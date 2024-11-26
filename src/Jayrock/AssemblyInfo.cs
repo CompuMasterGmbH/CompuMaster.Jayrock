@@ -26,12 +26,3 @@ using System.Reflection;
 using ComVisible = System.Runtime.InteropServices.ComVisibleAttribute;
 
 #endregion
-
-[assembly: AssemblyTitle("Jayrock")]
-[assembly: AssemblyDescription("JSON-RPC for ASP.NET/XSP")]
-
-//
-// Version information
-//
-
-[assembly: AssemblyFileVersion("0.9.16530.2159")]

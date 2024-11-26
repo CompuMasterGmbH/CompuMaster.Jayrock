@@ -27,6 +27,7 @@ namespace Jayrock.JsonRpc
     using System;
     using System.Diagnostics;
     using System.Reflection;
+    using Jayrock;
     using Jayrock.Services;
     using System.ComponentModel;
     using CustomTypeDescriptor = Jayrock.Json.Conversion.CustomTypeDescriptor;

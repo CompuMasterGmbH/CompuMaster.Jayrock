@@ -25,6 +25,7 @@ namespace Jayrock.JsonRpc
     #region Imports
 
     using System;
+    using Jayrock;
 
     using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
     using StreamingContext = System.Runtime.Serialization.StreamingContext;

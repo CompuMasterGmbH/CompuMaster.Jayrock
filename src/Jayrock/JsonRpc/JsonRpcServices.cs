@@ -26,6 +26,7 @@ namespace Jayrock.JsonRpc
 
     using System;
     using System.Collections;
+    using Jayrock;
     using Jayrock.Json;
     using Jayrock.Json.Conversion;
     using Jayrock.Services;

@@ -20,9 +20,38 @@
 //
 #endregion
 
-#region Imports
+namespace Jayrock
+{
+    #region Imports
 
-using System.Reflection;
-using ComVisible = System.Runtime.InteropServices.ComVisibleAttribute;
+    using System;
 
-#endregion
+    #endregion
+
+    /// <summary>
+    /// Provides masking services where one value masks another given a test.
+    /// </summary>
+
+    internal sealed class Mask
+    {
+        public static string NullString(string actual) 
+        {
+            return actual == null ? string.Empty : actual;
+        }
+
+        public static string NullString(string actual, string mask) 
+        {
+            return actual == null ? mask : actual;
+        }
+
+        public static string EmptyString(string actual, string emptyValue) 
+        {
+            return Mask.NullString(actual).Length == 0 ? emptyValue : actual;
+        }
+
+        private Mask()
+        {
+            throw new NotSupportedException();
+        }
+    }
+}
