@@ -159,8 +159,6 @@ namespace Jayrock.Json.Conversion.Converters
     }
 }
 
-#if NET_4_0
-
 namespace Jayrock.Json.Conversion.Converters
 {
     #region Imports
@@ -181,5 +179,3 @@ namespace Jayrock.Json.Conversion.Converters
         }
     }
 }
-
-#endif

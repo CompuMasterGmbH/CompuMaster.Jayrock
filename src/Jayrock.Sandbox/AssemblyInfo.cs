@@ -27,12 +27,3 @@ using CLSCompliantAttribute = System.CLSCompliantAttribute;
 using ComVisible = System.Runtime.InteropServices.ComVisibleAttribute;
 
 #endregion
-
-[assembly: AssemblyTitle("Jayrock Sandbox")]
-[assembly: AssemblyDescription("Sanbox library for Jayrock")]
-
-//
-// Version information
-//
-
-[assembly: AssemblyFileVersion("0.9.16530.2159")]
