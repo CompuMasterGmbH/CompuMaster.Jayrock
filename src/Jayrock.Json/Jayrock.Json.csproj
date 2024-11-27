@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyTitle>CompuMaster.Jayrock.Json</AssemblyTitle>
+    <Title>CompuMaster.Jayrock.Json</Title>
     <PackageId>CompuMaster.Jayrock.Json</PackageId>
-    <Description>JSON Library</Description>
+    <Description>Jayrock JSON is a versatile JSON parser, formatter and converter for .NET Standard 2.0, .NET Framework and .NET (Core)</Description>
     <Version>2024.9.17418.1142</Version>
     <ProjectType>Local</ProjectType>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
@@ -26,9 +26,9 @@
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.0" />
   </ItemGroup>
   <PropertyGroup>
-    <PackageReadmeFile>../README.md</PackageReadmeFile>
+    <PackageReadmeFile>../../README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\README.md" Pack="true" PackagePath="." />
+    <None Include="../../README.md" Pack="true" PackagePath="." />
   </ItemGroup>
 </Project>

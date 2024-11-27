@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net48</TargetFrameworks>
-    <AssemblyTitle>CompuMaster.Jayrock</AssemblyTitle>
+    <Title>CompuMaster.Jayrock</Title>
     <PackageId>CompuMaster.Jayrock</PackageId>
-    <Description>JSON-RPC for ASP.NET/XSP</Description>
+    <Description>Jayrock is a modest implementation of JSON, JsonML and JSON-RPC for the Microsoft .NET Framework, including ASP.NET.</Description>
     <Version>2024.9.16530.2159</Version>
     <ProjectType>Local</ProjectType>
     <OutputType>Library</OutputType>
@@ -48,9 +48,9 @@
     <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters" Version="1.4.0" />
   </ItemGroup>
   <PropertyGroup>
-    <PackageReadmeFile>../README.md</PackageReadmeFile>
+    <PackageReadmeFile>../../README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\README.md" Pack="true" PackagePath="." />
+    <None Include="../../README.md" Pack="true" PackagePath="." />
   </ItemGroup>
 </Project>
