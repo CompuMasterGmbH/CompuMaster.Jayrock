@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jayrock.Json", "src\Jayrock
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jayrock.Sandbox", "src\Jayrock.Sandbox\Jayrock.Sandbox.csproj", "{405B6AFF-52D4-4326-84F8-814FBF89AA12}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jayrock.Tests", "tests\Jayrock\Jayrock.Tests.csproj", "{DA5DD836-2530-4E76-9B76-1AAB3BE6A946}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CI_CD|Any CPU = CI_CD|Any CPU
@@ -40,6 +42,12 @@ Global
 		{405B6AFF-52D4-4326-84F8-814FBF89AA12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{405B6AFF-52D4-4326-84F8-814FBF89AA12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{405B6AFF-52D4-4326-84F8-814FBF89AA12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA5DD836-2530-4E76-9B76-1AAB3BE6A946}.CI_CD|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA5DD836-2530-4E76-9B76-1AAB3BE6A946}.CI_CD|Any CPU.Build.0 = Debug|Any CPU
+		{DA5DD836-2530-4E76-9B76-1AAB3BE6A946}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA5DD836-2530-4E76-9B76-1AAB3BE6A946}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA5DD836-2530-4E76-9B76-1AAB3BE6A946}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA5DD836-2530-4E76-9B76-1AAB3BE6A946}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

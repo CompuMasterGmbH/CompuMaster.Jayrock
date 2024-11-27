@@ -177,7 +177,10 @@ namespace Jayrock.Services
 
         private sealed class SecuredService : JsonRpcService
         {
-            [JsonRpcMethod, PrincipalPermission(SecurityAction.Demand)]
+            [JsonRpcMethod]
+#if NETFRAMEWORK
+            [PrincipalPermission(SecurityAction.Demand)]
+#endif
             public void SecuredMethod() { }
         }
     }

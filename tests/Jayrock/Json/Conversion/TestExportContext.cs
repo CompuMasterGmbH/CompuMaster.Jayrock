@@ -29,8 +29,10 @@ namespace Jayrock.Json.Conversion
     using System.Collections.Specialized;
     using System.Data;
     using System.Data.Common;
+#if NETFRAMEWORK
     using System.Web.UI;
     using System.Web.UI.HtmlControls;
+#endif
     using Jayrock.Json.Conversion.Converters;
     using NUnit.Framework;
 

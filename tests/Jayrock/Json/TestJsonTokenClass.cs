@@ -167,8 +167,9 @@ namespace Jayrock.Json
             Assert.AreEqual(JsonTokenClass.BOF, JsonToken.BOF().Class);
             Assert.AreEqual(JsonTokenClass.EOF, JsonToken.EOF().Class);
         }
-        
-        [ Test ]
+
+#if NETFRAMEWORK
+        [Test ]
         public void DeserializesToFactoryInstance()
         {
             IFormatter formatter = new BinaryFormatter();
@@ -177,6 +178,7 @@ namespace Jayrock.Json
             stream.Seek(0, SeekOrigin.Begin);
             Assert.AreSame(JsonTokenClass.Null, formatter.Deserialize(stream));
         }
+#endif
 
         [ Test ]
         public void EqualityByReference()

@@ -42,7 +42,8 @@ namespace Jayrock.Json
             Assert.IsTrue(JsonNull.Value.Equals(JsonNull.Value));
         }
 
-        [ Test ]
+#if NETFRAMEWORK
+        [Test ]
         public void ReferenceEqualityPostDeserialization()
         {
             MemoryStream stream = new MemoryStream();
@@ -52,6 +53,7 @@ namespace Jayrock.Json
             object o = formatter.Deserialize(stream);
             Assert.IsTrue(JsonNull.Value.Equals(o));
         }
+#endif
 
         [ Test ]
         public void LogicalEquality()

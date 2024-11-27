@@ -201,7 +201,8 @@ namespace Jayrock.Collections
             Assert.AreNotEqual(typeof(KeyedCollection), member.DeclaringType);
         }
 
-        [ Test ]
+#if NETFRAMEWORK
+        [Test ]
         public void MappingIsRestoredUponDeserialization()
         {
             NamedValueCollection collection = new NamedValueCollection();
@@ -218,6 +219,7 @@ namespace Jayrock.Collections
             Assert.AreEqual("foo", entry.Name); 
             Assert.AreEqual("bar", entry.Value);
         }
+#endif
 
         [ Serializable ]
         private sealed class NamedValue
