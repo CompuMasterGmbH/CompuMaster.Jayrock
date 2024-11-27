@@ -4,6 +4,7 @@
     <ProjectType>Local</ProjectType>
     <OutputType>Library</OutputType>
     <Configurations>CI_CD;Debug;Release</Configurations>
+    <Company>CompuMaster GmbH</Company>
   </PropertyGroup>
   <ItemGroup>
     <Reference Update="System">
@@ -12,7 +13,7 @@
     <Reference Update="System.Data">
       <Name>System.Data</Name>
     </Reference>
-    <Reference Include="System.Web">
+    <Reference Include="System.Web" Condition=" '$(TargetFramework)' == 'net48' ">
       <Name>System.Web</Name>
     </Reference>
     <Reference Update="System.Xml">

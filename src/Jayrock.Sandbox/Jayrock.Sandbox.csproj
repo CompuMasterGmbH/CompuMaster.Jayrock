@@ -12,6 +12,7 @@
     <OutputType>Library</OutputType>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <RootNamespace>Jayrock</RootNamespace>
+    <Company>CompuMaster GmbH</Company>
   </PropertyGroup>
   <ItemGroup>
     <Reference Update="System">
