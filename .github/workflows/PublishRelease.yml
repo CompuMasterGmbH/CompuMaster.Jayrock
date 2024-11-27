@@ -54,8 +54,8 @@ jobs:
             - name: Zip binaries CompuMaster.Jayrock.Json
               run: Compress-Archive -DestinationPath bin-jayrock-json.zip ${{env.BUILD_OUTPUT_BASEDIR}}/${{env.BUILD_OUTPUT_SUBDIR}}
 
-            - name: Zip binaries CompuMaster.Jayrock
-              run: Compress-Archive -DestinationPath bin-jayrock.zip ${{env.BUILD_OUTPUT_BASEDIR2}}/${{env.BUILD_OUTPUT_SUBDIR}}
+            #- name: Zip binaries CompuMaster.Jayrock
+            #  run: Compress-Archive -DestinationPath bin-jayrock.zip ${{env.BUILD_OUTPUT_BASEDIR2}}/${{env.BUILD_OUTPUT_SUBDIR}}
 
             - name: Publish zipped binaries CompuMaster.Jayrock.Json
               uses: softprops/action-gh-release@v1
@@ -64,18 +64,18 @@ jobs:
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Publish zipped binaries CompuMaster.Jayrock
-              uses: softprops/action-gh-release@v1
-              with:
-                files: "bin-jayrock.zip"
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            #- name: Publish zipped binaries CompuMaster.Jayrock
+            #  uses: softprops/action-gh-release@v1
+            #  with:
+            #    files: "bin-jayrock.zip"
+            #  env:
+            #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Pack CompuMaster.Jayrock.Json
               run: dotnet pack --no-build --configuration=${{env.PACK_CONFIGURATION}} ${{env.BUILD_PROJECT}} --output .  
 
-            - name: Pack CompuMaster.Jayrock
-              run: dotnet pack --no-build --configuration=${{env.PACK_CONFIGURATION}} ${{env.BUILD_PROJECT2}} --output .  
+            #- name: Pack CompuMaster.Jayrock
+            #  run: dotnet pack --no-build --configuration=${{env.PACK_CONFIGURATION}} ${{env.BUILD_PROJECT2}} --output .  
 
             - name: PushNuget CompuMaster.Jayrock.Json + CompuMaster.Jayrock
               run: dotnet nuget push *.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate 
