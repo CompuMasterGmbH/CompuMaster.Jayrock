@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyTitle>Jayrock.Json</AssemblyTitle>
+    <AssemblyTitle>CompuMaster.Jayrock.Json</AssemblyTitle>
+    <PackageId>CompuMaster.Jayrock.Json</PackageId>
     <Description>JSON Library</Description>
     <Version>2024.9.17418.1141</Version>
     <ProjectType>Local</ProjectType>

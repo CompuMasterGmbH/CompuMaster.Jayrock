@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyTitle>Jayrock Sandbox</AssemblyTitle>
+    <AssemblyTitle>CompuMaster.Jayrock.Sandbox</AssemblyTitle>
+    <PackageId>CompuMaster.Jayrock.Sandbox</PackageId>
     <Description>Sanbox library for Jayrock</Description>
     <Version>2024.9.16530.2159</Version>
     <Product>Jayrock</Product>

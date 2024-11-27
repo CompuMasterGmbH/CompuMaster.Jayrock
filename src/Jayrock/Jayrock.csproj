@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net48</TargetFrameworks>
-    <AssemblyTitle>Jayrock</AssemblyTitle>
+    <AssemblyTitle>CompuMaster.Jayrock</AssemblyTitle>
+    <PackageId>CompuMaster.Jayrock</PackageId>
     <Description>JSON-RPC for ASP.NET/XSP</Description>
-    <FileVersion>2024.9.16530.2159</FileVersion>
+    <Version>2024.9.16530.2159</Version>
     <ProjectType>Local</ProjectType>
     <OutputType>Library</OutputType>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
