@@ -94,12 +94,12 @@ jobs:
               if: (!startsWith(matrix.os, 'windows'))
               run: dotnet test --framework net8.0 --results-directory test-results --logger junit --configuration=${{env.BUILD_CONFIGURATION}}${{matrix.build_configuration_suffix}} --no-restore 
 
-            - name: Dir Listing (Win) test-results
-              if: startsWith(matrix.os, 'windows')
-              run: dir test-results
-            - name: Dir Listing (Linux/Mac) test-results
-              if: (!startsWith(matrix.os, 'windows'))
-              run: ls -la test-results
+            #- name: Dir Listing (Win) test-results
+            #  if: startsWith(matrix.os, 'windows')
+            #  run: dir test-results
+            #- name: Dir Listing (Linux/Mac) test-results
+            #  if: (!startsWith(matrix.os, 'windows'))
+            #  run: ls -la test-results
 
             #Following lines maybe required again after test&dev?!
             #  # the action is useless on pull_request events
@@ -128,10 +128,10 @@ jobs:
                 check_name: Unit Test Results (${{matrix.os}})
                 report_individual_runs: true
       
-            - name: Publish Unit Test Results
-              uses: actions/upload-artifact@v4
-              if: always()
-              with:
-                name: NUnit Test Results ${{ matrix.os }}
-                path: test-results/TestResults.xml
+            #- name: Publish Unit Test Results
+            #  uses: actions/upload-artifact@v4
+            #  if: always()
+            #  with:
+            #    name: NUnit Test Results ${{ matrix.os }}
+            #    path: test-results/TestResults.xml
 
