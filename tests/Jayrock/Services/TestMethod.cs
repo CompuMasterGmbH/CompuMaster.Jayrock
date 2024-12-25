@@ -27,6 +27,8 @@ namespace Jayrock.Services
     using System;
     using System.Security;
     using System.Security.Permissions;
+    using System.Security.Principal;
+    using System.Threading;
     using Jayrock.Json;
     using Jayrock.JsonRpc;
     using NUnit.Framework;
@@ -142,6 +144,14 @@ namespace Jayrock.Services
         {
             // Issue #12: PrincipalPermissionAttribute causes InvalidCastException when applied to service methods 
             // http://code.google.com/p/jayrock/issues/detail?id=12
+
+#if NETFRAMEWORK
+            // Set a test user with required authorizations
+            AppDomain.CurrentDomain.SetPrincipalPolicy(PrincipalPolicy.UnauthenticatedPrincipal);
+            var identity = new GenericIdentity("TestUser");
+            var principal = new GenericPrincipal(identity, new[] { "RequiredRole" }); // Optional: replace "RequiredRole" by expected role
+            Thread.CurrentPrincipal = principal;
+#endif
 
             SecuredService service = new SecuredService();
             Method method = service.GetClass().GetMethodByName("SecuredMethod");
