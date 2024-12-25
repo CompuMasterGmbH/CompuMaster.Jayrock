@@ -316,7 +316,7 @@ namespace Jayrock.Json.Conversion.Converters
             object o = context.Import(expectedType, reader);
             Assert.That(reader.EOF, Is.True, "Reader must be at EOF.");
             Assert.That(o, Is.Not.Null);
-            Assert.That(o, Is.InstanceOfType(expectedType));
+            Assert.That(o, Is.InstanceOf(expectedType));
             return o;
         }
 

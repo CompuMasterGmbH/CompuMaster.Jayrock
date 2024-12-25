@@ -35,20 +35,23 @@ namespace Jayrock.Json.Conversion.Converters
         [Test]
         public void Superclass()
         {
-            Assert.IsInstanceOf<ExporterBase>(new DateTimeExporter());
+            Assert.That(new DateTimeExporter(), Is.InstanceOf<ExporterBase>());
         }
 
         [Test]
         public void InputTypeIsString()
         {
-            Assert.AreSame(typeof(DateTime), (new DateTimeExporter()).InputType);
+            Assert.That((new DateTimeExporter()).InputType, Is.SameAs(typeof(DateTime)));
         }
 
         [Test]
         public void Export()
         {
             DateTime time = new DateTime(1999, 12, 31, 23, 30, 59, 999);
-            Assert.AreEqual("1999-12-31T23:30:59.9990000" + Tzd(time), Export(time));
+            Assert.That(Export(time), Is.EqualTo("1999-12-31T23:30:59.9990000" + Tzd(time)));
+#if NET5_0_OR_GREATER
+            Assert.That(Export(time), Is.EqualTo("1999-12-31T23:30:59.9990000" + TzdInfo(time)));
+#endif
         }
 
         private static string Export(DateTime value)
@@ -61,12 +64,28 @@ namespace Jayrock.Json.Conversion.Converters
 
         private static string Tzd(DateTime localTime)
         {
+#pragma warning disable CS0618
             TimeSpan offset = TimeZone.CurrentTimeZone.GetUtcOffset(localTime);
+#pragma warning restore CS0618
             string offsetString = offset.ToString();
             return offset.Ticks < 0 ?
                    (offsetString.Substring(0, 6)) :
                    ("+" + offsetString.Substring(0, 5));
         }
+
+#if NET5_0_OR_GREATER
+        private static string TzdInfo(DateTime localTime)
+        {
+            TimeSpan offset = TimeZoneInfo.Utc.GetUtcOffset(localTime);
+            string offsetString = offset.ToString();
+            return offset.Ticks < 0 ?
+                   (offsetString.Substring(0, 6)) :
+                   ("+" + offsetString.Substring(0, 5));
+        }
+#endif
     }
 }
+
+
+
 

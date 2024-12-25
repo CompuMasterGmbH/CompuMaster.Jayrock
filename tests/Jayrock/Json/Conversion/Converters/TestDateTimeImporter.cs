@@ -44,6 +44,9 @@ namespace Jayrock.Json.Conversion.Converters
         {
             DateTime time = new DateTime(1999, 12, 31, 23, 30, 59, 999);
             AssertImport(time, "\"1999-12-31T23:30:59.9990000" + Tzd(time) + "\"");
+#if NET5_0_OR_GREATER
+            AssertImport(time, "\"1999-12-31T23:30:59.9990000" + TzdInfo(time) + "\"");
+#endif
         }
 
         [Test]
@@ -167,12 +170,25 @@ namespace Jayrock.Json.Conversion.Converters
 
         private static string Tzd(DateTime localTime)
         {
+#pragma warning disable CS0618
             TimeSpan offset = TimeZone.CurrentTimeZone.GetUtcOffset(localTime);
+#pragma warning restore CS0618
             string offsetString = offset.ToString();
             return offset.Ticks < 0 ?
                    (offsetString.Substring(0, 6)) :
                    ("+" + offsetString.Substring(0, 5));
         }
+
+#if NET5_0_OR_GREATER
+        private static string TzdInfo(DateTime localTime)
+        {
+            TimeSpan offset = TimeZoneInfo.Utc.GetUtcOffset(localTime);
+            string offsetString = offset.ToString();
+            return offset.Ticks < 0 ?
+                   (offsetString.Substring(0, 6)) :
+                   ("+" + offsetString.Substring(0, 5));
+        }
+#endif
     }
 }
 
