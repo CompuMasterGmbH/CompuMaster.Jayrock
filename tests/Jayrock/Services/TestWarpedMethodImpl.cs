@@ -31,44 +31,44 @@ namespace Jayrock.Services
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestWarpedMethodImpl
     {
-        [ Test ]
+        [Test]
         public void Invocation()
         {
             TestMethodImpl baseMethod = new TestMethodImpl();
-            
+
             WarpedMethodImpl warpedMethod = new WarpedMethodImpl(baseMethod, typeof(Thing),
-                TypeDescriptor.GetProperties(typeof(Thing)), 
+                TypeDescriptor.GetProperties(typeof(Thing)),
                 TypeDescriptor.GetProperties(typeof(ResultThing))[0]);
-            
+
             DummyService service = new DummyService();
             object[] args = new object[] { 42, "foobar" };
             baseMethod.InvokeResult = new ResultThing(123);
             object result = warpedMethod.Invoke(service, args);
 
-            Assert.AreSame(service, baseMethod.InvokeService);
-            Assert.IsNotNull(baseMethod.InvokeArgs);
-            Assert.AreEqual(1, baseMethod.InvokeArgs.Length);
-            Assert.IsNotNull(baseMethod.InvokeArgs[0]);
+            Assert.That(baseMethod.InvokeService, Is.SameAs(service));
+            Assert.That(baseMethod.InvokeArgs, Is.Not.Null);
+            Assert.That(baseMethod.InvokeArgs.Length, Is.EqualTo(1));
+            Assert.That(baseMethod.InvokeArgs[0], Is.Not.Null);
             Thing thing = baseMethod.InvokeArgs[0] as Thing;
-            Assert.IsInstanceOfType(typeof(Thing), thing);
-            Assert.AreEqual(args[0], thing.Int);
-            Assert.AreEqual(args[1], thing.Str);
-            Assert.AreEqual(baseMethod.InvokeResult.Result, result);
+            Assert.That(thing, Is.InstanceOf<Thing>());
+            Assert.That(thing.Int, Is.EqualTo(args[0]));
+            Assert.That(thing.Str, Is.EqualTo(args[1]));
+            Assert.That(result, Is.EqualTo(baseMethod.InvokeResult.Result));
         }
 
-        [ Test ]
+        [Test]
         public void InvocationWithNoResult()
         {
             TestMethodImpl baseMethod = new TestMethodImpl();
             WarpedMethodImpl warpedMethod = new WarpedMethodImpl(baseMethod, typeof(Thing),
                 TypeDescriptor.GetProperties(typeof(Thing)), null);
-            Assert.IsNull(warpedMethod.Invoke(new DummyService(), new object[0]));
+            Assert.That(warpedMethod.Invoke(new DummyService(), new object[0]), Is.Null);
         }
 
-        [ Test ]
+        [Test]
         public void AsyncInvocation()
         {
             TestMethodImpl baseMethod = new TestMethodImpl();
@@ -83,52 +83,52 @@ namespace Jayrock.Services
             IAsyncResult ar = warpedMethod.BeginInvoke(service, args, null, null);
             object result = warpedMethod.EndInvoke(service, ar);
 
-            Assert.AreSame(ar, baseMethod.EndInvokeAsyncResult);
-            Assert.AreSame(service, baseMethod.InvokeService);
-            Assert.IsNotNull(baseMethod.InvokeArgs);
-            Assert.AreEqual(1, baseMethod.InvokeArgs.Length);
-            Assert.IsNotNull(baseMethod.InvokeArgs[0]);
+            Assert.That(baseMethod.EndInvokeAsyncResult, Is.SameAs(ar));
+            Assert.That(baseMethod.InvokeService, Is.SameAs(service));
+            Assert.That(baseMethod.InvokeArgs, Is.Not.Null);
+            Assert.That(baseMethod.InvokeArgs.Length, Is.EqualTo(1));
+            Assert.That(baseMethod.InvokeArgs[0], Is.Not.Null);
             Thing thing = baseMethod.InvokeArgs[0] as Thing;
-            Assert.IsInstanceOfType(typeof(Thing), thing);
-            Assert.AreEqual(args[0], thing.Int);
-            Assert.AreEqual(args[1], thing.Str);
-            Assert.AreEqual(baseMethod.InvokeResult.Result, result);
+            Assert.That(thing, Is.InstanceOf<Thing>());
+            Assert.That(thing.Int, Is.EqualTo(args[0]));
+            Assert.That(thing.Str, Is.EqualTo(args[1]));
+            Assert.That(result, Is.EqualTo(baseMethod.InvokeResult.Result));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotInitializeWithNullBaseImpl()
         {
-            new WarpedMethodImpl(null, typeof(Thing),
-                TypeDescriptor.GetProperties(typeof(Thing)), null);
+            Assert.Throws<ArgumentNullException>(() => new WarpedMethodImpl(null, typeof(Thing),
+                TypeDescriptor.GetProperties(typeof(Thing)), null));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotInitializeWithNullArgsType()
         {
-            new WarpedMethodImpl(new TestMethodImpl(), null,
-                TypeDescriptor.GetProperties(typeof(Thing)), null);
+            Assert.Throws<ArgumentNullException>(() => new WarpedMethodImpl(new TestMethodImpl(), null,
+                TypeDescriptor.GetProperties(typeof(Thing)), null));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotInitializeWithNullArgs()
         {
-            new WarpedMethodImpl(new TestMethodImpl(), typeof(Thing), null, null);
+            Assert.Throws<ArgumentNullException>(() => new WarpedMethodImpl(new TestMethodImpl(), typeof(Thing), null, null));
         }
 
-        [ Test ]
+        [Test]
         public void AsynchronousQueryIsDelegated()
         {
             TestMethodImpl impl = new TestMethodImpl();
-            Assert.IsFalse(impl.IsAsynchronousCalled);
-            Assert.IsFalse(new WarpedMethodImpl(impl, typeof(Thing), new PropertyDescriptorCollection(null), null).IsAsynchronous);
-            Assert.IsTrue(impl.IsAsynchronousCalled);
+            Assert.That(impl.IsAsynchronousCalled, Is.False);
+            Assert.That(new WarpedMethodImpl(impl, typeof(Thing), new PropertyDescriptorCollection(null), null).IsAsynchronous, Is.False);
+            Assert.That(impl.IsAsynchronousCalled, Is.True);
         }
 
         private sealed class Thing
         {
             private int _int;
             private string _str;
-            
+
             public int Int
             {
                 get { return _int; }
@@ -145,7 +145,7 @@ namespace Jayrock.Services
         private sealed class ResultThing
         {
             private readonly int _result;
-            
+
             public ResultThing(int result)
             {
                 _result = result;
@@ -211,3 +211,8 @@ namespace Jayrock.Services
         }
     }
 }
+
+
+
+
+

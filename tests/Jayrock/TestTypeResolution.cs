@@ -31,70 +31,70 @@ namespace Jayrock
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestTypeResolution : TestUtilityBase
     {
         private TypeResolutionHandler _initialCurrent;
 
-        [ SetUp ]
+        [SetUp]
         public void Init()
         {
             _initialCurrent = TypeResolution.Current;
         }
 
-        [ TearDown ]
+        [TearDown]
         public void Dispose()
         {
             TypeResolution.Current = _initialCurrent;
         }
 
-        [ Test ]
+        [Test]
         public void Default()
         {
-            Assert.IsNotNull(TypeResolution.Default);
+            Assert.That(TypeResolution.Default, Is.Not.Null);
         }
 
-        [ Test ]
+        [Test]
         public void Current()
         {
-            Assert.IsNotNull(TypeResolution.Current);
-            Assert.AreSame(TypeResolution.Default, TypeResolution.Current);
+            Assert.That(TypeResolution.Current, Is.Not.Null);
+            Assert.That(TypeResolution.Current, Is.SameAs(TypeResolution.Default));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotSetCurrentToNull()
         {
-            TypeResolution.Current = null;
+            Assert.Throws<ArgumentNullException>(() => TypeResolution.Current = null);
         }
 
-        [ Test ]
+        [Test]
         public void SetCurrent()
         {
             TypeResolutionHandler handler = new TypeResolutionHandler(DummyGetType);
             TypeResolution.Current = handler;
-            Assert.AreSame(handler, TypeResolution.Current);
+            Assert.That(TypeResolution.Current, Is.SameAs(handler));
         }
 
-        [ Test ]
+        [Test]
         public void FindTypeResolution()
         {
             TestTypeResolver resolver = new TestTypeResolver(typeof(object));
             TypeResolution.Current = new TypeResolutionHandler(resolver.Resolve);
-            Assert.AreSame(typeof(object), TypeResolution.FindType("obj"));
-            Assert.AreEqual("obj", resolver.LastTypeName, "typeName");
-            Assert.AreEqual(false, resolver.LastThrowOnError, "throwOnError");
-            Assert.AreEqual(false, resolver.LastIgnoreCase, "ignoreCase");
+            Assert.That(TypeResolution.FindType("obj"), Is.SameAs(typeof(object)));
+            Assert.That(resolver.LastTypeName, Is.EqualTo("obj"), "typeName");
+            Assert.That(resolver.LastThrowOnError, Is.False, "throwOnError");
+            Assert.That(resolver.LastIgnoreCase, Is.False, "ignoreCase");
         }
 
-        [ Test ]
+        [Test]
         public void GetTypeResolution()
         {
             TestTypeResolver resolver = new TestTypeResolver(typeof(object));
             TypeResolution.Current = new TypeResolutionHandler(resolver.Resolve);
-            Assert.AreSame(typeof(object), TypeResolution.GetType("obj"));
-            Assert.AreEqual("obj", resolver.LastTypeName, "typeName");
-            Assert.AreEqual(true, resolver.LastThrowOnError, "throwOnError");
-            Assert.AreEqual(false, resolver.LastIgnoreCase, "ignoreCase");
+            Assert.That(TypeResolution.GetType("obj"), Is.SameAs(typeof(object)));
+            Assert.That(resolver.LastTypeName, Is.EqualTo("obj"), "typeName");
+            Assert.That(resolver.LastThrowOnError, Is.True, "throwOnError");
+            Assert.That(resolver.LastIgnoreCase, Is.False, "ignoreCase");
         }
 
         private static Type DummyGetType(string typeName, bool throwOnError, bool ignoreCase)
@@ -124,3 +124,8 @@ namespace Jayrock
         }
     }
 }
+
+
+
+
+

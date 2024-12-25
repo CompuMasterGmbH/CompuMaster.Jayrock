@@ -92,7 +92,7 @@ namespace Jayrock.Json
                 list.Remove(tokenClass);
 
             if (list.Count > 0)
-                Assert.Fail("{0} not found in All collection.", list[0]);
+                Assert.Fail(string.Format("{0} not found in All collection.", list[0]));
         }
 
         [Test]

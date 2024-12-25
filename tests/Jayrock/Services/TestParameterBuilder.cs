@@ -29,70 +29,69 @@ namespace Jayrock.Services
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestParameterBuilder
     {
         private MethodBuilder _methodBuilder;
         private ParameterBuilder _builder;
 
-        [ SetUp ]
+        [SetUp]
         public void Init()
         {
             _methodBuilder = (new ServiceClassBuilder()).DefineMethod();
             _builder = _methodBuilder.DefineParameter();
         }
 
-        [ Test ] 
+        [Test]
         public void Defaults()
         {
-            Assert.IsNotNull(_builder.Name);
-            Assert.AreEqual(0, _builder.Position);
-            Assert.AreSame(typeof(object), _builder.ParameterType);
-            Assert.IsFalse(_builder.IsParamArray);
-            Assert.IsNotNull(_builder.Method);
+            Assert.That(_builder.Name, Is.Not.Null);
+            Assert.That(_builder.Position, Is.EqualTo(0));
+            Assert.That(_builder.ParameterType, Is.SameAs(typeof(object)));
+            Assert.That(_builder.IsParamArray, Is.False);
+            Assert.That(_builder.Method, Is.Not.Null);
         }
 
-        [ Test ]
+        [Test]
         public void GetSetName()
         {
             const string name = "MyParameter";
             _builder.Name = name;
-            Assert.AreEqual(name, _builder.Name);
+            Assert.That(_builder.Name, Is.EqualTo(name));
         }
-        
-        [ Test ]
+
+        [Test]
         public void GetSetReturnType()
         {
             Type type = typeof(int);
             _builder.ParameterType = type;
-            Assert.AreSame(type, _builder.ParameterType);
+            Assert.That(_builder.ParameterType, Is.SameAs(type));
         }
 
-        [ Test ]
+        [Test]
         public void GetPosition()
         {
-            Assert.AreEqual(0, _builder.Position);
-            Assert.AreEqual(1, _methodBuilder.DefineParameter().Position);
+            Assert.That(_builder.Position, Is.EqualTo(0));
+            Assert.That(_methodBuilder.DefineParameter().Position, Is.EqualTo(1));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void ReturnTypeCannotBeNull()
         {
-            _builder.ParameterType = null;
+            Assert.Throws<ArgumentNullException>(() => _builder.ParameterType = null);
         }
 
-        [ Test ]
+        [Test]
         public void GetSetIsParamArray()
         {
             _builder.IsParamArray = true;
-            Assert.AreEqual(true, _builder.IsParamArray);
+            Assert.That(_builder.IsParamArray, Is.True);
         }
-        
-        [ Test ]
+
+        [Test]
         public void MethodReference()
         {
-            Assert.AreSame(_methodBuilder, _builder.Method);
+            Assert.That(_builder.Method, Is.SameAs(_methodBuilder));
         }
     }
 }
-

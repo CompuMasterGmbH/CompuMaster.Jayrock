@@ -80,12 +80,14 @@ namespace Jayrock.Json.Conversion.Converters
             JsonTextReader reader = new JsonTextReader(new StringReader(input));
             GuidImporter importer = new GuidImporter();
             object o = importer.Import(new ImportContext(), reader);
-            Assert.IsTrue(reader.EOF, "Reader must be at EOF.");
+            Assert.That(reader.EOF, Is.True, "Reader must be at EOF.");
             if (expected != null)
-                Assert.IsInstanceOf<Guid>(o);
-            Assert.AreEqual(expected, o);
+                Assert.That(o, Is.InstanceOf<Guid>());
+            Assert.That(o, Is.EqualTo(expected));
         }
     }
 }
+
+
 
 

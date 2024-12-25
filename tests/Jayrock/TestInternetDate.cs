@@ -31,49 +31,49 @@ namespace Jayrock
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestInternetDate : TestUtilityBase
     {
-        [ Test ]
+        [Test]
         public void ParseMinimal()
         {
             AssertParse("Sun, 26 Feb 2006 21:52:00 GMT", "26 Feb 2006 21:52 GMT");
         }
 
-        [ Test ]
+        [Test]
         public void ParseWithSeconds()
         {
             AssertParse("Sun, 26 Feb 2006 21:52:20 GMT", "26 Feb 2006 21:52:20 GMT");
         }
 
-        [ Test ]
+        [Test]
         public void ParseWithDayOfWeekNoSeconds()
         {
             AssertParse("Sun, 26 Feb 2006 21:52:00 GMT", "Sun, 26 Feb 2006 21:52 GMT");
         }
 
-        [ Test ]
+        [Test]
         public void ParseComplete()
         {
             AssertParse("Sun, 26 Feb 2006 21:52:20 GMT", "Sun, 26 Feb 2006 21:52:20 GMT");
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotParseNull()
         {
-            InternetDate.Parse(null);
+            Assert.Throws<ArgumentNullException>(() => InternetDate.Parse(null));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void CannotParseEmpty()
         {
-            InternetDate.Parse(string.Empty);
+            Assert.Throws<ArgumentException>(() => InternetDate.Parse(string.Empty));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void CannotParseBelowMinimumLength()
         {
-            InternetDate.Parse("1234567890");
+            Assert.Throws<ArgumentException>(() => InternetDate.Parse("1234567890"));
         }
 
         [Test]
@@ -94,19 +94,19 @@ namespace Jayrock
             AssertParse("Sun, 26 Feb 2006 21:52:20 GMT", "Sun, 26 Feb 2006 22:52:20 +0100");
         }
 
-        [ Test ]
+        [Test]
         public void ParseIndiaTime()
         {
             AssertParse("Sun, 26 Feb 2006 21:52:20 GMT", "Mon, 27 Feb 2006 03:22:20 +0530");
         }
 
-        [ Test ]
+        [Test]
         public void ParsePST()
         {
             AssertParse("Sun, 26 Feb 2006 21:52:20 GMT", "Sun, 26 Feb 2006 13:52:20 -0800");
         }
 
-        [ Test ]
+        [Test]
         public void ParseNorthAmericanZones()
         {
             AssertParse("Sun, 26 Feb 2006 21:52:20 GMT", "Sun, 26 Feb 2006 17:52:20 EDT");
@@ -119,17 +119,17 @@ namespace Jayrock
             AssertParse("Sun, 26 Feb 2006 21:52:20 GMT", "Sun, 26 Feb 2006 13:52:20 PST");
         }
 
-        [ Test ]
+        [Test]
         public void CannotParseUnknownZones()
         {
-            foreach (string zone in new string[] {"ZT", "ZZT", "EZT", "ZST"})
+            foreach (string zone in new string[] { "ZT", "ZZT", "EZT", "ZST" })
             {
-                try 
-                { 
+                try
+                {
                     InternetDate.Parse("Sun, 26 Feb 2006 17:52:20 " + zone);
-                    Assert.Fail("{0} is not a valid zone.", zone);
-                } 
-                catch (FormatException) 
+                    Assert.Fail($"{zone} is not a valid zone.");
+                }
+                catch (FormatException)
                 {
                     continue;
                 }
@@ -142,46 +142,50 @@ namespace Jayrock
             AssertParse("Sun, 26 Feb 2006 21:52:20 GMT", "Mon, 27 Feb 2006 03:22:20 0530");
         }
 
-        [ Test ]
+        [Test]
         public void Roundtrip()
         {
             AssertParse("Sun, 26 Feb 2006 21:52:20 GMT", "Sun, 26 Feb 2006 21:52:20 GMT");
         }
 
-        [ Test, ExpectedException(typeof(FormatException)) ]
+        [Test]
         public void EmptyTimeZone()
         {
-            InternetDate.Parse("Sun, 26 Feb 2006 21:52:20 ");
+            Assert.Throws<FormatException>(() => InternetDate.Parse("Sun, 26 Feb 2006 21:52:20 "));
         }
 
-        [ Test, ExpectedException(typeof(FormatException)) ]
+        [Test]
         public void MissingTimeZone()
         {
-            InternetDate.Parse("Sun, 26 Feb 2006 21:52:20");
+            Assert.Throws<FormatException>(() => InternetDate.Parse("Sun, 26 Feb 2006 21:52:20"));
         }
 
-        [ Test, ExpectedException(typeof(FormatException)) ]
+        [Test]
         public void BadLocalDifferential()
         {
-            InternetDate.Parse("Sun, 26 Feb 2006 21:52:20 HHMM");
+            Assert.Throws<FormatException>(() => InternetDate.Parse("Sun, 26 Feb 2006 21:52:20 HHMM"));
         }
 
-        [ Test, ExpectedException(typeof(FormatException)) ]
+        [Test]
         public void WrongLocalDifferentialLength()
         {
-            InternetDate.Parse("Sun, 26 Feb 2006 22:52:20 100");
+            Assert.Throws<FormatException>(() => InternetDate.Parse("Sun, 26 Feb 2006 22:52:20 100"));
         }
 
-        [ Test, ExpectedException(typeof(FormatException)) ]
+        [Test]
         public void NoTimeZoneDelimiter()
         {
-            InternetDate.Parse("Sun,26-Feb-2006T22:52:20+0100");
+            Assert.Throws<FormatException>(() => InternetDate.Parse("Sun,26-Feb-2006T22:52:20+0100"));
         }
 
         private static void AssertParse(string expected, string input)
         {
             DateTime time = InternetDate.Parse(input);
-            Assert.AreEqual(expected, time.ToUniversalTime().ToString("r"), "Input = " + input);
+            Assert.That(time.ToUniversalTime().ToString("r"), Is.EqualTo(expected), "Input = " + input);
         }
     }
 }
+
+
+
+

@@ -31,91 +31,91 @@ namespace Jayrock.Services
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestTypeMethodImpl
     {
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotInitializeWithNullMethod()
         {
-            new TypeMethodImpl(null);
+            Assert.Throws<ArgumentNullException>(() => new TypeMethodImpl(null));
         }
 
-        [ Test ]
+        [Test]
         public void MethodPropertyReflectsInitializedMethod()
         {
             MethodInfo method = GetMethod("Sub");
             TypeMethodImpl impl = new TypeMethodImpl(method);
-            Assert.IsNotNull(impl.Method);
-            Assert.AreSame(method, impl.Method);
+            Assert.That(impl.Method, Is.Not.Null);
+            Assert.That(impl.Method, Is.SameAs(method));
         }
 
-        [ Test ]
+        [Test]
         public void InvokeCallsMethod()
         {
             MockService service = new MockService();
             TypeMethodImpl impl = GetImpl("Sub");
             impl.Invoke(service, null);
-            Assert.AreSame(impl.Method, service.LastCalledMethod);
+            Assert.That(service.LastCalledMethod, Is.SameAs(impl.Method));
         }
 
-        [ Test ]
+        [Test]
         public void InvokeReturnsResult()
         {
             MockService service = new MockService();
             service.NextReturn = new object();
-            Assert.AreSame(service.NextReturn, GetImpl("Function").Invoke(service, null));
+            Assert.That(GetImpl("Function").Invoke(service, null), Is.SameAs(service.NextReturn));
         }
-        
-        [ Test ]
+
+        [Test]
         public void BeginInvokeWithoutCallback()
         {
             MockService service = new MockService();
             TypeMethodImpl impl = GetImpl("Sub");
             object state = new object();
             IAsyncResult ar = impl.BeginInvoke(service, null, null, state);
-            Assert.IsNotNull(ar);
-            Assert.IsTrue(ar.CompletedSynchronously);
-            Assert.IsTrue(ar.IsCompleted);
-            Assert.AreSame(state, ar.AsyncState);
-            Assert.IsNotNull(ar.AsyncWaitHandle);
-            Assert.AreSame(impl.Method, service.LastCalledMethod);
+            Assert.That(ar, Is.Not.Null);
+            Assert.That(ar.CompletedSynchronously, Is.True);
+            Assert.That(ar.IsCompleted, Is.True);
+            Assert.That(ar.AsyncState, Is.SameAs(state));
+            Assert.That(ar.AsyncWaitHandle, Is.Not.Null);
+            Assert.That(service.LastCalledMethod, Is.SameAs(impl.Method));
         }
 
-        [ Test ]
+        [Test]
         public void BeginInvokeWithCallback()
         {
             MockService service = new MockService();
             TypeMethodImpl impl = GetImpl("Sub");
             bool[] called = new bool[1];
             impl.BeginInvoke(service, null, new AsyncCallback(OnInvoked), called);
-            Assert.IsTrue(called[0]);
+            Assert.That(called[0], Is.True);
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotInvokeWithNullService()
         {
-            GetImpl("Sub").Invoke(null, null);
+            Assert.Throws<ArgumentNullException>(() => GetImpl("Sub").Invoke(null, null));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotBeginInvokeWithNullService()
         {
-            GetImpl("Sub").BeginInvoke(null, null, null, null);
+            Assert.Throws<ArgumentNullException>(() => GetImpl("Sub").BeginInvoke(null, null, null, null));
         }
 
-        [ Test, ExpectedException(typeof(InvocationException)) ]
+        [Test]
         public void InvokeThrowsInvocationExceptionWhenBadParamCount()
         {
-            GetImpl("Sub").Invoke(new MockService(), new object[] { 1, 2, 3 });
+            Assert.Throws<InvocationException>(() => GetImpl("Sub").Invoke(new MockService(), new object[] { 1, 2, 3 }));
         }
 
-        [ Test, ExpectedException(typeof(InvocationException)) ]
+        [Test]
         public void InvokeThrowsInvocationExceptionWhenParamTypeMismatch()
         {
-            GetImpl("TwoArgSub").Invoke(new MockService(), new object[] { "1", "2" });
+            Assert.Throws<InvocationException>(() => GetImpl("TwoArgSub").Invoke(new MockService(), new object[] { "1", "2" }));
         }
 
-        [ Test ]
+        [Test]
         public void ExceptionInMethodPropagatedAsTargetMethodException()
         {
             MockService service = new MockService();
@@ -128,12 +128,12 @@ namespace Jayrock.Services
             }
             catch (TargetMethodException e)
             {
-                Assert.IsNotNull(e.InnerException);
-                Assert.AreSame(service.NextException, e.InnerException);
+                Assert.That(e.InnerException, Is.Not.Null);
+                Assert.That(e.InnerException, Is.SameAs(service.NextException));
             }
         }
 
-        [ Test ]
+        [Test]
         public void EndInvokePropagatesThrownException()
         {
             MockService service = new MockService();
@@ -147,44 +147,44 @@ namespace Jayrock.Services
             }
             catch (TargetMethodException e)
             {
-                Assert.IsNotNull(e.InnerException);
-                Assert.AreSame(service.NextException, e.InnerException);
+                Assert.That(e.InnerException, Is.Not.Null);
+                Assert.That(e.InnerException, Is.SameAs(service.NextException));
             }
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotCallEndInvokeWithNullService()
         {
             TypeMethodImpl impl = GetImpl("Sub");
-            impl.EndInvoke(null, impl.BeginInvoke(new MockService(), null, null, null));
+            Assert.Throws<ArgumentNullException>(() => impl.EndInvoke(null, impl.BeginInvoke(new MockService(), null, null, null)));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotCallEndInvokeWithNullAsyncResult()
         {
-            GetImpl("Sub").EndInvoke(new MockService(), null);
+            Assert.Throws<ArgumentNullException>(() => GetImpl("Sub").EndInvoke(new MockService(), null));
         }
 
-        [ Test ]
+        [Test]
         public void ImplementationIsNotAsynchronous()
         {
-            Assert.IsFalse(GetImpl("Sub").IsAsynchronous);
-        }
-        
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
-        public void CannotCallEndInvokeWithBadAsyncResultType()
-        {
-            GetImpl("Sub").EndInvoke(new MockService(), new DummyAsyncResult());
+            Assert.That(GetImpl("Sub").IsAsynchronous, Is.False);
         }
 
-        [ Test ]
+        [Test]
+        public void CannotCallEndInvokeWithBadAsyncResultType()
+        {
+            Assert.Throws<ArgumentException>(() => GetImpl("Sub").EndInvoke(new MockService(), new DummyAsyncResult()));
+        }
+
+        [Test]
         public void InvokingStaticMethodPrependsServiceObjectToArgs()
         {
             MockService service = new MockService();
             const int num = 42;
             const string str = "hello";
             object result = GetImpl("Static").Invoke(service, new object[] { num, str });
-            Assert.AreEqual(new object[] { service, num, str }, result);
+            Assert.That(result, Is.EqualTo(new object[] { service, num, str }));
         }
 
         private sealed class DummyAsyncResult : IAsyncResult
@@ -197,8 +197,8 @@ namespace Jayrock.Services
 
         private static void OnInvoked(IAsyncResult ar)
         {
-            Assert.IsNotNull(ar);
-            ((bool[]) ar.AsyncState)[0] = true;
+            Assert.That(ar, Is.Not.Null);
+            ((bool[])ar.AsyncState)[0] = true;
         }
 
         private static TypeMethodImpl GetImpl(string name)
@@ -216,12 +216,12 @@ namespace Jayrock.Services
             public MethodBase LastCalledMethod;
             public object NextReturn;
             public Exception NextException;
-            
+
             public void Sub()
             {
                 LastCalledMethod = MethodBase.GetCurrentMethod();
             }
-            
+
             public void TwoArgSub(int a, int b)
             {
                 LastCalledMethod = MethodBase.GetCurrentMethod();
@@ -232,7 +232,7 @@ namespace Jayrock.Services
                 LastCalledMethod = MethodBase.GetCurrentMethod();
                 return NextReturn;
             }
-            
+
             public void Erroneous()
             {
                 throw NextException;
@@ -242,7 +242,7 @@ namespace Jayrock.Services
             {
                 return new object[] { service, num, str };
             }
-            
+
             public ServiceClass GetClass()
             {
                 throw new NotImplementedException();
@@ -250,3 +250,7 @@ namespace Jayrock.Services
         }
     }
 }
+
+
+
+
