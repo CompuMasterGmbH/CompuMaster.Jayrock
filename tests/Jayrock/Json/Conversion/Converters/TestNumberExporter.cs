@@ -31,117 +31,81 @@ namespace Jayrock.Json.Conversion.Converters
 
     public abstract class TestNumberExporter
     {
-        [ Test ]
+        [Test]
         public void InputType()
         {
-            Assert.AreSame(SampleValue.GetType(), CreateExporter().InputType);
+            Assert.That(CreateExporter().InputType, Is.SameAs(SampleValue.GetType()));
         }
 
-        [ Test ]
+        [Test]
         public void ExportNull()
         {
             JsonRecorder writer = new JsonRecorder();
             CreateExporter().Export(new ExportContext(), null, writer);
-            writer.CreatePlayer().ReadNull();
+            Assert.That(writer.CreatePlayer().ReadNull, Throws.Nothing);
         }
 
-        [ Test ]
+        [Test]
         public void ExportNumber()
         {
             JsonRecorder writer = new JsonRecorder();
             object sample = SampleValue;
             CreateExporter().Export(new ExportContext(), sample, writer);
             object actual = Convert.ChangeType(writer.CreatePlayer().ReadNumber(), sample.GetType());
-            Assert.IsInstanceOfType(sample.GetType(), actual);
-            Assert.AreEqual(sample, actual);
+            Assert.That(actual, Is.InstanceOf(sample.GetType()));
+            Assert.That(actual, Is.EqualTo(sample));
         }
 
         protected abstract object SampleValue { get; }
         protected abstract IExporter CreateExporter();
     }
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestByteExporter : TestNumberExporter
     {
-        protected override object SampleValue
-        {
-            get { return (byte) 123; }
-        }
+        protected override object SampleValue => (byte)123;
 
-        protected override IExporter CreateExporter()
-        {
-            return new ByteExporter();
-        }
+        protected override IExporter CreateExporter() => new ByteExporter();
     }
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestInt16Exporter : TestNumberExporter
     {
-        protected override object SampleValue
-        {
-            get { return (short) 1234; }
-        }
+        protected override object SampleValue => (short)1234;
 
-        protected override IExporter CreateExporter()
-        {
-            return new Int16Exporter();
-        }
+        protected override IExporter CreateExporter() => new Int16Exporter();
     }
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestInt32Exporter : TestNumberExporter
     {
-        protected override object SampleValue
-        {
-            get { return 123456; }
-        }
+        protected override object SampleValue => 123456;
 
-        protected override IExporter CreateExporter()
-        {
-            return new Int32Exporter();
-        }
+        protected override IExporter CreateExporter() => new Int32Exporter();
     }
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestInt64Exporter : TestNumberExporter
     {
-        protected override object SampleValue
-        {
-            get { return 9876543210L; }
-        }
+        protected override object SampleValue => 9876543210L;
 
-        protected override IExporter CreateExporter()
-        {
-            return new Int64Exporter();
-        }
+        protected override IExporter CreateExporter() => new Int64Exporter();
     }
-    
-    [ TestFixture ]
+
+    [TestFixture]
     public class TestSingleExporter : TestNumberExporter
     {
-        protected override object SampleValue
-        {
-            get { return 12.345f; }
-        }
+        protected override object SampleValue => 12.345f;
 
-        protected override IExporter CreateExporter()
-        {
-            return new SingleExporter();
-        }
+        protected override IExporter CreateExporter() => new SingleExporter();
     }
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestDoubleExporter : TestNumberExporter
     {
-        protected override object SampleValue
-        {
-            get { return 12.345m; }
-        }
+        protected override object SampleValue => 12.345m;
 
-        protected override IExporter CreateExporter()
-        {
-            return new DecimalExporter();
-        }
+        protected override IExporter CreateExporter() => new DecimalExporter();
     }
 }
 
@@ -156,18 +120,12 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestBigIntegerExporter : TestNumberExporter
     {
-        protected override object SampleValue
-        {
-            get { return BigInteger.Pow(long.MaxValue, 3); }
-        }
+        protected override object SampleValue => BigInteger.Pow(long.MaxValue, 3);
 
-        protected override IExporter CreateExporter()
-        {
-            return new BigIntegerExporter();
-        }
+        protected override IExporter CreateExporter() => new BigIntegerExporter();
     }
 }
 

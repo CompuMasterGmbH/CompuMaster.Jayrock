@@ -28,61 +28,61 @@ namespace Jayrock.Services
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestServiceClassBuilder
     {
         private ServiceClassBuilder _builder;
 
-        [ SetUp ]
+        [SetUp]
         public void Init()
         {
             _builder = new ServiceClassBuilder();
         }
 
-        [ Test ] 
+        [Test]
         public void Defaults()
         {
-            Assert.IsNotNull(_builder.Name);
-            Assert.IsFalse(_builder.HasMethods);
-            Assert.IsNotNull(_builder.Methods);
-            Assert.AreEqual(0, _builder.Methods.Count);
-            Assert.IsNotNull(_builder.Description);
-            Assert.AreEqual(0, _builder.Description.Length);
+            Assert.That(_builder.Name, Is.Not.Null);
+            Assert.That(_builder.HasMethods, Is.False);
+            Assert.That(_builder.Methods, Is.Not.Null);
+            Assert.That(_builder.Methods.Count, Is.EqualTo(0));
+            Assert.That(_builder.Description, Is.Not.Null);
+            Assert.That(_builder.Description.Length, Is.EqualTo(0));
         }
 
-        [ Test ]
+        [Test]
         public void GetSetName()
         {
             const string name = "MyService";
             _builder.Name = name;
-            Assert.AreEqual(name, _builder.Name);
-        }
-        
-        [ Test ]
-        public void DefineTwoMethods()
-        {
-            Assert.IsFalse(_builder.HasMethods);
-            Assert.IsNotNull(_builder.DefineMethod());
-            Assert.IsTrue(_builder.HasMethods);
-            Assert.IsNotNull(_builder.DefineMethod());
-            Assert.IsTrue(_builder.HasMethods);
-            MethodBuilder[] methods = (MethodBuilder[]) CollectionHelper.ToArray(_builder.Methods, typeof(MethodBuilder));
-            Assert.IsNotNull(methods);
-            Assert.AreEqual(2, methods.Length);
+            Assert.That(_builder.Name, Is.EqualTo(name));
         }
 
-        [ Test ]
+        [Test]
+        public void DefineTwoMethods()
+        {
+            Assert.That(_builder.HasMethods, Is.False);
+            Assert.That(_builder.DefineMethod(), Is.Not.Null);
+            Assert.That(_builder.HasMethods, Is.True);
+            Assert.That(_builder.DefineMethod(), Is.Not.Null);
+            Assert.That(_builder.HasMethods, Is.True);
+            MethodBuilder[] methods = (MethodBuilder[])CollectionHelper.ToArray(_builder.Methods, typeof(MethodBuilder));
+            Assert.That(methods, Is.Not.Null);
+            Assert.That(methods.Length, Is.EqualTo(2));
+        }
+
+        [Test]
         public void GetSetDescription()
         {
             const string name = "Test description of a service.";
             _builder.Description = name;
-            Assert.AreEqual(name, _builder.Description);
+            Assert.That(_builder.Description, Is.EqualTo(name));
         }
 
-        [ Test ]
+        [Test]
         public void MethodsCollectionIsReadOnly()
         {
-            Assert.IsTrue(_builder.Methods.IsReadOnly);
+            Assert.That(_builder.Methods.IsReadOnly, Is.True);
         }
     }
 }

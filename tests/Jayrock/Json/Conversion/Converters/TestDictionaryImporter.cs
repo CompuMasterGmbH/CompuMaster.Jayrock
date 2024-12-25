@@ -29,10 +29,10 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestDictionaryImporter
     {
-        [ Test ]
+        [Test]
         public void Import()
         {
             JsonRecorder writer = new JsonRecorder();
@@ -42,10 +42,10 @@ namespace Jayrock.Json.Conversion.Converters
             writer.WriteEndObject();
             JsonReader reader = writer.CreatePlayer();
             ImportContext context = new ImportContext();
-            IDictionary map = (IDictionary) context.Import(typeof(IDictionary), reader);
-            Assert.IsNotNull(map);
-            Assert.AreEqual(1, map.Count);
-            Assert.AreEqual("bar", map["foo"]);
+            IDictionary map = (IDictionary)context.Import(typeof(IDictionary), reader);
+            Assert.That(map, Is.Not.Null);
+            Assert.That(map.Count, Is.EqualTo(1));
+            Assert.That(map["foo"], Is.EqualTo("bar"));
         }
     }
 }

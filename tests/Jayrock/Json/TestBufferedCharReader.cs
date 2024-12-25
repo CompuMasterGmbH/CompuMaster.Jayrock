@@ -29,10 +29,10 @@ namespace Jayrock.Json
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestBufferedCharReader
     {
-        [ Test ]
+        [Test]
         public void InitialCounters()
         {
             BufferedCharReader reader = new BufferedCharReader(TextReader.Null);
@@ -60,31 +60,31 @@ namespace Jayrock.Json
         public void CountersUnaffectedWhenReadingPastEOF()
         {
             BufferedCharReader reader = new BufferedCharReader(new StringReader("abc"));
-            Assert.AreEqual('a', reader.Next());
-            Assert.AreEqual('b', reader.Next());
-            Assert.AreEqual('c', reader.Next());
-            Assert.IsFalse(reader.More());
-            Assert.AreEqual(0, reader.Next());
-            Assert.AreEqual(3, reader.CharCount, "CharCount");
-            Assert.AreEqual(1, reader.LineNumber, "LineNumber");
-            Assert.AreEqual(3, reader.LinePosition, "LinePosition");
+            Assert.That(reader.Next(), Is.EqualTo('a'));
+            Assert.That(reader.Next(), Is.EqualTo('b'));
+            Assert.That(reader.Next(), Is.EqualTo('c'));
+            Assert.That(reader.More(), Is.False);
+            Assert.That(reader.Next(), Is.EqualTo('\0'));
+            Assert.That(reader.CharCount, Is.EqualTo(3), "CharCount");
+            Assert.That(reader.LineNumber, Is.EqualTo(1), "LineNumber");
+            Assert.That(reader.LinePosition, Is.EqualTo(3), "LinePosition");
         }
 
         [Test]
         public void LineNumberBumpsAndPositionResetsWithEachLF()
         {
             BufferedCharReader reader = new BufferedCharReader(new StringReader("\n1\n23\n456\n"));
-            AssertReadLineNumPos(reader, '\n',  1, 1);
-            AssertReadLineNumPos(reader, '1',   2, 1);
-            AssertReadLineNumPos(reader, '\n',  2, 2);
-            AssertReadLineNumPos(reader, '2',   3, 1);
-            AssertReadLineNumPos(reader, '3',   3, 2);
-            AssertReadLineNumPos(reader, '\n',  3, 3);
-            AssertReadLineNumPos(reader, '4',   4, 1);
-            AssertReadLineNumPos(reader, '5',   4, 2);
-            AssertReadLineNumPos(reader, '6',   4, 3);
-            AssertReadLineNumPos(reader, '\n',  4, 4);
-            AssertReadLineNumPos(reader, '\0',  4, 4);
+            AssertReadLineNumPos(reader, '\n', 1, 1);
+            AssertReadLineNumPos(reader, '1', 2, 1);
+            AssertReadLineNumPos(reader, '\n', 2, 2);
+            AssertReadLineNumPos(reader, '2', 3, 1);
+            AssertReadLineNumPos(reader, '3', 3, 2);
+            AssertReadLineNumPos(reader, '\n', 3, 3);
+            AssertReadLineNumPos(reader, '4', 4, 1);
+            AssertReadLineNumPos(reader, '5', 4, 2);
+            AssertReadLineNumPos(reader, '6', 4, 3);
+            AssertReadLineNumPos(reader, '\n', 4, 4);
+            AssertReadLineNumPos(reader, '\0', 4, 4);
         }
 
         [Test]
@@ -122,31 +122,31 @@ namespace Jayrock.Json
         public void BacktrackAfterEnding()
         {
             BufferedCharReader reader = new BufferedCharReader(new StringReader(";"));
-            Assert.IsTrue(reader.More());
-            Assert.AreEqual(';', reader.Next());
-            Assert.IsFalse(reader.More());
+            Assert.That(reader.More(), Is.True);
+            Assert.That(reader.Next(), Is.EqualTo(';'));
+            Assert.That(reader.More(), Is.False);
             reader.Back();
-            Assert.IsTrue(reader.More());
-            Assert.AreEqual(';', reader.Next());
-            Assert.IsFalse(reader.More());
+            Assert.That(reader.More(), Is.True);
+            Assert.That(reader.Next(), Is.EqualTo(';'));
+            Assert.That(reader.More(), Is.False);
         }
 
         private static void AssertReadLineNumPos(BufferedCharReader reader, char expected, int line, int pos)
         {
-            Assert.AreEqual(expected, reader.Next(), "Read");
+            Assert.That(reader.Next(), Is.EqualTo(expected), "Read");
             AssertLineCounters(reader, line, pos);
         }
 
         private static void AssertCounters(BufferedCharReader reader, int chars, int line, int pos)
         {
-            Assert.AreEqual(chars, reader.CharCount, "CharCount");
+            Assert.That(reader.CharCount, Is.EqualTo(chars), "CharCount");
             AssertLineCounters(reader, line, pos);
         }
 
         private static void AssertLineCounters(BufferedCharReader reader, int line, int pos)
         {
-            Assert.AreEqual(line, reader.LineNumber, "LineNumber");
-            Assert.AreEqual(pos, reader.LinePosition, "LinePosition");
+            Assert.That(reader.LineNumber, Is.EqualTo(line), "LineNumber");
+            Assert.That(reader.LinePosition, Is.EqualTo(pos), "LinePosition");
         }
     }
 }

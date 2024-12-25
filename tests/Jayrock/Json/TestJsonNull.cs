@@ -33,17 +33,17 @@ namespace Jayrock.Json
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonNull
     {
-        [ Test ]
+        [Test]
         public void Equality()
         {
-            Assert.IsTrue(JsonNull.Value.Equals(JsonNull.Value));
+            Assert.That(JsonNull.Value.Equals(JsonNull.Value), Is.True);
         }
 
 #if NETFRAMEWORK
-        [Test ]
+        [Test]
         public void ReferenceEqualityPostDeserialization()
         {
             MemoryStream stream = new MemoryStream();
@@ -51,23 +51,23 @@ namespace Jayrock.Json
             formatter.Serialize(stream, JsonNull.Value);
             stream.Position = 0;
             object o = formatter.Deserialize(stream);
-            Assert.IsTrue(JsonNull.Value.Equals(o));
+            Assert.That(JsonNull.Value.Equals(o), Is.True);
         }
 #endif
 
-        [ Test ]
+        [Test]
         public void LogicalEquality()
         {
-            Assert.IsTrue(JsonNull.LogicallyEquals(JsonNull.Value), "Equals self?");
-            Assert.IsFalse(JsonNull.LogicallyEquals(new object()), "Equals non-nullable?");
-            Assert.IsTrue(JsonNull.LogicallyEquals(null), "Equals null reference?");
-            Assert.IsTrue(JsonNull.LogicallyEquals(DBNull.Value), "Equals DBNull?");
+            Assert.That(JsonNull.LogicallyEquals(JsonNull.Value), Is.True, "Equals self?");
+            Assert.That(JsonNull.LogicallyEquals(new object()), Is.False, "Equals non-nullable?");
+            Assert.That(JsonNull.LogicallyEquals(null), Is.True, "Equals null reference?");
+            Assert.That(JsonNull.LogicallyEquals(DBNull.Value), Is.True, "Equals DBNull?");
         }
 
-        [ Test ]
+        [Test]
         public void StringRepresentation()
         {
-            Assert.AreEqual("null", JsonNull.Value.ToString());
+            Assert.That(JsonNull.Value.ToString(), Is.EqualTo("null"));
         }
     }
 }

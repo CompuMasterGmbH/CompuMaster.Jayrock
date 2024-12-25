@@ -31,91 +31,91 @@ namespace Jayrock.Json
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonTextWriter
     {
-        [ Test ]
+        [Test]
         public void Blank()
         {
             JsonTextWriter writer = new JsonTextWriter(new StringWriter());
-            Assert.AreEqual(string.Empty, writer.ToString());
+            Assert.That(writer.ToString(), Is.EqualTo(string.Empty));
         }
 
-        [ Test ]
+        [Test]
         public void WriteString()
         {
             WriteString("[\"Hello\"]", "Hello");
             WriteString("[\"Hello World\"]", "Hello World");
             WriteString("[\"And before he parted, he said, \\\"Goodbye, people!\\\"\"]", "And before he parted, he said, \"Goodbye, people!\"");
             WriteString("[\"Hello\\tWorld\"]", "Hello\tWorld");
-            WriteString("[\"Hello\\u0000World\"]", "Hello" + ((char) 0) + "World");
+            WriteString("[\"Hello\\u0000World\"]", "Hello" + ((char)0) + "World");
         }
 
         private static void WriteString(string expected, string value)
         {
             JsonTextWriter writer = new JsonTextWriter(new StringWriter());
             writer.WriteString(value);
-            Assert.AreEqual(expected, writer.ToString());
+            Assert.That(writer.ToString(), Is.EqualTo(expected));
         }
 
-        [ Test ]
+        [Test]
         public void WriteNumber()
         {
             JsonTextWriter writer = new JsonTextWriter(new StringWriter());
             writer.WriteNumber(123);
-            Assert.AreEqual("[123]", writer.ToString());
+            Assert.That(writer.ToString(), Is.EqualTo("[123]"));
         }
 
-        [ Test ]
+        [Test]
         public void WriteNull()
         {
             JsonTextWriter writer = new JsonTextWriter(new StringWriter());
             writer.WriteNull();
-            Assert.AreEqual("[null]", writer.ToString());
+            Assert.That(writer.ToString(), Is.EqualTo("[null]"));
         }
 
-        [ Test ]
+        [Test]
         public void WriteTrueBoolean()
         {
             JsonTextWriter writer = new JsonTextWriter(new StringWriter());
             writer.WriteBoolean(true);
-            Assert.AreEqual("[true]", writer.ToString());
+            Assert.That(writer.ToString(), Is.EqualTo("[true]"));
         }
 
-        [ Test ]
+        [Test]
         public void WriteFalseBoolean()
         {
             JsonTextWriter writer = new JsonTextWriter(new StringWriter());
             writer.WriteBoolean(false);
-            Assert.AreEqual("[false]", writer.ToString());
+            Assert.That(writer.ToString(), Is.EqualTo("[false]"));
         }
 
-        [ Test ]
+        [Test]
         public void WriteEmptyArray()
         {
             JsonTextWriter writer = new JsonTextWriter(new StringWriter());
             writer.WriteStringArray(new string[0]);
-            Assert.AreEqual("[]", writer.ToString());
+            Assert.That(writer.ToString(), Is.EqualTo("[]"));
         }
 
-        [ Test ]
+        [Test]
         public void WriteArray()
         {
             JsonTextWriter writer = new JsonTextWriter(new StringWriter());
             writer.WriteStringArray(new object[] { 123, "Hello \"Old\" World", true });
-            Assert.AreEqual("[\"123\",\"Hello \\\"Old\\\" World\",\"True\"]", writer.ToString());
+            Assert.That(writer.ToString(), Is.EqualTo("[\"123\",\"Hello \\\"Old\\\" World\",\"True\"]"));
         }
 
-        [ Test ]
+        [Test]
         public void WriteEmptyObject()
         {
             JsonTextWriter writer = new JsonTextWriter(new StringWriter());
             writer.WriteStartObject();
             writer.WriteEndObject();
-            Assert.AreEqual("{}", writer.ToString());
+            Assert.That(writer.ToString(), Is.EqualTo("{}"));
         }
 
-        [ Test ]
+        [Test]
         public void WriteObject()
         {
             JsonTextWriter writer = new JsonTextWriter(new StringWriter());
@@ -125,45 +125,45 @@ namespace Jayrock.Json
             writer.WriteMember("Salary");
             writer.WriteNumber(123456789);
             writer.WriteEndObject();
-            Assert.AreEqual("{\"Name\":\"John Doe\",\"Salary\":123456789}", writer.ToString());
+            Assert.That(writer.ToString(), Is.EqualTo("{\"Name\":\"John Doe\",\"Salary\":123456789}"));
         }
 
-        [ Test ]
+        [Test]
         public void WriteNullValue()
         {
-            Assert.AreEqual("[null]", JsonConvert.ExportToString(JsonNull.Value));
+            Assert.That(JsonConvert.ExportToString(JsonNull.Value), Is.EqualTo("[null]"));
         }
 
-        [ Test ]
+        [Test]
         public void WriteValue()
         {
-            Assert.AreEqual("[123]", WriteValue((byte) 123), "Byte");
-            Assert.AreEqual("[\"123\"]", WriteValue((sbyte) 123), "Short byte");
-            Assert.AreEqual("[123]", WriteValue((short) 123), "Short integer");
-            Assert.AreEqual("[123]", WriteValue(123), "Integer");
-            Assert.AreEqual("[123]", WriteValue(123L), "Long integer");
-            Assert.AreEqual("[123]", WriteValue(123m), "Decimal");
+            Assert.That(WriteValue((byte)123), Is.EqualTo("[123]"), "Byte");
+            Assert.That(WriteValue((sbyte)123), Is.EqualTo("[\"123\"]"), "Short byte");
+            Assert.That(WriteValue((short)123), Is.EqualTo("[123]"), "Short integer");
+            Assert.That(WriteValue(123), Is.EqualTo("[123]"), "Integer");
+            Assert.That(WriteValue(123L), Is.EqualTo("[123]"), "Long integer");
+            Assert.That(WriteValue(123m), Is.EqualTo("[123]"), "Decimal");
         }
 
-        [ Test ]
+        [Test]
         public void WriteObjectArray()
         {
             JsonObject o = new JsonObject();
             o.Put("one", 1);
             o.Put("two", 2);
             o.Put("three", 3);
-            Assert.AreEqual("[{\"one\":1,\"two\":2,\"three\":3},{\"one\":1,\"two\":2,\"three\":3},{\"one\":1,\"two\":2,\"three\":3}]", WriteValue(new object[] { o, o, o }));
+            Assert.That(WriteValue(new object[] { o, o, o }), Is.EqualTo("[{\"one\":1,\"two\":2,\"three\":3},{\"one\":1,\"two\":2,\"three\":3},{\"one\":1,\"two\":2,\"three\":3}]"));
         }
 
-        [ Test ]
+        [Test]
         public void WriteNestedArrays()
         {
             int[] inner = new int[] { 1, 2, 3 };
             int[][] outer = new int[][] { inner, inner, inner };
-            Assert.AreEqual("[[1,2,3],[1,2,3],[1,2,3]]", WriteValue(outer));
+            Assert.That(WriteValue(outer), Is.EqualTo("[[1,2,3],[1,2,3],[1,2,3]]"));
         }
 
-        [ Test ]
+        [Test]
         public void WriteFromReader()
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(@"
@@ -182,16 +182,16 @@ namespace Jayrock.Json
 
             JsonTextWriter writer = new JsonTextWriter();
             writer.WriteFromReader(reader);
-            Assert.AreEqual("{\"menu\":{\"id\":\"file\",\"value\":\"File:\",\"popup\":{\"menuitem\":[{\"value\":\"New\",\"onclick\":\"CreateNewDoc()\"},{\"value\":\"Open\",\"onclick\":\"OpenDoc()\"},{\"value\":\"Close\",\"onclick\":\"CloseDoc()\"}]}}}", writer.ToString());
+            Assert.That(writer.ToString(), Is.EqualTo("{\"menu\":{\"id\":\"file\",\"value\":\"File:\",\"popup\":{\"menuitem\":[{\"value\":\"New\",\"onclick\":\"CreateNewDoc()\"},{\"value\":\"Open\",\"onclick\":\"OpenDoc()\"},{\"value\":\"Close\",\"onclick\":\"CloseDoc()\"}]}}}"));
         }
 
-        [ Test ]
+        [Test]
         public void PrettyPrinting()
         {
             JsonTextWriter writer = new JsonTextWriter();
             writer.PrettyPrint = true;
             writer.WriteFromReader(new JsonTextReader(new StringReader("{'menu':{'id':'file','value':'File:','popup':{'menuitem':[{'value':'New','onclick':'CreateNewDoc()'},{'value':'Open','onclick':'OpenDoc()'},{'value':'Close','onclick':'CloseDoc()'}]}}}")));
-            Assert.AreEqual(RewriteLines(@"{ 
+            Assert.That(writer.ToString() + Environment.NewLine, Is.EqualTo(RewriteLines(@"{ 
     ""menu"": { 
         ""id"": ""file"",
         ""value"": ""File:"",
@@ -208,9 +208,9 @@ namespace Jayrock.Json
             } ]
         }
     }
-}"), writer.ToString() + Environment.NewLine);
+}")));
         }
-        
+
         private static string WriteValue(object value)
         {
             JsonTextWriter writer = new JsonTextWriter(new StringWriter());
@@ -229,7 +229,7 @@ namespace Jayrock.Json
                 writer.WriteLine(line);
                 line = reader.ReadLine();
             }
-            
+
             return writer.ToString();
         }
     }

@@ -38,10 +38,10 @@ namespace Jayrock.Json.Conversion
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestExportContext
     {
-        [ Test ]
+        [Test]
         public void StockExporters()
         {
             AssertInStock(typeof(ByteExporter), typeof(byte));
@@ -77,14 +77,14 @@ namespace Jayrock.Json.Conversion
             AssertInStock(typeof(JsonNumberExporter), typeof(JsonNumber));
             AssertInStock(typeof(JsonBufferExporter), typeof(JsonBuffer));
             AssertInStock(typeof(ComponentExporter), typeof(ThingWithConstructor));
-            
-            #if !NET_1_0 && !NET_1_1 
+
+#if !NET_1_0 && !NET_1_1
 
             AssertInStock(typeof(NullableExporter), typeof(int?));
 
-            #endif
+#endif
 
-            #if !NET_1_0 && !NET_1_1 && !NET_2_0
+#if !NET_1_0 && !NET_1_1 && !NET_2_0
 
             AssertInStock(typeof(BigIntegerExporter), typeof(System.Numerics.BigInteger));
             AssertInStock(typeof(ExpandoObjectExporter), typeof(System.Dynamic.ExpandoObject));
@@ -98,35 +98,35 @@ namespace Jayrock.Json.Conversion
             AssertInStock(typeof(TupleExporter), typeof(Tuple<int, int, int, int, int, int, int>));
             AssertInStock(typeof(TupleExporter), typeof(Tuple<int, int, int, int, int, int, int, int>));
 
-            #endif // !NET_1_0 && !NET_1_1 && !NET_2_0
+#endif // !NET_1_0 && !NET_1_1 && !NET_2_0
         }
 
-        [ Test ]
+        [Test]
         public void HasItems()
         {
-            Assert.IsNotNull((new ExportContext()).Items);
+            Assert.That((new ExportContext()).Items, Is.Not.Null);
         }
 
-        [ Test ]
+        [Test]
         public void Registration()
         {
             ExportContext context = new ExportContext();
             ThingExporter exporter = new ThingExporter();
             context.Register(exporter);
-            Assert.AreSame(exporter, context.FindExporter(typeof(Thing)));
+            Assert.That(context.FindExporter(typeof(Thing)), Is.SameAs(exporter));
         }
 
-        [ Test ]
+        [Test]
         public void RegistrationIsPerContext()
         {
             ExportContext context = new ExportContext();
             ThingExporter exporter = new ThingExporter();
             context.Register(exporter);
             context = new ExportContext();
-            Assert.AreNotSame(exporter, context.FindExporter(typeof(Thing)));
+            Assert.That(context.FindExporter(typeof(Thing)), Is.Not.SameAs(exporter));
         }
-        
-        [ Test ]
+
+        [Test]
         public void ExportJsonNullValue()
         {
             ExportContext context = new ExportContext();
@@ -134,18 +134,18 @@ namespace Jayrock.Json.Conversion
             context.Export(JsonNull.Value, writer);
             JsonReader reader = writer.CreatePlayer();
             reader.ReadNull();
-            Assert.IsTrue(reader.EOF);
+            Assert.That(reader.EOF, Is.True);
         }
 
         private static void AssertInStock(Type expected, Type type)
         {
             ExportContext context = new ExportContext();
             IExporter exporter = context.FindExporter(type);
-            Assert.IsNotNull(exporter, "No exporter found for {0}", type.FullName);
-            Assert.AreSame(type, exporter.InputType, "{0} reported {1} when expecting {2}.", exporter, exporter.InputType, type);
-            Assert.IsInstanceOfType(expected, exporter, type.FullName);
+            Assert.That(exporter, Is.Not.Null, $"No exporter found for {type.FullName}");
+            Assert.That(exporter.InputType, Is.SameAs(type), $"{exporter} reported {exporter.InputType} when expecting {type}.");
+            Assert.That(exporter, Is.InstanceOf(expected), type.FullName);
         }
-        
+
         private sealed class ExportableThing : IJsonExportable
         {
             public void Export(ExportContext context, JsonWriter writer)
@@ -157,32 +157,30 @@ namespace Jayrock.Json.Conversion
         private sealed class MyDataSet : DataSet
         {
         }
-        
+
         private sealed class MyDataTable : DataTable
         {
         }
-        
+
         private sealed class MyDataRow : DataRow
         {
-            public MyDataRow(DataRowBuilder builder) : 
-                base(builder) {}
-        }        
-        
-        private sealed class Thing {}
+            public MyDataRow(DataRowBuilder builder) :
+                base(builder)
+            { }
+        }
+
+        private sealed class Thing { }
 
         private sealed class ThingExporter : IExporter
         {
-            public Type InputType
-            {
-                get { return typeof(Thing); }
-            }
+            public Type InputType => typeof(Thing);
 
             public void Export(ExportContext context, object value, JsonWriter writer)
             {
                 throw new NotImplementedException();
             }
         }
-        
+
         public struct ValueThing
         {
             public int Field1;

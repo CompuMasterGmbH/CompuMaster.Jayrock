@@ -30,83 +30,83 @@ namespace Jayrock
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestDictionaryHelper
     {
-        [ Test ]
+        [Test]
         public void NullDictionaryYieldsZeroEntries()
         {
             DictionaryEntry[] entries = DictionaryHelper.GetEntries(null);
-            Assert.IsNotNull(entries);
-            Assert.AreEqual(0, entries.Length);
+            Assert.That(entries, Is.Not.Null);
+            Assert.That(entries.Length, Is.EqualTo(0));
         }
 
-        [ Test ]
+        [Test]
         public void EmptyDictionaryYieldsZeroEntries()
         {
             DictionaryEntry[] entries = DictionaryHelper.GetEntries(new Hashtable());
-            Assert.AreEqual(0, entries.Length);
+            Assert.That(entries.Length, Is.EqualTo(0));
         }
 
-        [ Test ]
+        [Test]
         public void NonEmptyDictionary()
         {
             Hashtable map = new Hashtable();
-            
+
             map.Add(1, "one");
             map.Add(2, "two");
             map.Add(3, "three");
-            
+
             ArrayList entryList = new ArrayList(DictionaryHelper.GetEntries(map));
-            Assert.AreEqual(3, entryList.Count);
-            
+            Assert.That(entryList.Count, Is.EqualTo(3));
+
             DictionaryEntry first = Shift(entryList);
-            Assert.AreEqual(first.Value, map[first.Key]);
+            Assert.That(first.Value, Is.EqualTo(map[first.Key]));
             map.Remove(first.Key);
-            
+
             DictionaryEntry second = Shift(entryList);
-            Assert.AreEqual(second.Value, map[second.Key]);
+            Assert.That(second.Value, Is.EqualTo(map[second.Key]));
             map.Remove(second.Key);
 
             DictionaryEntry third = Shift(entryList);
-            Assert.AreEqual(third.Value, map[third.Key]);
+            Assert.That(third.Value, Is.EqualTo(map[third.Key]));
             map.Remove(third.Key);
-            
-            Assert.AreEqual(0, map.Count);
-            Assert.AreEqual(0, entryList.Count);
+
+            Assert.That(map.Count, Is.EqualTo(0));
+            Assert.That(entryList.Count, Is.EqualTo(0));
         }
 
-        [ Test ]
+        [Test]
         public void DisposableDictionaryEnumerator()
         {
             MockDictionary dict = new MockDictionary();
             dict.Add(1, "one");
-            Assert.IsFalse(dict.EnumeratorDisposed);
+            Assert.That(dict.EnumeratorDisposed, Is.False);
             DictionaryHelper.GetEntries(dict);
-            Assert.IsTrue(dict.EnumeratorDisposed);
+            Assert.That(dict.EnumeratorDisposed, Is.True);
         }
-        
+
         private DictionaryEntry Shift(IList entryList)
         {
-            DictionaryEntry entry = (DictionaryEntry) entryList[0];
+            DictionaryEntry entry = (DictionaryEntry)entryList[0];
             entryList.RemoveAt(0);
             return entry;
         }
-        
+
         private sealed class MockDictionary : DictionaryBase, IDictionary
         {
             public bool EnumeratorDisposed;
-            
+
             public void Add(int key, string value)
             {
                 Dictionary.Add(key, value);
             }
-            
+
             IDictionaryEnumerator IDictionary.GetEnumerator()
             {
                 return new DictionaryEnumerator(this, InnerHashtable.GetEnumerator());
             }
-           
+
             private sealed class DictionaryEnumerator : IDictionaryEnumerator, IDisposable
             {
                 private readonly MockDictionary _dictionary;
@@ -118,35 +118,17 @@ namespace Jayrock
                     _inner = inner;
                 }
 
-                public object Key
-                {
-                    get { return _inner.Key; }
-                }
+                public object Key => _inner.Key;
 
-                public object Value
-                {
-                    get { return _inner.Value; }
-                }
+                public object Value => _inner.Value;
 
-                public DictionaryEntry Entry
-                {
-                    get { return _inner.Entry; }
-                }
+                public DictionaryEntry Entry => _inner.Entry;
 
-                public bool MoveNext()
-                {
-                    return _inner.MoveNext();
-                }
+                public bool MoveNext() => _inner.MoveNext();
 
-                public void Reset()
-                {
-                    _inner.Reset();
-                }
+                public void Reset() => _inner.Reset();
 
-                public object Current
-                {
-                    get { return _inner.Current; }
-                }
+                public object Current => _inner.Current;
 
                 public void Dispose()
                 {

@@ -28,47 +28,47 @@ namespace Jayrock.Diagnostics
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestDebugString
     {
         private const string _sample = "The quick brown fox jumps over the lazy dog.";
 
-        [ Test ]
+        [Test]
         public void FormatNullYieldsEmptyString()
         {
-            Assert.AreEqual(string.Empty, DebugString.Format(null));
+            Assert.That(DebugString.Format(null), Is.EqualTo(string.Empty));
         }
 
-        [ Test ]
+        [Test]
         public void ClippedWhenExceedsWidth()
         {
-            Assert.AreEqual("The quick" + DebugString.Ellipsis, DebugString.Format(_sample, 10));
+            Assert.That(DebugString.Format(_sample, 10), Is.EqualTo("The quick" + DebugString.Ellipsis));
         }
 
-        [ Test ]
+        [Test]
         public void NotClippedWhenWithinWidth()
         {
-            Assert.AreEqual(_sample, DebugString.Format(_sample, 100));
-            Assert.AreEqual(_sample, DebugString.Format(_sample, _sample.Length));
+            Assert.That(DebugString.Format(_sample, 100), Is.EqualTo(_sample));
+            Assert.That(DebugString.Format(_sample, _sample.Length), Is.EqualTo(_sample));
         }
 
-        [ Test ]
+        [Test]
         public void ControlsCharactersSuppression()
         {
             int[] ranges = { 0, 0x1f, 0x7f, 0x7f, 0x80, 0x9f };
-            
+
             int count = 0;
             for (int i = 0; i < ranges.Length; i += 2)
                 count += (ranges[i + 1] - ranges[i]) + 1;
-            
+
             char[] controls = new char[count];
-            
+
             int running = 0;
             for (int i = 0; i < ranges.Length; i += 2)
                 for (int j = ranges[i]; j <= ranges[i + 1]; j++)
-                    controls[running++] = (char) j;
-            
-            Assert.AreEqual(new string(DebugString.ControlReplacement, count), DebugString.Format(new string(controls), count));
+                    controls[running++] = (char)j;
+
+            Assert.That(DebugString.Format(new string(controls), count), Is.EqualTo(new string(DebugString.ControlReplacement, count)));
         }
     }
 }

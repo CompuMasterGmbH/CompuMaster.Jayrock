@@ -31,58 +31,58 @@ namespace Jayrock.Json
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonWriter
     {
         private bool _disposed;
-        
-        [ SetUp ]
+
+        [SetUp]
         public void Init()
         {
             _disposed = false;
         }
-        
-        [ Test ]
+
+        [Test]
         public void ClosingRaisesDisposed()
         {
-            JsonWriter writer = new StubJsonWriter();   
+            JsonWriter writer = new StubJsonWriter();
             writer.Disposed += new EventHandler(Writer_Disposed);
-            Assert.IsFalse(_disposed);
+            Assert.That(_disposed, Is.False);
             writer.Close();
-            Assert.IsTrue(_disposed);
+            Assert.That(_disposed, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void CloseWithoutDisposedHandlerHarmless()
         {
-            JsonWriter writer = new StubJsonWriter();   
+            JsonWriter writer = new StubJsonWriter();
             writer.Close();
         }
 
-        [ Test ]
+        [Test]
         public void AutoCompletion()
         {
             JsonRecorder writer = new JsonRecorder();
-            
+
             writer.WriteStartArray();
             writer.WriteStartObject();
             writer.WriteMember("outer");
             writer.WriteStartObject();
             writer.WriteMember("inner");
             writer.AutoComplete();
-            
+
             JsonReader reader = writer.CreatePlayer();
-            
+
             reader.ReadToken(JsonTokenClass.Array);
             reader.ReadToken(JsonTokenClass.Object);
-            Assert.AreEqual("outer", reader.ReadMember());
+            Assert.That(reader.ReadMember(), Is.EqualTo("outer"));
             reader.ReadToken(JsonTokenClass.Object);
-            Assert.AreEqual("inner", reader.ReadMember());
+            Assert.That(reader.ReadMember(), Is.EqualTo("inner"));
             reader.ReadNull();
             reader.ReadToken(JsonTokenClass.EndObject);
             reader.ReadToken(JsonTokenClass.EndObject);
             reader.ReadToken(JsonTokenClass.EndArray);
-            Assert.IsTrue(reader.EOF);
+            Assert.That(reader.EOF, Is.True);
         }
 
         private void Writer_Disposed(object sender, EventArgs e)
@@ -92,26 +92,17 @@ namespace Jayrock.Json
 
         private sealed class StubJsonWriter : JsonWriter
         {
-            public override int Depth
-            {
-                get { throw new NotImplementedException(); }
-            }
+            public override int Depth => throw new NotImplementedException();
 
             public override int MaxDepth
             {
-                get { throw new NotImplementedException(); }
-                set { throw new NotImplementedException(); }
+                get => throw new NotImplementedException();
+                set => throw new NotImplementedException();
             }
 
-            public override JsonWriterBracket Bracket
-            {
-                get { throw new NotImplementedException(); }
-            }
+            public override JsonWriterBracket Bracket => throw new NotImplementedException();
 
-            public override int Index
-            {
-                get { throw new NotImplementedException(); }
-            }
+            public override int Index => throw new NotImplementedException();
 
             public override void WriteStartObject()
             {

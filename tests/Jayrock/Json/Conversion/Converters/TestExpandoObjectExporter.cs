@@ -34,19 +34,19 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestExpandoObjectExporter
     {
-        [ Test ]
+        [Test]
         public void Superclass()
         {
-            Assert.IsInstanceOfType(typeof(ExporterBase), new ExpandoObjectExporter());
+            Assert.That(new ExpandoObjectExporter(), Is.InstanceOf<ExporterBase>());
         }
 
-        [ Test ]
+        [Test]
         public void InputTypeIsExpandoObject()
         {
-            Assert.AreSame(typeof(ExpandoObject), (new ExpandoObjectExporter()).InputType);
+            Assert.That((new ExpandoObjectExporter()).InputType, Is.SameAs(typeof(ExpandoObject)));
         }
 
         [Test]
@@ -60,7 +60,7 @@ namespace Jayrock.Json.Conversion.Converters
             obj.nums = new[] { 123, 456, 789 };
             var json = new StringBuilder();
             new ExpandoObjectExporter().Export(context, obj, JsonText.CreateWriter(json));
-            Assert.AreEqual("{\"num\":123,\"flag\":true,\"str\":\"foobar\",\"nums\":[123,456,789]}", json.ToString());
+            Assert.That(json.ToString(), Is.EqualTo("{\"num\":123,\"flag\":true,\"str\":\"foobar\",\"nums\":[123,456,789]}"));
         }
     }
 }

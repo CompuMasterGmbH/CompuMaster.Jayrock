@@ -34,10 +34,10 @@ namespace Jayrock.Json.Conversion
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestImportContext
     {
-        [ Test ]
+        [Test]
         public void StockImporters()
         {
             AssertInStock(typeof(ByteImporter), typeof(byte));
@@ -65,26 +65,24 @@ namespace Jayrock.Json.Conversion
             AssertInStock(typeof(UriImporter), typeof(Uri));
             AssertInStock(typeof(JsonBufferImporter), typeof(JsonBuffer));
 
-            #if !NET_1_0 && !NET_1_1 
+#if !NET_1_0 && !NET_1_1 
 
             AssertInStock(typeof(NullableImporter), typeof(int?));
             AssertInStock(typeof(DictionaryImporter<string, string>), typeof(System.Collections.Generic.IDictionary<string, string>));
             AssertInStock(typeof(DictionaryImporter<int, object>), typeof(System.Collections.Generic.IDictionary<int, object>));
             AssertInStock(typeof(DictionaryImporter<Guid, string>), typeof(SubDictionaryThing));
 
-            // TODO Use AssertInStock once CollectionImporter is public
-            Assert.IsNotNull(new ImportContext().FindImporter(typeof(System.Collections.Generic.IList<string>)));
-            Assert.IsNotNull(new ImportContext().FindImporter(typeof(System.Collections.Generic.ICollection<string>)));
-            Assert.IsNotNull(new ImportContext().FindImporter(typeof(System.Collections.Generic.IEnumerable<string>)));
-            Assert.IsNotNull(new ImportContext().FindImporter(typeof(IEnumerable)));
+            Assert.That(new ImportContext().FindImporter(typeof(System.Collections.Generic.IList<string>)), Is.Not.Null);
+            Assert.That(new ImportContext().FindImporter(typeof(System.Collections.Generic.ICollection<string>)), Is.Not.Null);
+            Assert.That(new ImportContext().FindImporter(typeof(System.Collections.Generic.IEnumerable<string>)), Is.Not.Null);
+            Assert.That(new ImportContext().FindImporter(typeof(IEnumerable)), Is.Not.Null);
 
-            #endif // !NET_1_0 && !NET_1_1
+#endif // !NET_1_0 && !NET_1_1
 
-            #if !NET_1_0 && !NET_1_1 && !NET_2_0
+#if !NET_1_0 && !NET_1_1 && !NET_2_0
 
-            // TODO Use AssertInStock once CollectionImporter is public
-            Assert.IsNotNull(new ImportContext().FindImporter(typeof(System.Collections.Generic.ISet<string>)));
-            
+            Assert.That(new ImportContext().FindImporter(typeof(System.Collections.Generic.ISet<string>)), Is.Not.Null);
+
             AssertInStock(typeof(BigIntegerImporter), typeof(System.Numerics.BigInteger));
             AssertInStock(typeof(ExpandoObjectImporter), typeof(System.Dynamic.ExpandoObject));
 
@@ -97,42 +95,42 @@ namespace Jayrock.Json.Conversion
             AssertInStock(typeof(TupleImporter), typeof(Tuple<int, int, int, int, int, int, int>));
             AssertInStock(typeof(TupleImporter), typeof(Tuple<int, int, int, int, int, int, int, int>));
 
-            #endif // !NET_1_0 && !NET_1_1 && !NET_2_0
+#endif // !NET_1_0 && !NET_1_1 && !NET_2_0
         }
 
-        [ Test ]
+        [Test]
         public void HasItems()
         {
-            Assert.IsNotNull((new ImportContext()).Items);
+            Assert.That(new ImportContext().Items, Is.Not.Null);
         }
 
-        [ Test ]
+        [Test]
         public void Registration()
         {
             ImportContext context = new ImportContext();
             ThingImporter importer = new ThingImporter();
             context.Register(importer);
-            Assert.AreSame(importer, context.FindImporter(typeof(Thing)));
+            Assert.That(context.FindImporter(typeof(Thing)), Is.SameAs(importer));
         }
 
-        [ Test ]
+        [Test]
         public void RegistrationIsPerContext()
         {
             ImportContext context = new ImportContext();
             ThingImporter exporter = new ThingImporter();
             context.Register(exporter);
             context = new ImportContext();
-            Assert.AreNotSame(exporter, context.FindImporter(typeof(Thing)));
+            Assert.That(context.FindImporter(typeof(Thing)), Is.Not.SameAs(exporter));
         }
 
         private static void AssertInStock(Type expected, Type type)
         {
             ImportContext context = new ImportContext();
             IImporter importer = context.FindImporter(type);
-            Assert.IsNotNull(importer, "No importer found for {0}", type.FullName);
-            Assert.IsInstanceOfType(expected, importer, type.FullName);
+            Assert.That(importer, Is.Not.Null, $"No importer found for {type.FullName}");
+            Assert.That(importer, Is.InstanceOf(expected), type.FullName);
         }
-        
+
         private sealed class ImportableThing : IJsonImportable
         {
             public void Import(ImportContext context, JsonReader reader)
@@ -141,28 +139,25 @@ namespace Jayrock.Json.Conversion
             }
         }
 
-        private sealed class Thing {}
+        private sealed class Thing { }
 
         private sealed class ThingImporter : IImporter
         {
-            public Type OutputType
-            {
-                get { return typeof(Thing); }
-            }
+            public Type OutputType => typeof(Thing);
 
             public object Import(ImportContext context, JsonReader reader)
             {
                 throw new NotImplementedException();
             }
         }
-    
+
         public struct ValueThing
         {
             public int Field1;
             public int Field2;
         }
 
-        #if !NET_1_0 && !NET_1_1 
+#if !NET_1_0 && !NET_1_1 
 
         internal class DictionaryThing : System.Collections.Generic.IDictionary<Guid, string>
         {
@@ -207,15 +202,9 @@ namespace Jayrock.Json.Conversion
                 throw new NotImplementedException();
             }
 
-            public int Count
-            {
-                get { throw new NotImplementedException(); }
-            }
+            public int Count => throw new NotImplementedException();
 
-            public bool IsReadOnly
-            {
-                get { throw new NotImplementedException(); }
-            }
+            public bool IsReadOnly => throw new NotImplementedException();
 
             #endregion
 
@@ -243,19 +232,13 @@ namespace Jayrock.Json.Conversion
 
             public string this[Guid key]
             {
-                get { throw new NotImplementedException(); }
-                set { throw new NotImplementedException(); }
+                get => throw new NotImplementedException();
+                set => throw new NotImplementedException();
             }
 
-            public System.Collections.Generic.ICollection<Guid> Keys
-            {
-                get { throw new NotImplementedException(); }
-            }
+            public System.Collections.Generic.ICollection<Guid> Keys => throw new NotImplementedException();
 
-            public System.Collections.Generic.ICollection<string> Values
-            {
-                get { throw new NotImplementedException(); }
-            }
+            public System.Collections.Generic.ICollection<string> Values => throw new NotImplementedException();
 
             #endregion
         }
@@ -264,6 +247,6 @@ namespace Jayrock.Json.Conversion
         {
         }
 
-        #endif // !NET_1_0 && !NET_1_1
+#endif // !NET_1_0 && !NET_1_1
     }
 }

@@ -25,41 +25,41 @@ namespace Jayrock.Json
     using Conversion;
     using NUnit.Framework;
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonMember
     {
-        [ Test ]
+        [Test]
         public void Default()
         {
             JsonMember member = new JsonMember();
-            Assert.AreEqual(string.Empty, member.Name);
-            Assert.IsNull(member.Value);
-            Assert.AreEqual(string.Empty, member.ToString());
+            Assert.That(member.Name, Is.EqualTo(string.Empty));
+            Assert.That(member.Value, Is.Null);
+            Assert.That(member.ToString(), Is.EqualTo(string.Empty));
         }
 
-        [ Test ]
+        [Test]
         public void NameWithNullValue()
         {
             JsonMember member = new JsonMember("foo", null);
-            Assert.AreEqual("foo", member.Name);
-            Assert.IsNull(member.Value);
-            Assert.AreEqual("foo: ", member.ToString());
+            Assert.That(member.Name, Is.EqualTo("foo"));
+            Assert.That(member.Value, Is.Null);
+            Assert.That(member.ToString(), Is.EqualTo("foo: "));
         }
 
-        [ Test ]
+        [Test]
         public void NameWithNonNullValue()
         {
             JsonMember member = new JsonMember("foo", "bar");
-            Assert.AreEqual("foo", member.Name);
-            Assert.AreEqual("bar", member.Value);
-            Assert.AreEqual("foo: bar", member.ToString());
+            Assert.That(member.Name, Is.EqualTo("foo"));
+            Assert.That(member.Value, Is.EqualTo("bar"));
+            Assert.That(member.ToString(), Is.EqualTo("foo: bar"));
         }
 
-        [ Test ]
+        [Test]
         public void NameValueExported()
         {
-            Assert.AreEqual(@"{""name"":""foo"",""value"":""bar""}",
-                JsonConvert.ExportToString(new JsonMember("foo", "bar")));
+            Assert.That(JsonConvert.ExportToString(new JsonMember("foo", "bar")),
+                Is.EqualTo(@"{""name"":""foo"",""value"":""bar""}"));
         }
     }
 }

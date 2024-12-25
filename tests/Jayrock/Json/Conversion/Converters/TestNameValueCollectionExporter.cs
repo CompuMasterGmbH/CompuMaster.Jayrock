@@ -29,65 +29,65 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestNameValueCollectionExporter
     {
-        [ Test ]
+        [Test]
         public void Empty()
         {
-            Assert.AreEqual("{}", Export(new NameValueCollection()));
+            Assert.That(Export(new NameValueCollection()), Is.EqualTo("{}"));
         }
 
-        [ Test ]
+        [Test]
         public void OneNameValue()
         {
             NameValueCollection collection = new NameValueCollection();
             collection.Add("foo", "bar");
-            Assert.AreEqual("{\"foo\":\"bar\"}", Export(collection));
+            Assert.That(Export(collection), Is.EqualTo("{\"foo\":\"bar\"}"));
         }
 
-        [ Test ]
+        [Test]
         public void EmptyName()
         {
             NameValueCollection collection = new NameValueCollection();
             collection.Add("", "bar");
-            Assert.AreEqual("{\"\":\"bar\"}", Export(collection));
+            Assert.That(Export(collection), Is.EqualTo("{\"\":\"bar\"}"));
         }
 
-        [ Test ]
+        [Test]
         public void EmptyValue()
         {
             NameValueCollection collection = new NameValueCollection();
             collection.Add("foo", "");
-            Assert.AreEqual("{\"foo\":\"\"}", Export(collection));
+            Assert.That(Export(collection), Is.EqualTo("{\"foo\":\"\"}"));
         }
 
-        [ Test ]
+        [Test]
         public void NullValue()
         {
             NameValueCollection collection = new NameValueCollection();
             collection.Add("foo", null);
-            Assert.AreEqual("{\"foo\":null}", Export(collection));
+            Assert.That(Export(collection), Is.EqualTo("{\"foo\":null}"));
         }
 
-        [ Test ]
+        [Test]
         public void ValuesArray()
         {
             NameValueCollection collection = new NameValueCollection();
             collection.Add("foo", "bar1");
             collection.Add("foo", "bar2");
             collection.Add("foo", "bar3");
-            Assert.AreEqual("{\"foo\":[\"bar1\",\"bar2\",\"bar3\"]}", Export(collection));
+            Assert.That(Export(collection), Is.EqualTo("{\"foo\":[\"bar1\",\"bar2\",\"bar3\"]}"));
         }
 
-        [ Test ]
+        [Test]
         public void ManyEntries()
         {
             NameValueCollection collection = new NameValueCollection();
             collection.Add("foo1", "bar1");
             collection.Add("foo2", "bar2");
             collection.Add("foo3", "bar3");
-            Assert.AreEqual("{\"foo1\":\"bar1\",\"foo2\":\"bar2\",\"foo3\":\"bar3\"}", Export(collection));
+            Assert.That(Export(collection), Is.EqualTo("{\"foo1\":\"bar1\",\"foo2\":\"bar2\",\"foo3\":\"bar3\"}"));
         }
 
         private static string Export(object o)
