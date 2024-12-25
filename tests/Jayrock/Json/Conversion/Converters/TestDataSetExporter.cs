@@ -31,49 +31,49 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestDataSetExporter
     {
-        [ Test ]
+        [Test]
         public void Superclass()
         {
-            Assert.IsInstanceOfType(typeof(ExporterBase), new DataSetExporter());
+            Assert.That(new DataSetExporter(), Is.InstanceOf<ExporterBase>());
         }
 
-        [ Test ]
+        [Test]
         public void InputTypeIsDataSet()
         {
-            Assert.AreSame(typeof(DataSet), (new DataSetExporter()).InputType);
+            Assert.That(new DataSetExporter().InputType, Is.EqualTo(typeof(DataSet)));
         }
 
-        [ Test ]
+        [Test]
         public void EmptyDataSetYieldsEmptyJsonObject()
         {
             DataSet ds = new DataSet();
-            Assert.AreEqual("{}", JsonConvert.ExportToString(ds));
+            Assert.That(JsonConvert.ExportToString(ds), Is.EqualTo("{}"));
         }
 
-        [ Test ]
+        [Test]
         public void TableNamesBecomeJsonObjectMemberNames()
         {
             DataSet ds = new DataSet();
             ds.Tables.Add(new DataTable("Table1"));
             ds.Tables.Add(new DataTable("Table2"));
-            
+
             JsonRecorder writer = new JsonRecorder();
             JsonConvert.Export(ds, writer);
             JsonReader reader = writer.CreatePlayer();
 
             reader.ReadToken(JsonTokenClass.Object);
-            Assert.AreEqual("Table1", reader.ReadMember());
+            Assert.That(reader.ReadMember(), Is.EqualTo("Table1"));
             reader.Skip(); // skip table contents
-            Assert.AreEqual("Table2", reader.ReadMember());
+            Assert.That(reader.ReadMember(), Is.EqualTo("Table2"));
             reader.Skip(); // skip table contents
             reader.ReadToken(JsonTokenClass.EndObject);
-            Assert.IsTrue(reader.EOF);
+            Assert.That(reader.EOF, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void TableExportedViaItsExporter()
         {
             DataSet ds = new DataSet();
@@ -84,10 +84,10 @@ namespace Jayrock.Json.Conversion.Converters
             context.Register(exporter);
             context.Export(ds, new JsonRecorder());
 
-            Assert.AreSame(ds.Tables[0], exporter.LastExported);
+            Assert.That(exporter.LastExported, Is.SameAs(ds.Tables[0]));
         }
 
-        [ Test ]
+        [Test]
         public void TablesExportedEvenWithoutExporterInContext()
         {
             DataSet ds = new DataSet();
@@ -100,10 +100,10 @@ namespace Jayrock.Json.Conversion.Converters
             JsonReader reader = writer.CreatePlayer();
 
             reader.ReadToken(JsonTokenClass.Object);
-            Assert.AreEqual("Table1", reader.ReadMember());
+            Assert.That(reader.ReadMember(), Is.EqualTo("Table1"));
             reader.Skip(); // skip table contents
             reader.ReadToken(JsonTokenClass.EndObject);
-            Assert.IsTrue(reader.EOF);
+            Assert.That(reader.EOF, Is.True);
         }
 
         private sealed class TestExportContext : ExportContext
@@ -117,7 +117,7 @@ namespace Jayrock.Json.Conversion.Converters
 
             public override IExporter FindExporter(Type type)
             {
-                return (IExporter) _exporters[type];
+                return (IExporter)_exporters[type];
             }
         }
 
@@ -132,7 +132,7 @@ namespace Jayrock.Json.Conversion.Converters
 
             public void Export(ExportContext context, object value, JsonWriter writer)
             {
-                LastExported = (DataTable) value;
+                LastExported = (DataTable)value;
                 (new DataTableExporter(InputType)).Export(context, value, writer);
             }
         }

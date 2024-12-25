@@ -35,19 +35,19 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestExpandoObjectImporter
     {
-        [ Test ]
+        [Test]
         public void Superclass()
         {
-            Assert.IsInstanceOfType(typeof(ImporterBase), new ExpandoObjectImporter());
+            Assert.That(new ExpandoObjectImporter(), Is.InstanceOf<ImporterBase>());
         }
 
-        [ Test ]
+        [Test]
         public void InputTypeIsExpandoObject()
         {
-            Assert.AreSame(typeof(ExpandoObject), (new ExpandoObjectImporter()).OutputType);
+            Assert.That((new ExpandoObjectImporter()).OutputType, Is.SameAs(typeof(ExpandoObject)));
         }
 
         [Test]
@@ -61,21 +61,21 @@ namespace Jayrock.Json.Conversion.Converters
                 obj: { x: 456, y: 789 },
                 arr: [ 123, { x: 456, y: 789 } ],
             }"));
-            Assert.IsNotNull(expando);
-            Assert.IsInstanceOfType(typeof(ExpandoObject), expando);
+            Assert.That(expando, Is.Not.Null);
+            Assert.That(expando, Is.InstanceOf<ExpandoObject>());
             dynamic obj = expando;
-            Assert.AreEqual(123, ((JsonNumber) obj.num).ToInt32());
-            Assert.IsTrue((bool) obj.flag);
-            Assert.AreEqual("foobar", (string) obj.str);
-            Assert.IsInstanceOfType(typeof(ExpandoObject), (object) obj.obj);
-            Assert.AreEqual(456, ((JsonNumber) obj.obj.x).ToInt32());
-            Assert.AreEqual(789, ((JsonNumber) obj.obj.y).ToInt32());
-            Assert.IsTrue(typeof(IList<object>).IsAssignableFrom(((object)obj.arr).GetType()));
-            var arr = (IList<object>) obj.arr;
-            Assert.AreEqual(123, ((JsonNumber) arr[0]).ToInt32());
-            Assert.IsInstanceOfType(typeof(ExpandoObject), arr[1]);
-            Assert.AreEqual(456, ((JsonNumber) (((dynamic) (arr[1])).x)).ToInt32());
-            Assert.AreEqual(789, ((JsonNumber) (((dynamic) (arr[1])).y)).ToInt32());
+            Assert.That(((JsonNumber)obj.num).ToInt32(), Is.EqualTo(123));
+            Assert.That((bool)obj.flag, Is.True);
+            Assert.That((string)obj.str, Is.EqualTo("foobar"));
+            Assert.That((object)obj.obj, Is.InstanceOf<ExpandoObject>());
+            Assert.That(((JsonNumber)obj.obj.x).ToInt32(), Is.EqualTo(456));
+            Assert.That(((JsonNumber)obj.obj.y).ToInt32(), Is.EqualTo(789));
+            Assert.That(typeof(IList<object>).IsAssignableFrom(((object)obj.arr).GetType()), Is.True);
+            var arr = (IList<object>)obj.arr;
+            Assert.That(((JsonNumber)arr[0]).ToInt32(), Is.EqualTo(123));
+            Assert.That(arr[1], Is.InstanceOf<ExpandoObject>());
+            Assert.That(((JsonNumber)(((dynamic)(arr[1])).x)).ToInt32(), Is.EqualTo(456));
+            Assert.That(((JsonNumber)(((dynamic)(arr[1])).y)).ToInt32(), Is.EqualTo(789));
         }
     }
 }

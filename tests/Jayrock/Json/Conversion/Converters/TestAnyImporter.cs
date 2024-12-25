@@ -29,70 +29,70 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestAnyImporter
     {
-        [ Test ]
+        [Test]
         public void ParseNumber()
         {
-            Assert.AreEqual(123, (int) (JsonNumber) Parse("123"));
+            Assert.That((int)(JsonNumber)Parse("123"), Is.EqualTo(123));
         }
 
-        [ Test ]
+        [Test]
         public void ParseString()
         {
             // TODO: Move some of these test to JsonTextWriter since these have more to do with parsing than importing.
-            
-            Assert.AreEqual("Hello World", Parse("\"Hello World\""), "Double-quoted string.");
-            Assert.AreEqual("Hello World", Parse("'Hello World'"), "Single-quoted string.");
-            Assert.AreEqual("Hello 'World'", Parse("\"Hello 'World'\""));
-            Assert.AreEqual("Hello \"World\"", Parse("'Hello \"World\"'"));
+
+            Assert.That(Parse("\"Hello World\""), Is.EqualTo("Hello World"), "Double-quoted string.");
+            Assert.That(Parse("'Hello World'"), Is.EqualTo("Hello World"), "Single-quoted string.");
+            Assert.That(Parse("\"Hello 'World'\""), Is.EqualTo("Hello 'World'"));
+            Assert.That(Parse("'Hello \"World\"'"), Is.EqualTo("Hello \"World\""));
         }
 
-        [ Test ]
+        [Test]
         public void ParseBoolean()
         {
-            Assert.AreEqual(true, Parse("true"));
-            Assert.AreEqual(false, Parse("false"));
+            Assert.That(Parse("true"), Is.True);
+            Assert.That(Parse("false"), Is.False);
         }
 
-        [ Test ]
+        [Test]
         public void ParseNull()
         {
-            Assert.IsNull(Parse("null"));
+            Assert.That(Parse("null"), Is.Null);
         }
 
-        [ Test ]
+        [Test]
         public void ParseEmptyArray()
         {
-            JsonArray values = (JsonArray) Parse("[]");
-            Assert.IsNotNull(values);
-            Assert.AreEqual(0, values.Length);
+            JsonArray values = (JsonArray)Parse("[]");
+            Assert.That(values, Is.Not.Null);
+            Assert.That(values.Length, Is.EqualTo(0));
         }
 
-        [ Test ]
+        [Test]
         public void ParseArray()
         {
-            JsonArray values = (JsonArray) Parse("[123,'Hello World',true]");
-            Assert.IsNotNull(values);
-            Assert.AreEqual(3, values.Length);
-            Assert.AreEqual(123, (int) (JsonNumber) values[0]);
-            Assert.AreEqual("Hello World", values[1]);
-            Assert.AreEqual(true, values[2]);
+            JsonArray values = (JsonArray)Parse("[123,'Hello World',true]");
+            Assert.That(values, Is.Not.Null);
+            Assert.That(values.Length, Is.EqualTo(3));
+            Assert.That((int)(JsonNumber)values[0], Is.EqualTo(123));
+            Assert.That(values[1], Is.EqualTo("Hello World"));
+            Assert.That(values[2], Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void ParseEmptyObject()
         {
-            JsonObject o = (JsonObject) Parse("{}");
-            Assert.IsNotNull(o);
-            Assert.AreEqual(0, o.Count);
+            JsonObject o = (JsonObject)Parse("{}");
+            Assert.That(o, Is.Not.Null);
+            Assert.That(o.Count, Is.EqualTo(0));
         }
 
-        [ Test ]
+        [Test]
         public void ParseObject()
         {
-            JsonObject article = (JsonObject) Parse(@"
+            JsonObject article = (JsonObject)Parse(@"
                 /* Article */ {
                     Title : 'Introduction to JSON',
                     Rating : 2,
@@ -106,35 +106,35 @@ namespace Jayrock.Json.Conversion.Converters
                     ]
                 }");
 
-            Assert.IsNotNull(article);
-            Assert.AreEqual(5, article.Count);
-            Assert.AreEqual("Introduction to JSON", article["Title"]);
-            Assert.AreEqual(2, (int) (JsonNumber) article["Rating"]);
-            Assert.IsTrue(article.Contains("Abstract"));
-            Assert.IsNull(article["Abstract"]);
-            
-            JsonObject author = (JsonObject) article["Author"];
-            Assert.IsNotNull(author);
-            Assert.AreEqual(2, author.Count);
-            Assert.AreEqual("John Doe", author["Name"]);
-            Assert.AreEqual("john.doe@example.com", author["E-Mail Address"]);
+            Assert.That(article, Is.Not.Null);
+            Assert.That(article.Count, Is.EqualTo(5));
+            Assert.That(article["Title"], Is.EqualTo("Introduction to JSON"));
+            Assert.That((int)(JsonNumber)article["Rating"], Is.EqualTo(2));
+            Assert.That(article.Contains("Abstract"), Is.True);
+            Assert.That(article["Abstract"], Is.Null);
 
-            JsonArray references = (JsonArray) article["References"];
-            Assert.IsNotNull(references);
-            Assert.AreEqual(1, references.Length);
+            JsonObject author = (JsonObject)article["Author"];
+            Assert.That(author, Is.Not.Null);
+            Assert.That(author.Count, Is.EqualTo(2));
+            Assert.That(author["Name"], Is.EqualTo("John Doe"));
+            Assert.That(author["E-Mail Address"], Is.EqualTo("john.doe@example.com"));
 
-            JsonObject reference = (JsonObject) references[0];
-            Assert.IsNotNull(reference);
-            Assert.AreEqual(2, reference.Count);
-            Assert.AreEqual("JSON RPC", reference["Title"]);
-            Assert.AreEqual("http://www.json-rpc.org/", reference["Link"]);
+            JsonArray references = (JsonArray)article["References"];
+            Assert.That(references, Is.Not.Null);
+            Assert.That(references.Length, Is.EqualTo(1));
+
+            JsonObject reference = (JsonObject)references[0];
+            Assert.That(reference, Is.Not.Null);
+            Assert.That(reference.Count, Is.EqualTo(2));
+            Assert.That(reference["Title"], Is.EqualTo("JSON RPC"));
+            Assert.That(reference["Link"], Is.EqualTo("http://www.json-rpc.org/"));
         }
 
         private object Parse(string s)
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(s));
             object value = JsonConvert.Import(reader);
-            Assert.IsTrue(reader.EOF);
+            Assert.That(reader.EOF, Is.True);
             return value;
         }
     }

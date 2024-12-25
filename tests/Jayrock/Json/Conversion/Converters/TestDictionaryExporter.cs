@@ -30,60 +30,59 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestDictionaryExporter
     {
-        [ Test ]
+        [Test]
         public void Superclass()
         {
-            Assert.IsInstanceOfType(typeof(ExporterBase), new DictionaryExporter(typeof(Hashtable)));    
+            Assert.That(new DictionaryExporter(typeof(Hashtable)), Is.InstanceOf<ExporterBase>());
         }
 
-        [ Test ]
+        [Test]
         public void InputTypeInitialization()
         {
             Type type = typeof(Hashtable);
             DictionaryExporter exporter = new DictionaryExporter(type);
-            Assert.AreSame(type, exporter.InputType);
+            Assert.That(exporter.InputType, Is.SameAs(type));
         }
 
-        [ Test ]
+        [Test]
         public void ExportEmpty()
         {
             JsonReader reader = Export(new Hashtable());
             reader.ReadToken(JsonTokenClass.Object);
-            Assert.AreEqual(JsonTokenClass.EndObject, reader.TokenClass);
+            Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.EndObject));
         }
 
-        [ Test ]
+        [Test]
         public void ExportFlat()
         {
             Hashtable h = new Hashtable();
-         
+
             h.Add("FirstName", "John");
             h.Add("LastName", "Doe");
             h.Add("MiddleName", null);
-            
+
             JsonReader reader = Export(h);
-            
+
             //
-            // We need a complex assertions loop here because the order in 
-            // which members are written cannot be guaranteed to follow
-            // the order of insertion.
+            // Wir benötigen hier eine komplexe Assertion-Schleife, da die Reihenfolge der Mitglieder
+            // nicht garantiert ist und von der Einfügereihenfolge abweichen kann.
             //
-            
+
             reader.ReadToken(JsonTokenClass.Object);
             while (reader.TokenClass != JsonTokenClass.EndObject)
             {
                 string member = reader.ReadMember();
-                Assert.IsTrue(h.Contains(member));
-            
+                Assert.That(h.Contains(member), Is.True);
+
                 object expected = h[member];
-                
+
                 if (expected == null)
                     reader.ReadNull();
                 else
-                    Assert.AreEqual(expected, reader.ReadString());
+                    Assert.That(reader.ReadString(), Is.EqualTo(expected));
             }
         }
 

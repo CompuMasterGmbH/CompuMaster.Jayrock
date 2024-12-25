@@ -30,65 +30,65 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestEnumerableExporter
     {
-        [ Test ]
+        [Test]
         public void Superclass()
         {
-            Assert.IsInstanceOfType(typeof(ExporterBase), new EnumerableExporter(typeof(Array)));    
+            Assert.That(new EnumerableExporter(typeof(Array)), Is.InstanceOf<ExporterBase>());
         }
 
-        [ Test ]
+        [Test]
         public void InputTypeInitialization()
         {
             Type type = typeof(Array);
             EnumerableExporter exporter = new EnumerableExporter(type);
-            Assert.AreSame(type, exporter.InputType);
+            Assert.That(exporter.InputType, Is.SameAs(type));
         }
 
-        [ Test ]
+        [Test]
         public void ExportEmpty()
         {
-            JsonReader reader = Export(new object[] {});
+            JsonReader reader = Export(new object[] { });
             reader.ReadToken(JsonTokenClass.Array);
-            reader.ReadToken(JsonTokenClass.EndArray);
+            Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.EndArray));
         }
 
-        [ Test ]
+        [Test]
         public void ExportFlatArray()
         {
             JsonReader reader = Export(new int[] { 11, 22, 33 });
             reader.ReadToken(JsonTokenClass.Array);
-            Assert.AreEqual(11, reader.ReadNumber().ToInt32());
-            Assert.AreEqual(22, reader.ReadNumber().ToInt32());
-            Assert.AreEqual(33, reader.ReadNumber().ToInt32());
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(11));
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(22));
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(33));
             reader.ReadToken(JsonTokenClass.EndArray);
         }
 
-        [ Test ]
+        [Test]
         public void ExportList()
         {
             JsonReader reader = Export(new ArrayList(new int[] { 11, 22, 33 }));
             reader.ReadToken(JsonTokenClass.Array);
-            Assert.AreEqual(11, reader.ReadNumber().ToInt32());
-            Assert.AreEqual(22, reader.ReadNumber().ToInt32());
-            Assert.AreEqual(33, reader.ReadNumber().ToInt32());
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(11));
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(22));
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(33));
             reader.ReadToken(JsonTokenClass.EndArray);
         }
 
-        [ Test ]
+        [Test]
         public void ExportNestedArrays()
         {
             JsonReader reader = Export(new ArrayList(new object[] { 11, 22, new object[] { 33, 44 }, 55 }));
             reader.ReadToken(JsonTokenClass.Array);
-            Assert.AreEqual(11, reader.ReadNumber().ToInt32());
-            Assert.AreEqual(22, reader.ReadNumber().ToInt32());
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(11));
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(22));
             reader.ReadToken(JsonTokenClass.Array);
-            Assert.AreEqual(33, reader.ReadNumber().ToInt32());
-            Assert.AreEqual(44, reader.ReadNumber().ToInt32());
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(33));
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(44));
             reader.ReadToken(JsonTokenClass.EndArray);
-            Assert.AreEqual(55, reader.ReadNumber().ToInt32());
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(55));
             reader.ReadToken(JsonTokenClass.EndArray);
         }
 

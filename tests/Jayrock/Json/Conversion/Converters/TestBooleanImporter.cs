@@ -35,7 +35,7 @@ namespace Jayrock.Json.Conversion.Converters
         [Test]
         public void ImportNull()
         {
-            Assert.IsNull(Import("null"));
+            Assert.That(Import("null"), Is.Null);
         }
 
         [Test]
@@ -89,8 +89,8 @@ namespace Jayrock.Json.Conversion.Converters
         private static void AssertImport(bool expected, string input)
         {
             object o = Import(input);
-            Assert.IsInstanceOf<bool>(o);
-            Assert.AreEqual(expected, o);
+            Assert.That(o, Is.InstanceOf<bool>());
+            Assert.That(o, Is.EqualTo(expected));
         }
 
         private static object Import(string input)
@@ -98,9 +98,8 @@ namespace Jayrock.Json.Conversion.Converters
             JsonTextReader reader = new JsonTextReader(new StringReader(input));
             BooleanImporter importer = new BooleanImporter();
             object o = importer.Import(new ImportContext(), reader);
-            Assert.IsTrue(reader.EOF, "Reader must be at EOF.");
+            Assert.That(reader.EOF, Is.True, "Reader must be at EOF.");
             return o;
         }
     }
 }
-

@@ -29,31 +29,31 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestBooleanExporter
     {
-        [ Test ]
+        [Test]
         public void Superclass()
         {
-            Assert.IsInstanceOfType(typeof(ExporterBase), new BooleanExporter());
+            Assert.That(new BooleanExporter(), Is.InstanceOf<ExporterBase>());
         }
-        
-        [ Test ]
+
+        [Test]
         public void InputTypeIsBoolean()
         {
-            Assert.AreSame(typeof(bool), (new BooleanExporter()).InputType);
+            Assert.That((new BooleanExporter()).InputType, Is.SameAs(typeof(bool)));
         }
 
-        [ Test ]
+        [Test]
         public void ExportTrue()
         {
-            Assert.AreEqual(true, Export(true).ReadBoolean());
+            Assert.That(Export(true).ReadBoolean(), Is.EqualTo(true));
         }
 
-        [ Test ]
+        [Test]
         public void ExportFalse()
         {
-            Assert.AreEqual(true, Export(true).ReadBoolean());
+            Assert.That(Export(false).ReadBoolean(), Is.EqualTo(false));
         }
 
         private static JsonReader Export(bool value)

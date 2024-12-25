@@ -29,10 +29,10 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestListImporter
     {
-        [ Test ]
+        [Test]
         public void Import()
         {
             JsonRecorder writer = new JsonRecorder();
@@ -42,8 +42,8 @@ namespace Jayrock.Json.Conversion.Converters
             writer.WriteEndArray();
             JsonReader reader = writer.CreatePlayer();
             ImportContext context = new ImportContext();
-            IList list = (IList) context.Import(typeof(IList), reader);
-            Assert.AreEqual(new object[] { "foo", "bar" }, CollectionHelper.ToArray(list));
+            IList list = (IList)context.Import(typeof(IList), reader);
+            Assert.That(CollectionHelper.ToArray(list), Is.EqualTo(new object[] { "foo", "bar" }));
         }
     }
 }

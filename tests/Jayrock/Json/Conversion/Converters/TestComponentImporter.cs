@@ -33,36 +33,36 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestComponentImporter
     {
-        [ Test ]
+        [Test]
         public void ImportNull()
         {
             ComponentImporter importer = new ComponentImporter(typeof(object));
-            Assert.IsNull(importer.Import(new ImportContext(), CreateReader("null")));
+            Assert.That(importer.Import(new ImportContext(), CreateReader("null")), Is.Null);
         }
 
-        [ Test ]
+        [Test]
         public void ImportEmptyObject()
         {
-            Marriage m = (Marriage) Import(typeof(Marriage), "{}");
-            Assert.IsNull(m.Husband, "Husband");
-            Assert.IsNull(m.Wife, "Wife");
-        }
-                
-        [ Test ]
-        public void ImportObject()
-        {
-            Person p = (Person) Import(typeof(Person), "{ Id : 42, FullName : 'Charles Dickens' }");
-            Assert.AreEqual(42, p.Id, "Id");
-            Assert.AreEqual("Charles Dickens", p.FullName, "FullName");
+            Marriage m = (Marriage)Import(typeof(Marriage), "{}");
+            Assert.That(m.Husband, Is.Null, "Husband");
+            Assert.That(m.Wife, Is.Null, "Wife");
         }
 
-        [ Test ]
+        [Test]
+        public void ImportObject()
+        {
+            Person p = (Person)Import(typeof(Person), "{ Id : 42, FullName : 'Charles Dickens' }");
+            Assert.That(p.Id, Is.EqualTo(42), "Id");
+            Assert.That(p.FullName, Is.EqualTo("Charles Dickens"), "FullName");
+        }
+
+        [Test]
         public void ImportEmbeddedObjects()
         {
-            Marriage m = (Marriage) Import(typeof(Marriage), @"{
+            Marriage m = (Marriage)Import(typeof(Marriage), @"{
                 Husband : {
                     Id : 42,
                     FullName : 'Bob'
@@ -72,13 +72,13 @@ namespace Jayrock.Json.Conversion.Converters
                     Id       : 43
                 } 
             }");
-            Assert.AreEqual(42, m.Husband.Id, "Husband.Id");
-            Assert.AreEqual("Bob", m.Husband.FullName, "Husband.FullName");
-            Assert.AreEqual(43, m.Wife.Id, "Wife.Id");
-            Assert.AreEqual("Alice", m.Wife.FullName, "Wife.FullName");
+            Assert.That(m.Husband.Id, Is.EqualTo(42), "Husband.Id");
+            Assert.That(m.Husband.FullName, Is.EqualTo("Bob"), "Husband.FullName");
+            Assert.That(m.Wife.Id, Is.EqualTo(43), "Wife.Id");
+            Assert.That(m.Wife.FullName, Is.EqualTo("Alice"), "Wife.FullName");
         }
-        
-        [ Test ]
+
+        [Test]
         public void YahooNewsSearch()
         {
             string text = @"
@@ -130,62 +130,62 @@ namespace Jayrock.Json.Conversion.Converters
                     ]
                 }
             }";
-            
+
             JsonTextReader reader = new JsonTextReader(new StringReader(text));
             ImportContext context = new ImportContext();
-            YahooResponse response = (YahooResponse) context.Import(typeof(YahooResponse), reader);
-            Assert.IsNotNull(response);
-            
+            YahooResponse response = (YahooResponse)context.Import(typeof(YahooResponse), reader);
+            Assert.That(response, Is.Not.Null);
+
             YahooResultSet resultSet = response.ResultSet;
-            Assert.IsNotNull(resultSet);
-            Assert.AreEqual(2393,  resultSet.totalResultsAvailable);
-            Assert.AreEqual(3,  resultSet.totalResultsReturned);
-            Assert.AreEqual(1,  resultSet.firstResultPosition);
-            Assert.AreEqual(3,  resultSet.Result.Length);
-            
+            Assert.That(resultSet, Is.Not.Null);
+            Assert.That(resultSet.totalResultsAvailable, Is.EqualTo(2393));
+            Assert.That(resultSet.totalResultsReturned, Is.EqualTo(3));
+            Assert.That(resultSet.firstResultPosition, Is.EqualTo(1));
+            Assert.That(resultSet.Result.Length, Is.EqualTo(3));
+
             YahooResult result = resultSet.Result[0];
-            
-            Assert.IsNotNull(result);
-            Assert.AreEqual("Yahoo invites its users to shoot ads", result.Title);
-            Assert.AreEqual(" Yahoo first encouraged consumers to create blogs and photo pages with text and pictures. Now, the Internet portal wants them to make advertisements, too. On Monday, Yahoo touts a new look for its front page by asking people to pull out the video camera, open up the editing software and create 12-second spot for Yahoo.", result.Summary);
-            Assert.AreEqual("http://news.yahoo.com/s/usatoday/20060717/tc_usatoday/yahooinvitesitsuserstoshootads", result.Url);
-            Assert.AreEqual("http://news.yahoo.com/s/usatoday/20060717/tc_usatoday/yahooinvitesitsuserstoshootads", result.ClickUrl);
-            Assert.AreEqual("USATODAY.com via Yahoo! News", result.NewsSource);
-            Assert.AreEqual("http://news.yahoo.com/", result.NewsSourceUrl);
-            Assert.AreEqual("en", result.Language);
-            Assert.AreEqual(1153133816, result.PublishDate);
-            Assert.AreEqual(1153134044, result.ModificationDate);
-            
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Title, Is.EqualTo("Yahoo invites its users to shoot ads"));
+            Assert.That(result.Summary, Is.EqualTo(" Yahoo first encouraged consumers to create blogs and photo pages with text and pictures. Now, the Internet portal wants them to make advertisements, too. On Monday, Yahoo touts a new look for its front page by asking people to pull out the video camera, open up the editing software and create 12-second spot for Yahoo."));
+            Assert.That(result.Url, Is.EqualTo("http://news.yahoo.com/s/usatoday/20060717/tc_usatoday/yahooinvitesitsuserstoshootads"));
+            Assert.That(result.ClickUrl, Is.EqualTo("http://news.yahoo.com/s/usatoday/20060717/tc_usatoday/yahooinvitesitsuserstoshootads"));
+            Assert.That(result.NewsSource, Is.EqualTo("USATODAY.com via Yahoo! News"));
+            Assert.That(result.NewsSourceUrl, Is.EqualTo("http://news.yahoo.com/"));
+            Assert.That(result.Language, Is.EqualTo("en"));
+            Assert.That(result.PublishDate, Is.EqualTo(1153133816));
+            Assert.That(result.ModificationDate, Is.EqualTo(1153134044));
+
             result = resultSet.Result[1];
 
-            Assert.AreEqual("Yahoo to launch new finance features", result.Title);
-            Assert.AreEqual(" Yahoo Inc. is beefing up the finance section of its Web site with more interactive stock charts and other features to help it maintain its longtime lead over rival financial information sites.", result.Summary);
-            Assert.AreEqual("http://news.yahoo.com/s/ap/20060717/ap_on_hi_te/yahoo_finance_2", result.Url);
-            Assert.AreEqual("http://news.yahoo.com/s/ap/20060717/ap_on_hi_te/yahoo_finance_2", result.ClickUrl);
-            Assert.AreEqual("AP via Yahoo! News", result.NewsSource);
-            Assert.AreEqual("http://news.yahoo.com/", result.NewsSourceUrl);
-            Assert.AreEqual("en", result.Language);
-            Assert.AreEqual(1153134777, result.PublishDate);
-            Assert.AreEqual(1153134920, result.ModificationDate);
-            Assert.AreEqual("http://us.news2.yimg.com/us.yimg.com/p/ap/20060714/vsthumb.8b1161b66b564adba0a5bbd6339c9379.media_summit_idet125.jpg", result.Thumbnail.Url);
-            Assert.AreEqual(82, result.Thumbnail.Height);
-            Assert.AreEqual(76, result.Thumbnail.Width);
+            Assert.That(result.Title, Is.EqualTo("Yahoo to launch new finance features"));
+            Assert.That(result.Summary, Is.EqualTo(" Yahoo Inc. is beefing up the finance section of its Web site with more interactive stock charts and other features to help it maintain its longtime lead over rival financial information sites."));
+            Assert.That(result.Url, Is.EqualTo("http://news.yahoo.com/s/ap/20060717/ap_on_hi_te/yahoo_finance_2"));
+            Assert.That(result.ClickUrl, Is.EqualTo("http://news.yahoo.com/s/ap/20060717/ap_on_hi_te/yahoo_finance_2"));
+            Assert.That(result.NewsSource, Is.EqualTo("AP via Yahoo! News"));
+            Assert.That(result.NewsSourceUrl, Is.EqualTo("http://news.yahoo.com/"));
+            Assert.That(result.Language, Is.EqualTo("en"));
+            Assert.That(result.PublishDate, Is.EqualTo(1153134777));
+            Assert.That(result.ModificationDate, Is.EqualTo(1153134920));
+            Assert.That(result.Thumbnail.Url, Is.EqualTo("http://us.news2.yimg.com/us.yimg.com/p/ap/20060714/vsthumb.8b1161b66b564adba0a5bbd6339c9379.media_summit_idet125.jpg"));
+            Assert.That(result.Thumbnail.Height, Is.EqualTo(82));
+            Assert.That(result.Thumbnail.Width, Is.EqualTo(76));
 
             result = resultSet.Result[2];
 
-            Assert.AreEqual("Yahoo Finance revises charts, chat, other features", result.Title);
-            Assert.AreEqual(" Yahoo Inc. on Monday will unveil an upgraded version of its top-ranked financial information site that features new stock charting tools, improved investor chat rooms and financial video news.", result.Summary);
-            Assert.AreEqual("http://news.yahoo.com/s/nm/20060717/wr_nm/media_yahoo_finance_dc_2", result.Url);
-            Assert.AreEqual("http://news.yahoo.com/s/nm/20060717/wr_nm/media_yahoo_finance_dc_2", result.ClickUrl);
-            Assert.AreEqual("Reuters via Yahoo! News", result.NewsSource);
-            Assert.AreEqual("http://news.yahoo.com/", result.NewsSourceUrl);
-            Assert.AreEqual("en", result.Language);
-            Assert.AreEqual(1153113288, result.PublishDate);
-            Assert.AreEqual(1153113674, result.ModificationDate);
+            Assert.That(result.Title, Is.EqualTo("Yahoo Finance revises charts, chat, other features"));
+            Assert.That(result.Summary, Is.EqualTo(" Yahoo Inc. on Monday will unveil an upgraded version of its top-ranked financial information site that features new stock charting tools, improved investor chat rooms and financial video news."));
+            Assert.That(result.Url, Is.EqualTo("http://news.yahoo.com/s/nm/20060717/wr_nm/media_yahoo_finance_dc_2"));
+            Assert.That(result.ClickUrl, Is.EqualTo("http://news.yahoo.com/s/nm/20060717/wr_nm/media_yahoo_finance_dc_2"));
+            Assert.That(result.NewsSource, Is.EqualTo("Reuters via Yahoo! News"));
+            Assert.That(result.NewsSourceUrl, Is.EqualTo("http://news.yahoo.com/"));
+            Assert.That(result.Language, Is.EqualTo("en"));
+            Assert.That(result.PublishDate, Is.EqualTo(1153113288));
+            Assert.That(result.ModificationDate, Is.EqualTo(1153113674));
         }
-        
-        
-        [ Test ]
+
+
+        [Test]
         public void SkipsReadOnlyProperty()
         {
             Type thingType = typeof(Thing);
@@ -194,10 +194,10 @@ namespace Jayrock.Json.Conversion.Converters
             descriptor.GetProperties().Add(new ReadOnlyPropertyDescriptor("Id"));
             ComponentImporter importer = new ComponentImporter(thingType, descriptor);
             importer.Import(new ImportContext(), reader);
-            Assert.IsFalse(((ReadOnlyPropertyDescriptor) descriptor.GetProperties().Find("Id", false)).SetValueCalled);
+            Assert.That(((ReadOnlyPropertyDescriptor)descriptor.GetProperties().Find("Id", false)).SetValueCalled, Is.False);
         }
 
-        [ Test ]
+        [Test]
         public void MemberImportCustomization()
         {
             TestTypeDescriptor logicalType = new TestTypeDescriptor();
@@ -223,7 +223,7 @@ namespace Jayrock.Json.Conversion.Converters
             ComponentImporter importer = new ComponentImporter(typeof(Thing), logicalType);
             ImportContext context = new ImportContext();
             context.Register(importer);
-            
+
             JsonRecorder writer = new JsonRecorder();
             writer.WriteStartObject();
             writer.WriteMember("prop1");
@@ -235,31 +235,31 @@ namespace Jayrock.Json.Conversion.Converters
             writer.WriteEndObject();
 
             JsonReader reader = writer.CreatePlayer();
-            Thing thing = (Thing) context.Import(typeof(Thing), reader);
+            Thing thing = (Thing)context.Import(typeof(Thing), reader);
 
-            Assert.AreEqual(1, calls2.Count);
+            Assert.That(calls2.Count, Is.EqualTo(1));
 
-            Assert.AreSame(memberImporter2, calls2[0]);
-            Assert.AreEqual(new object[] { context, reader, thing }, memberImporter2.ImportArgs);
-            Assert.AreEqual("value2", memberImporter2.ImportedValue);
+            Assert.That(calls2[0], Is.SameAs(memberImporter2));
+            Assert.That(memberImporter2.ImportArgs, Is.EqualTo(new object[] { context, reader, thing }));
+            Assert.That(memberImporter2.ImportedValue, Is.EqualTo("value2"));
 
-            Assert.AreEqual(1, calls3.Count);
+            Assert.That(calls3.Count, Is.EqualTo(1));
 
-            Assert.AreSame(memberImporter3, calls3[0]);
-            Assert.AreEqual(new object[] { context, reader, thing }, memberImporter3.ImportArgs);
-            Assert.AreEqual("value3", memberImporter3.ImportedValue);
+            Assert.That(calls3[0], Is.SameAs(memberImporter3));
+            Assert.That(memberImporter3.ImportArgs, Is.EqualTo(new object[] { context, reader, thing }));
+            Assert.That(memberImporter3.ImportedValue, Is.EqualTo("value3"));
         }
 
-        [ Test ]
+        [Test]
         public void NonMemberImport()
         {
             ComponentImporter importer = new ComponentImporter(typeof(DynamicThing));
             ImportContext context = new ImportContext();
             const string json = "{ str1: value1, str2: value2, num: 42 }";
-            DynamicThing thing = (DynamicThing) importer.Import(context, JsonText.CreateReader(json));
-            Assert.AreEqual(2, thing.NonMembers.Count);
-            Assert.AreEqual("value1", thing.NonMembers["str1"]);
-            Assert.AreEqual("value2", thing.NonMembers["str2"]);
+            DynamicThing thing = (DynamicThing)importer.Import(context, JsonText.CreateReader(json));
+            Assert.That(thing.NonMembers.Count, Is.EqualTo(2));
+            Assert.That(thing.NonMembers["str1"], Is.EqualTo("value1"));
+            Assert.That(thing.NonMembers["str2"], Is.EqualTo("value2"));
         }
 
         private sealed class DynamicThing : INonObjectMemberImporter
@@ -270,7 +270,7 @@ namespace Jayrock.Json.Conversion.Converters
             {
                 if (reader.TokenClass != JsonTokenClass.String)
                     return false;
-                NonMembers[name] = context.Import(reader);
+                NonMembers[name] = context.Import(typeof(object), reader);
                 return true;
             }
         }
@@ -283,8 +283,9 @@ namespace Jayrock.Json.Conversion.Converters
         {
             public bool SetValueCalled;
 
-            public ReadOnlyPropertyDescriptor(string name) : 
-                base(name, null) {}
+            public ReadOnlyPropertyDescriptor(string name) :
+                base(name, null)
+            { }
 
             public override void SetValue(object component, object value)
             {
@@ -304,7 +305,7 @@ namespace Jayrock.Json.Conversion.Converters
             public override bool ShouldSerializeValue(object component) { throw new NotImplementedException(); }
             public override Type ComponentType { get { throw new NotImplementedException(); } }
             public override Type PropertyType { get { throw new NotImplementedException(); } }
-            
+
             #endregion
         }
 
@@ -313,9 +314,9 @@ namespace Jayrock.Json.Conversion.Converters
             JsonReader reader = CreateReader(s);
             ImportContext context = new ImportContext();
             object o = context.Import(expectedType, reader);
-            Assert.IsTrue(reader.EOF, "Reader must be at EOF.");
-            Assert.IsNotNull(o);
-            Assert.IsInstanceOfType(expectedType, o);
+            Assert.That(reader.EOF, Is.True, "Reader must be at EOF.");
+            Assert.That(o, Is.Not.Null);
+            Assert.That(o, Is.InstanceOfType(expectedType));
             return o;
         }
 
@@ -323,7 +324,7 @@ namespace Jayrock.Json.Conversion.Converters
         {
             return new JsonTextReader(new StringReader(s));
         }
-        
+
         public sealed class Marriage
         {
             private Person _husband;
@@ -362,7 +363,7 @@ namespace Jayrock.Json.Conversion.Converters
 
         //
         // NOTE: The default assignments on the following fields is
-        // to maily shut off the following warning from the compiler:
+        // to primarily shut off the following warning from the compiler:
         //
         // warning CS0649: Field '...' is never assigned to, and will always have its default value
         //
@@ -406,7 +407,7 @@ namespace Jayrock.Json.Conversion.Converters
             public int Height = 0;
             public int Width = 0;
         }
- 
+
         private sealed class TestObjectMemberImporter : IObjectMemberImporter
         {
             public object[] ImportArgs;
@@ -437,7 +438,7 @@ namespace Jayrock.Json.Conversion.Converters
                 _services = services;
                 _propertyType = type;
             }
-            
+
             public override bool IsReadOnly { get { return false; } }
             public override void SetValue(object component, object value) { }
 
@@ -455,7 +456,7 @@ namespace Jayrock.Json.Conversion.Converters
             public override void ResetValue(object component) { throw new NotImplementedException(); }
             public override bool ShouldSerializeValue(object component) { throw new NotImplementedException(); }
             public override Type ComponentType { get { throw new NotImplementedException(); } }
-            
+
             #endregion
         }
 

@@ -30,49 +30,49 @@ namespace Jayrock.JsonRpc
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonRpcError
     {
-        [ Test ]
+        [Test]
         public void InitializationFromException()
         {
             ApplicationException exception = new ApplicationException();
             JsonObject error = JsonRpcError.FromException(ThrowAndCatch(exception));
-            Assert.IsNotNull(error);
-            Assert.AreEqual(3, error.Count);
-            Assert.AreEqual(exception.Message, error["message"]);
-            Assert.AreEqual("JSONRPCError", error["name"]);
-            JsonArray errors = (JsonArray) error["errors"];
-            Assert.AreEqual(1, errors.Count);
-            error = (JsonObject) errors.Shift();
-            Assert.AreEqual(exception.Message, error["message"]);
-            Assert.AreEqual("ApplicationException", error["name"]);
+            Assert.That(error, Is.Not.Null);
+            Assert.That(error.Count, Is.EqualTo(3));
+            Assert.That(error["message"], Is.EqualTo(exception.Message));
+            Assert.That(error["name"], Is.EqualTo("JSONRPCError"));
+            JsonArray errors = (JsonArray)error["errors"];
+            Assert.That(errors.Count, Is.EqualTo(1));
+            error = (JsonObject)errors.Shift();
+            Assert.That(error["message"], Is.EqualTo(exception.Message));
+            Assert.That(error["name"], Is.EqualTo("ApplicationException"));
         }
 
-        [ Test ]
+        [Test]
         public void StackTraceInclusion()
         {
             ApplicationException exception = new ApplicationException();
             JsonObject error = JsonRpcError.FromException(ThrowAndCatch(exception), true);
-            string trace = (string) error["stackTrace"];
-            Assert.IsNotNull(trace);
-            Assert.IsNotEmpty(trace);
+            string trace = (string)error["stackTrace"];
+            Assert.That(trace, Is.Not.Null);
+            Assert.That(trace, Is.Not.Empty);
         }
 
-        [ Test ]
+        [Test]
         public void InnerExceptions()
         {
             Exception inner = new FormatException();
             ApplicationException outer = new ApplicationException(null, inner);
             JsonObject error = JsonRpcError.FromException(ThrowAndCatch(outer));
-            JsonArray errors = (JsonArray) error["errors"];
-            Assert.AreEqual(2, errors.Count);
-            error = (JsonObject) errors.Shift();
-            Assert.AreEqual(outer.Message, error["message"]);
-            Assert.AreEqual("ApplicationException", error["name"]);
-            error = (JsonObject) errors.Shift();
-            Assert.AreEqual(inner.Message, error["message"]);
-            Assert.AreEqual("FormatException", error["name"]);
+            JsonArray errors = (JsonArray)error["errors"];
+            Assert.That(errors.Count, Is.EqualTo(2));
+            error = (JsonObject)errors.Shift();
+            Assert.That(error["message"], Is.EqualTo(outer.Message));
+            Assert.That(error["name"], Is.EqualTo("ApplicationException"));
+            error = (JsonObject)errors.Shift();
+            Assert.That(error["message"], Is.EqualTo(inner.Message));
+            Assert.That(error["name"], Is.EqualTo("FormatException"));
         }
 
         private static Exception ThrowAndCatch(Exception exceptionToThrow)

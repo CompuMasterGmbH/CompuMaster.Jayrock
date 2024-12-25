@@ -33,25 +33,25 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestDbDataRecordExporter
     {
-        [ Test ]
+        [Test]
         public void EmptyTable()
         {
-            Assert.AreEqual("[]", Format(new DataTable()));
+            Assert.That(Format(new DataTable()), Is.EqualTo("[]"));
         }
 
-        [ Test ]
+        [Test]
         public void OneFieldOneRow()
         {
             DataTable table = new DataTable();
             table.Columns.Add("id", typeof(int));
             AppendRow(table, 1);
-            Assert.AreEqual("[{\"id\":1}]", Format(table));
+            Assert.That(Format(table), Is.EqualTo("[{\"id\":1}]"));
         }
 
-        [ Test ]
+        [Test]
         public void TwoFieldsTwoRows()
         {
             DataTable table = new DataTable();
@@ -59,10 +59,10 @@ namespace Jayrock.Json.Conversion.Converters
             table.Columns.Add("name", typeof(string));
             AppendRow(table, 1, "john");
             AppendRow(table, 2, "zack");
-            Assert.AreEqual("[{\"id\":1,\"name\":\"john\"},{\"id\":2,\"name\":\"zack\"}]", Format(table));
+            Assert.That(Format(table), Is.EqualTo("[{\"id\":1,\"name\":\"john\"},{\"id\":2,\"name\":\"zack\"}]"));
         }
 
-        [ Test ]
+        [Test]
         public void NullFieldValues()
         {
             DataTable table = new DataTable();
@@ -71,9 +71,9 @@ namespace Jayrock.Json.Conversion.Converters
             AppendRow(table, DBNull.Value);
             AppendRow(table, 3);
             AppendRow(table, new object[] { null });
-            Assert.AreEqual("[{\"id\":1},{\"id\":null},{\"id\":3},{\"id\":null}]", Format(table));
+            Assert.That(Format(table), Is.EqualTo("[{\"id\":1},{\"id\":null},{\"id\":3},{\"id\":null}]"));
         }
-        
+
         private static void AppendRow(DataTable table, params object[] values)
         {
             table.Rows.Add(values);
@@ -85,7 +85,7 @@ namespace Jayrock.Json.Conversion.Converters
             JsonConvert.Export(new FakeDataTableReader(table), writer);
             return writer.ToString();
         }
-        
+
         //
         // NOTE: The .NET Framework 2.0 has a DataTableReader implementation.
         // The following is a stub implementation for testing under 1.x.
@@ -100,10 +100,10 @@ namespace Jayrock.Json.Conversion.Converters
             public FakeDataTableReader(DataTable table)
             {
                 Debug.Assert(table != null);
-                
+
                 _table = table;
             }
-            
+
             private DataRow CurrentRow
             {
                 get { return _table.Rows[_index]; }
@@ -123,7 +123,7 @@ namespace Jayrock.Json.Conversion.Converters
             {
                 if (_index + 1 >= _table.Rows.Count)
                     return false;
-                
+
                 _index++;
                 return true;
             }
@@ -182,16 +182,6 @@ namespace Jayrock.Json.Conversion.Converters
             }
 
             #region Unimplemented and uninteresting IDataRecord/Reader members
-            
-            //
-            // The remaining IDataRecord/Reader members are not implemented
-            // because DbEnumerator never seems to call them. 
-            //
-            // NOTE: It may be that this assumption no longer holds true in 
-            // a future implementation of the DbEnumerator and there for
-            // this test fixutre may entirely fail. Consider finishing the
-            // implementation minimally.
-            //
 
             public DataTable GetSchemaTable()
             {
@@ -297,7 +287,7 @@ namespace Jayrock.Json.Conversion.Converters
             {
                 get { throw new NotImplementedException(); }
             }
-            
+
             #endregion
         }
     }

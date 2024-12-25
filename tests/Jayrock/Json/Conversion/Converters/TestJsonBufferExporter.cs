@@ -29,22 +29,22 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonBufferExporter
     {
-        [ Test ]
+        [Test]
         public void Superclass()
         {
-            Assert.IsInstanceOfType(typeof(ExporterBase), new JsonBufferExporter());
-        }
-        
-        [ Test ]
-        public void InputTypeIsJsonBuffer()
-        {
-            Assert.AreSame(typeof(JsonBuffer), (new JsonBufferExporter()).InputType);
+            Assert.That(new JsonBufferExporter(), Is.InstanceOf<ExporterBase>());
         }
 
-        [ Test ]
+        [Test]
+        public void InputTypeIsJsonBuffer()
+        {
+            Assert.That((new JsonBufferExporter()).InputType, Is.SameAs(typeof(JsonBuffer)));
+        }
+
+        [Test]
         public void Export()
         {
             StringBuilder sb = new StringBuilder();
@@ -52,7 +52,7 @@ namespace Jayrock.Json.Conversion.Converters
             JsonBuffer buffer = JsonBuffer.From("[42,{x:123,y:456},foo,true,null,false]");
             JsonBufferExporter exporter = new JsonBufferExporter();
             exporter.Export(JsonConvert.CreateExportContext(), buffer, writer);
-            Assert.AreEqual("[42,{\"x\":123,\"y\":456},\"foo\",true,null,false]", sb.ToString());
+            Assert.That(sb.ToString(), Is.EqualTo("[42,{\"x\":123,\"y\":456},\"foo\",true,null,false]"));
         }
     }
 }

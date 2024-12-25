@@ -42,7 +42,7 @@ namespace Jayrock.Json.Conversion.Converters
         [Test]
         public void EmptyObject()
         {
-            Assert.AreEqual("[\"System.Object\"]", Format(new object()));
+            Assert.That(Format(new object()), Is.EqualTo("[\"System.Object\"]"));
         }
 
         [Test]
@@ -66,9 +66,9 @@ namespace Jayrock.Json.Conversion.Converters
 
             JsonReader reader = FormatForReading(car);
             reader.ReadToken(JsonTokenClass.Object);
-            Assert.AreEqual("year", reader.ReadMember());
-            Assert.AreEqual(0, (int)reader.ReadNumber());
-            Assert.AreEqual(JsonTokenClass.EndObject, reader.TokenClass);
+            Assert.That(reader.ReadMember(), Is.EqualTo("year"));
+            Assert.That(reader.ReadNumber(), Is.EqualTo(0));
+            Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.EndObject));
         }
 
         [Test]
@@ -106,12 +106,12 @@ namespace Jayrock.Json.Conversion.Converters
             JsonConvert.Export(point, writer);
             JsonReader reader = writer.CreatePlayer();
             reader.ReadToken(JsonTokenClass.Object);
-            Assert.AreEqual("x", reader.ReadMember());
-            Assert.AreEqual(123, reader.ReadNumber().ToInt32());
-            Assert.AreEqual("y", reader.ReadMember());
-            Assert.AreEqual(456, reader.ReadNumber().ToInt32());
-            Assert.AreSame(JsonTokenClass.EndObject, reader.TokenClass);
-            Assert.IsFalse(reader.Read());
+            Assert.That(reader.ReadMember(), Is.EqualTo("x"));
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(123));
+            Assert.That(reader.ReadMember(), Is.EqualTo("y"));
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(456));
+            Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.EndObject));
+            Assert.That(reader.Read(), Is.False);
         }
 
         [Test]
@@ -212,15 +212,15 @@ namespace Jayrock.Json.Conversion.Converters
             Thing thing = new Thing();
             context.Export(thing, writer);
 
-            Assert.AreEqual(2, calls.Count);
+            Assert.That(calls.Count, Is.EqualTo(2));
 
             object[] args = { context, writer, thing };
 
-            Assert.AreSame(memexp1, calls[0]);
-            Assert.AreEqual(args, ((TestObjectMemberExporter)calls[0]).ExportArgs);
+            Assert.That(calls[0], Is.SameAs(memexp1));
+            Assert.That(((TestObjectMemberExporter)calls[0]).ExportArgs, Is.EqualTo(args));
 
-            Assert.AreSame(memexp2, calls[1]);
-            Assert.AreEqual(args, ((TestObjectMemberExporter)calls[1]).ExportArgs);
+            Assert.That(calls[1], Is.SameAs(memexp2));
+            Assert.That(((TestObjectMemberExporter)calls[1]).ExportArgs, Is.EqualTo(args));
         }
 
         private sealed class TestObjectMemberExporter : IObjectMemberExporter
@@ -326,7 +326,7 @@ namespace Jayrock.Json.Conversion.Converters
         {
             JsonReader reader = FormatForReading(actual);
             TestObject(expected, reader, "(root)");
-            Assert.IsFalse(reader.Read(), "Expected EOF.");
+            Assert.That(reader.Read(), Is.False, "Expected EOF.");
         }
 
         private static void TestObject(JsonObject expected, JsonReader reader, string path)
@@ -342,7 +342,7 @@ namespace Jayrock.Json.Conversion.Converters
                 TestValue(value, reader, path + "/" + name);
             }
 
-            Assert.AreEqual(0, expected.Count);
+            Assert.That(expected.Count, Is.EqualTo(0));
             reader.Read();
         }
 
@@ -361,7 +361,7 @@ namespace Jayrock.Json.Conversion.Converters
         {
             if (JsonNull.LogicallyEquals(expected))
             {
-                Assert.AreEqual(JsonTokenClass.Null, reader.TokenClass, path);
+                Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.Null), path);
             }
             else
             {
@@ -378,9 +378,9 @@ namespace Jayrock.Json.Conversion.Converters
                 {
                     switch (expectedType)
                     {
-                        case TypeCode.String: Assert.AreEqual(expected, reader.ReadString(), path); break;
-                        case TypeCode.Int32: Assert.AreEqual(expected, (int)reader.ReadNumber(), path); break;
-                        default: Assert.Fail("Don't know how to handle {0} values.", expected.GetType()); break;
+                        case TypeCode.String: Assert.That(reader.ReadString(), Is.EqualTo(expected), path); break;
+                        case TypeCode.Int32: Assert.That(reader.ReadNumber(), Is.EqualTo(expected), path); break;
+                        default: Assert.Fail($"Don't know how to handle {expected.GetType()} values."); break;
                     }
                 }
             }
@@ -480,4 +480,3 @@ namespace Jayrock.Json.Conversion.Converters
         }
     }
 }
-
