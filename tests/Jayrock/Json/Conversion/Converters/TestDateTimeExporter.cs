@@ -29,22 +29,22 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestDateTimeExporter
     {
-        [ Test ]
+        [Test]
         public void Superclass()
         {
-            Assert.IsInstanceOfType(typeof(ExporterBase), new DateTimeExporter());    
+            Assert.IsInstanceOf<ExporterBase>(new DateTimeExporter());
         }
 
-        [ Test ]
+        [Test]
         public void InputTypeIsString()
         {
             Assert.AreSame(typeof(DateTime), (new DateTimeExporter()).InputType);
         }
 
-        [ Test ]
+        [Test]
         public void Export()
         {
             DateTime time = new DateTime(1999, 12, 31, 23, 30, 59, 999);
@@ -58,14 +58,15 @@ namespace Jayrock.Json.Conversion.Converters
             exporter.Export(new ExportContext(), value, writer);
             return writer.CreatePlayer().ReadString();
         }
- 
+
         private static string Tzd(DateTime localTime)
         {
             TimeSpan offset = TimeZone.CurrentTimeZone.GetUtcOffset(localTime);
             string offsetString = offset.ToString();
-            return offset.Ticks < 0 ? 
-                   (offsetString.Substring(0, 6)) : 
+            return offset.Ticks < 0 ?
+                   (offsetString.Substring(0, 6)) :
                    ("+" + offsetString.Substring(0, 5));
         }
     }
 }
+

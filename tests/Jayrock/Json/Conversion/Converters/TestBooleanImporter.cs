@@ -29,67 +29,67 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestBooleanImporter
     {
-        [ Test ]
+        [Test]
         public void ImportNull()
         {
             Assert.IsNull(Import("null"));
         }
 
-        [ Test ]
+        [Test]
         public void ImportTrue()
         {
             AssertImport(true, "true");
         }
 
-        [ Test ]
+        [Test]
         public void ImportFalse()
         {
             AssertImport(false, "false");
         }
 
-        [ Test ]
+        [Test]
         public void ImportNonZeroNumber()
         {
             AssertImport(true, "123");
         }
 
-        [ Test ]
+        [Test]
         public void ImportZeroNumber()
         {
             AssertImport(false, "0");
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportFractionalNumbers()
         {
-            Import("0.5");
+            Assert.Throws<JsonException>(() => Import("0.5"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportString()
         {
-            Import("'true'");
+            Assert.Throws<JsonException>(() => Import("'true'"));
         }
-       
-        [ Test, ExpectedException(typeof(JsonException)) ]
+
+        [Test]
         public void CannotImportArray()
         {
-            Import("[]");
+            Assert.Throws<JsonException>(() => Import("[]"));
         }
-        
-        [ Test, ExpectedException(typeof(JsonException)) ]
+
+        [Test]
         public void CannotImportObject()
         {
-            Import("{}");
+            Assert.Throws<JsonException>(() => Import("{}"));
         }
-        
+
         private static void AssertImport(bool expected, string input)
         {
             object o = Import(input);
-            Assert.IsInstanceOfType(typeof(bool), o);
+            Assert.IsInstanceOf<bool>(o);
             Assert.AreEqual(expected, o);
         }
 
@@ -103,3 +103,4 @@ namespace Jayrock.Json.Conversion.Converters
         }
     }
 }
+

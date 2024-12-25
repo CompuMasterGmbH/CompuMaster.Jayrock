@@ -30,34 +30,34 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestEnumImporter
     {
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotInitWithNull()
         {
-            new EnumImporter(null);
+            Assert.Throws<ArgumentNullException>(() => new EnumImporter(null));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void ActualTypeMustBeEnum()
         {
-            new EnumImporter(typeof(object));
+            Assert.Throws<ArgumentException>(() => new EnumImporter(typeof(object)));
         }
 
-        [ Test ]
+        [Test]
         public void ImportNull()
         {
             Assert.IsNull(Import(typeof(Days), JsonNull.Text));
         }
 
-        [ Test ]
+        [Test]
         public void ImportString()
         {
             Assert.AreEqual(Days.Friday, Import(typeof(Days), "'Friday'"));
         }
 
-        [ Test ]
+        [Test]
         public void ImportStringIgnoresCase()
         {
             Assert.AreEqual(Days.Friday, Import(typeof(Days), "'FRIDAY'"));
@@ -65,65 +65,65 @@ namespace Jayrock.Json.Conversion.Converters
             Assert.AreEqual(Days.Friday, Import(typeof(Days), "'FrIdAy'"));
         }
 
-        [ Test ]
+        [Test]
         public void ImportStringIgnoresWhitespace()
         {
             Assert.AreEqual(Days.Friday, Import(typeof(Days), "' Friday '"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportUnknownName()
         {
-            Assert.AreEqual(Days.Friday, Import(typeof(Days), "'???'"));
+            Assert.Throws<JsonException>(() => Import(typeof(Days), "'???'"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportNumericalString()
         {
-            Import(typeof(Days), "' 3 '");
+            Assert.Throws<JsonException>(() => Import(typeof(Days), "' 3 '"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportPositiveNumericalString()
         {
-            Import(typeof(Days), "' +3 '");
+            Assert.Throws<JsonException>(() => Import(typeof(Days), "' +3 '"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportNegativeNumericalString()
         {
-            Import(typeof(Days), "' -3 '");
+            Assert.Throws<JsonException>(() => Import(typeof(Days), "' -3 '"));
         }
-        
-        [ Test, ExpectedException(typeof(JsonException)) ]
+
+        [Test]
         public void CannotImportNumber()
         {
-            Import(typeof(Days), "3");
+            Assert.Throws<JsonException>(() => Import(typeof(Days), "3"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportBoolean()
         {
-            Import(typeof(Days), JsonBoolean.TrueText);
-            Import(typeof(Days), JsonBoolean.FalseText);
+            Assert.Throws<JsonException>(() => Import(typeof(Days), JsonBoolean.TrueText));
+            Assert.Throws<JsonException>(() => Import(typeof(Days), JsonBoolean.FalseText));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportObject()
         {
-            Import(typeof(Days), "{}");
+            Assert.Throws<JsonException>(() => Import(typeof(Days), "{}"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportArray()
         {
-            Import(typeof(Days), "[]");
+            Assert.Throws<JsonException>(() => Import(typeof(Days), "[]"));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void BitFieldEnumsNotSupported()
         {
-            new EnumImporter(typeof(AttributeTargets));
+            Assert.Throws<ArgumentException>(() => new EnumImporter(typeof(AttributeTargets)));
         }
 
         private static object Import(Type type, string s)
@@ -136,7 +136,7 @@ namespace Jayrock.Json.Conversion.Converters
         {
             return new JsonTextReader(new StringReader(s));
         }
-        
+
         private enum Days
         {
             Sunday,
@@ -149,3 +149,5 @@ namespace Jayrock.Json.Conversion.Converters
         }
     }
 }
+
+

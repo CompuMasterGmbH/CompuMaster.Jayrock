@@ -32,22 +32,22 @@ namespace Jayrock.JsonML
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonMLCodec
     {
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void EncodeDoesNotAcceptNullXmlReader()
         {
-            JsonMLCodec.Encode(null, new JsonRecorder());
+            Assert.Throws<ArgumentNullException>(() => JsonMLCodec.Encode(null, new JsonRecorder()));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void EncodeDoesNotAcceptNullJsonWriter()
         {
-            JsonMLCodec.Encode(new XmlTextReader("http://www.example.com/"), null);
+            Assert.Throws<ArgumentNullException>(() => JsonMLCodec.Encode(new XmlTextReader("http://www.example.com/"), null));
         }
 
-        [ Test ]
+        [Test]
         public void EncodeArrayOnSingleEmptyElement()
         {
             JsonReader reader = EncodeArray("<root />");
@@ -56,7 +56,7 @@ namespace Jayrock.JsonML
             reader.ReadToken(JsonTokenClass.EndArray);
         }
 
-        [ Test ]
+        [Test]
         public void EncodeArrayOnSingleEmptyElementWithAttributes()
         {
             JsonReader reader = EncodeArray("<root a1='v1' a2='v2' />");
@@ -71,7 +71,7 @@ namespace Jayrock.JsonML
             reader.ReadToken(JsonTokenClass.EndArray);
         }
 
-        [ Test ]
+        [Test]
         public void EncodeArrayOnSingleElementWithAttributesAndContent()
         {
             JsonReader reader = EncodeArray("<root a1='v1' a2='v2'>content</root>");
@@ -87,7 +87,7 @@ namespace Jayrock.JsonML
             reader.ReadToken(JsonTokenClass.EndArray);
         }
 
-        [ Test ]
+        [Test]
         public void EncodeArrayOnNestedEmptyElements()
         {
             JsonReader reader = EncodeArray(@"
@@ -110,7 +110,7 @@ namespace Jayrock.JsonML
             reader.ReadToken(JsonTokenClass.EndArray);
         }
 
-        [ Test ]
+        [Test]
         public void EncodeArrayOnInterspersedElementsAndText()
         {
             JsonReader reader = EncodeArray(@"<root>text1<e1 />text2<e2 />text3</root>");
@@ -128,7 +128,7 @@ namespace Jayrock.JsonML
             reader.ReadToken(JsonTokenClass.EndArray);
         }
 
-        [ Test ]
+        [Test]
         public void EncodeArrayCDataHandling()
         {
             JsonReader reader = EncodeArray("<e><![CDATA[<content>]]></e>");
@@ -138,12 +138,12 @@ namespace Jayrock.JsonML
             reader.ReadToken(JsonTokenClass.EndArray);
         }
 
-        [ Test ]
+        [Test]
         public void EncodeArrayOnComplexXml()
         {
             JsonReader reader = EncodeArray(
                 "<a ichi='1' ni='2'><b>The content of b</b> and " +
-                "<c san='3'>The content of c</c><d>do</d><e></e>" + 
+                "<c san='3'>The content of c</c><d>do</d><e></e>" +
                 "<d>re</d><f/><d>mi</d></a>");
 
             reader.ReadToken(JsonTokenClass.Array);
@@ -154,14 +154,14 @@ namespace Jayrock.JsonML
             Assert.AreEqual("ni", reader.ReadMember());
             Assert.AreEqual("2", reader.ReadString());
             reader.ReadToken(JsonTokenClass.EndObject);
-            
+
             reader.ReadToken(JsonTokenClass.Array);
             Assert.AreEqual("b", reader.ReadString());
             Assert.AreEqual("The content of b", reader.ReadString());
             reader.ReadToken(JsonTokenClass.EndArray);
-            
+
             Assert.AreEqual(" and ", reader.ReadString());
-            
+
             reader.ReadToken(JsonTokenClass.Array);
             Assert.AreEqual("c", reader.ReadString());
             reader.ReadToken(JsonTokenClass.Object);
@@ -170,12 +170,12 @@ namespace Jayrock.JsonML
             reader.ReadToken(JsonTokenClass.EndObject);
             Assert.AreEqual("The content of c", reader.ReadString());
             reader.ReadToken(JsonTokenClass.EndArray);
-            
+
             reader.ReadToken(JsonTokenClass.Array);
             Assert.AreEqual("d", reader.ReadString());
             Assert.AreEqual("do", reader.ReadString());
             reader.ReadToken(JsonTokenClass.EndArray);
-            
+
             reader.ReadToken(JsonTokenClass.Array);
             Assert.AreEqual("e", reader.ReadString());
             reader.ReadToken(JsonTokenClass.EndArray);
@@ -197,7 +197,7 @@ namespace Jayrock.JsonML
             reader.ReadToken(JsonTokenClass.EndArray); // a
         }
 
-        [ Test ]
+        [Test]
         public void EncodeArraySkipsComments()
         {
             JsonReader reader = EncodeArray("<e><!--comment--></e>");
@@ -206,13 +206,13 @@ namespace Jayrock.JsonML
             reader.ReadToken(JsonTokenClass.EndArray);
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void EncodeArrayExpectsXmlReaderOnElement()
         {
             XmlTextReader reader = new XmlTextReader(new StringReader("<e>text</e>"));
             reader.Read();
             reader.Read();
-            JsonMLCodec.EncodeArrayForm(reader, new JsonRecorder());
+            Assert.Throws<ArgumentException>(() => JsonMLCodec.EncodeArrayForm(reader, new JsonRecorder()));
         }
 
         private static JsonReader EncodeArray(string xml)
@@ -222,7 +222,7 @@ namespace Jayrock.JsonML
             return writer.CreatePlayer();
         }
 
-        [ Test ]
+        [Test]
         public void EncodeObjectOnSingleEmptyElement()
         {
             JsonReader reader = EncodeObject("<root />");
@@ -232,7 +232,7 @@ namespace Jayrock.JsonML
             reader.ReadToken(JsonTokenClass.EndObject);
         }
 
-        [ Test ]
+        [Test]
         public void EncodeObjectOnSingleEmptyElementWithAttributes()
         {
             JsonReader reader = EncodeObject("<root a1='v1' a2='v2' />");
@@ -246,7 +246,7 @@ namespace Jayrock.JsonML
             reader.ReadToken(JsonTokenClass.EndObject);
         }
 
-        [ Test ]
+        [Test]
         public void EncodeObjectOnSingleElementWithAttributesAndContent()
         {
             JsonReader reader = EncodeObject("<root a1='v1' a2='v2'>content</root>");
@@ -264,7 +264,7 @@ namespace Jayrock.JsonML
             reader.ReadToken(JsonTokenClass.EndObject);
         }
 
-        [ Test ]
+        [Test]
         public void EncodeObjectOnNestedEmptyElements()
         {
             JsonReader reader = EncodeObject(@"
@@ -273,33 +273,33 @@ namespace Jayrock.JsonML
                     <child2 />
                     <child3 />
                 </root>");
-            
+
             reader.ReadToken(JsonTokenClass.Object);
             Assert.AreEqual("tagName", reader.ReadMember());
             Assert.AreEqual("root", reader.ReadString());
             Assert.AreEqual("childNodes", reader.ReadMember());
             reader.ReadToken(JsonTokenClass.Array);
 
-                reader.ReadToken(JsonTokenClass.Object);
-                Assert.AreEqual("tagName", reader.ReadMember());
-                Assert.AreEqual("child1", reader.ReadString());
-                reader.ReadToken(JsonTokenClass.EndObject);
-                
-                reader.ReadToken(JsonTokenClass.Object);
-                Assert.AreEqual("tagName", reader.ReadMember());
-                Assert.AreEqual("child2", reader.ReadString());
-                reader.ReadToken(JsonTokenClass.EndObject);
-                
-                reader.ReadToken(JsonTokenClass.Object);
-                Assert.AreEqual("tagName", reader.ReadMember());
-                Assert.AreEqual("child3", reader.ReadString());
-                reader.ReadToken(JsonTokenClass.EndObject);
-            
+            reader.ReadToken(JsonTokenClass.Object);
+            Assert.AreEqual("tagName", reader.ReadMember());
+            Assert.AreEqual("child1", reader.ReadString());
+            reader.ReadToken(JsonTokenClass.EndObject);
+
+            reader.ReadToken(JsonTokenClass.Object);
+            Assert.AreEqual("tagName", reader.ReadMember());
+            Assert.AreEqual("child2", reader.ReadString());
+            reader.ReadToken(JsonTokenClass.EndObject);
+
+            reader.ReadToken(JsonTokenClass.Object);
+            Assert.AreEqual("tagName", reader.ReadMember());
+            Assert.AreEqual("child3", reader.ReadString());
+            reader.ReadToken(JsonTokenClass.EndObject);
+
             reader.ReadToken(JsonTokenClass.EndArray);
             reader.ReadToken(JsonTokenClass.EndObject);
         }
 
-        [ Test ]
+        [Test]
         public void EncodeObjectOnInterspersedElementsAndText()
         {
             JsonReader reader = EncodeObject(@"<root>text1<e1 />text2<e2 />text3</root>");
@@ -310,27 +310,27 @@ namespace Jayrock.JsonML
             Assert.AreEqual("childNodes", reader.ReadMember());
             reader.ReadToken(JsonTokenClass.Array);
 
-                Assert.AreEqual("text1", reader.ReadString());
-            
-                reader.ReadToken(JsonTokenClass.Object);
-                Assert.AreEqual("tagName", reader.ReadMember());
-                Assert.AreEqual("e1", reader.ReadString());
-                reader.ReadToken(JsonTokenClass.EndObject);
+            Assert.AreEqual("text1", reader.ReadString());
 
-                Assert.AreEqual("text2", reader.ReadString());
+            reader.ReadToken(JsonTokenClass.Object);
+            Assert.AreEqual("tagName", reader.ReadMember());
+            Assert.AreEqual("e1", reader.ReadString());
+            reader.ReadToken(JsonTokenClass.EndObject);
 
-                reader.ReadToken(JsonTokenClass.Object);
-                Assert.AreEqual("tagName", reader.ReadMember());
-                Assert.AreEqual("e2", reader.ReadString());
-                reader.ReadToken(JsonTokenClass.EndObject);
+            Assert.AreEqual("text2", reader.ReadString());
 
-                Assert.AreEqual("text3", reader.ReadString());
-            
+            reader.ReadToken(JsonTokenClass.Object);
+            Assert.AreEqual("tagName", reader.ReadMember());
+            Assert.AreEqual("e2", reader.ReadString());
+            reader.ReadToken(JsonTokenClass.EndObject);
+
+            Assert.AreEqual("text3", reader.ReadString());
+
             reader.ReadToken(JsonTokenClass.EndArray);
             reader.ReadToken(JsonTokenClass.EndObject);
         }
 
-        [ Test ]
+        [Test]
         public void EncodeObjectCDataHandling()
         {
             JsonReader reader = EncodeObject("<e><![CDATA[<content>]]></e>");
@@ -344,12 +344,12 @@ namespace Jayrock.JsonML
             reader.ReadToken(JsonTokenClass.EndObject);
         }
 
-        [ Test ]
+        [Test]
         public void EncodeObjectOnComplexXml()
         {
             JsonReader reader = EncodeObject(
                 "<a ichi='1' ni='2'><b>The content of b</b> and " +
-                "<c san='3'>The content of c</c><d>do</d><e></e>" + 
+                "<c san='3'>The content of c</c><d>do</d><e></e>" +
                 "<d>re</d><f/><d>mi</d></a>");
 
             reader.ReadToken(JsonTokenClass.Object);
@@ -362,66 +362,66 @@ namespace Jayrock.JsonML
             Assert.AreEqual("childNodes", reader.ReadMember());
             reader.ReadToken(JsonTokenClass.Array);
 
-                reader.ReadToken(JsonTokenClass.Object);
-                Assert.AreEqual("tagName", reader.ReadMember());
-                Assert.AreEqual("b", reader.ReadString());
-                Assert.AreEqual("childNodes", reader.ReadMember());
-                reader.ReadToken(JsonTokenClass.Array);
-                Assert.AreEqual("The content of b", reader.ReadString());
-                reader.ReadToken(JsonTokenClass.EndArray);
-            
-                Assert.AreEqual(" and ", reader.ReadString());
+            reader.ReadToken(JsonTokenClass.Object);
+            Assert.AreEqual("tagName", reader.ReadMember());
+            Assert.AreEqual("b", reader.ReadString());
+            Assert.AreEqual("childNodes", reader.ReadMember());
+            reader.ReadToken(JsonTokenClass.Array);
+            Assert.AreEqual("The content of b", reader.ReadString());
+            reader.ReadToken(JsonTokenClass.EndArray);
 
-                reader.ReadToken(JsonTokenClass.Object);
-                Assert.AreEqual("tagName", reader.ReadMember());
-                Assert.AreEqual("c", reader.ReadString());
-                Assert.AreEqual("san", reader.ReadMember());
-                Assert.AreEqual("3", reader.ReadString());
-                Assert.AreEqual("childNodes", reader.ReadMember());
-                reader.ReadToken(JsonTokenClass.Array);
-                Assert.AreEqual("The content of c", reader.ReadString());
-                reader.ReadToken(JsonTokenClass.EndArray);
+            Assert.AreEqual(" and ", reader.ReadString());
 
-                reader.ReadToken(JsonTokenClass.Object);
-                Assert.AreEqual("tagName", reader.ReadMember());
-                Assert.AreEqual("d", reader.ReadString());
-                Assert.AreEqual("childNodes", reader.ReadMember());
-                reader.ReadToken(JsonTokenClass.Array);
-                Assert.AreEqual("do", reader.ReadString());
-                reader.ReadToken(JsonTokenClass.EndArray);
+            reader.ReadToken(JsonTokenClass.Object);
+            Assert.AreEqual("tagName", reader.ReadMember());
+            Assert.AreEqual("c", reader.ReadString());
+            Assert.AreEqual("san", reader.ReadMember());
+            Assert.AreEqual("3", reader.ReadString());
+            Assert.AreEqual("childNodes", reader.ReadMember());
+            reader.ReadToken(JsonTokenClass.Array);
+            Assert.AreEqual("The content of c", reader.ReadString());
+            reader.ReadToken(JsonTokenClass.EndArray);
 
-                reader.ReadToken(JsonTokenClass.Object);
-                Assert.AreEqual("tagName", reader.ReadMember());
-                Assert.AreEqual("e", reader.ReadString());
-                reader.ReadToken(JsonTokenClass.EndObject);
+            reader.ReadToken(JsonTokenClass.Object);
+            Assert.AreEqual("tagName", reader.ReadMember());
+            Assert.AreEqual("d", reader.ReadString());
+            Assert.AreEqual("childNodes", reader.ReadMember());
+            reader.ReadToken(JsonTokenClass.Array);
+            Assert.AreEqual("do", reader.ReadString());
+            reader.ReadToken(JsonTokenClass.EndArray);
 
-                reader.ReadToken(JsonTokenClass.Object);
-                Assert.AreEqual("tagName", reader.ReadMember());
-                Assert.AreEqual("d", reader.ReadString());
-                Assert.AreEqual("childNodes", reader.ReadMember());
-                reader.ReadToken(JsonTokenClass.Array);
-                Assert.AreEqual("re", reader.ReadString());
-                reader.ReadToken(JsonTokenClass.EndArray);
+            reader.ReadToken(JsonTokenClass.Object);
+            Assert.AreEqual("tagName", reader.ReadMember());
+            Assert.AreEqual("e", reader.ReadString());
+            reader.ReadToken(JsonTokenClass.EndObject);
 
-                reader.ReadToken(JsonTokenClass.Object);
-                Assert.AreEqual("tagName", reader.ReadMember());
-                Assert.AreEqual("f", reader.ReadString());
-                reader.ReadToken(JsonTokenClass.EndObject);
+            reader.ReadToken(JsonTokenClass.Object);
+            Assert.AreEqual("tagName", reader.ReadMember());
+            Assert.AreEqual("d", reader.ReadString());
+            Assert.AreEqual("childNodes", reader.ReadMember());
+            reader.ReadToken(JsonTokenClass.Array);
+            Assert.AreEqual("re", reader.ReadString());
+            reader.ReadToken(JsonTokenClass.EndArray);
 
-                reader.ReadToken(JsonTokenClass.Object);
-                Assert.AreEqual("tagName", reader.ReadMember());
-                Assert.AreEqual("d", reader.ReadString());
-                Assert.AreEqual("childNodes", reader.ReadMember());
-                reader.ReadToken(JsonTokenClass.Array);
-                Assert.AreEqual("mi", reader.ReadString());
-                reader.ReadToken(JsonTokenClass.EndArray);
-                reader.ReadToken(JsonTokenClass.EndObject);
-                
+            reader.ReadToken(JsonTokenClass.Object);
+            Assert.AreEqual("tagName", reader.ReadMember());
+            Assert.AreEqual("f", reader.ReadString());
+            reader.ReadToken(JsonTokenClass.EndObject);
+
+            reader.ReadToken(JsonTokenClass.Object);
+            Assert.AreEqual("tagName", reader.ReadMember());
+            Assert.AreEqual("d", reader.ReadString());
+            Assert.AreEqual("childNodes", reader.ReadMember());
+            reader.ReadToken(JsonTokenClass.Array);
+            Assert.AreEqual("mi", reader.ReadString());
+            reader.ReadToken(JsonTokenClass.EndArray);
+            reader.ReadToken(JsonTokenClass.EndObject);
+
             reader.ReadToken(JsonTokenClass.EndArray);
             reader.ReadToken(JsonTokenClass.EndObject); // a
         }
 
-        [ Test ]
+        [Test]
         public void EncodeObjectSkipsComments()
         {
             JsonReader reader = EncodeObject("<e><!--comment--></e>");
@@ -431,13 +431,13 @@ namespace Jayrock.JsonML
             reader.ReadToken(JsonTokenClass.EndObject);
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void EncodeObjectExpectsXmlReaderOnElement()
         {
             XmlTextReader reader = new XmlTextReader(new StringReader("<e>text</e>"));
             reader.Read();
             reader.Read();
-            JsonMLCodec.EncodeObjectForm(reader, new JsonRecorder());
+            Assert.Throws<ArgumentException>(() => JsonMLCodec.EncodeObjectForm(reader, new JsonRecorder()));
         }
 
         private static JsonReader EncodeObject(string xml)
@@ -447,16 +447,16 @@ namespace Jayrock.JsonML
             return writer.CreatePlayer();
         }
 
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void DecodeDoesNotAcceptNullJsonReader()
         {
-            JsonMLCodec.Decode(null, new XmlTextWriter(new StringWriter()));
+            Assert.Throws<ArgumentNullException>(() => JsonMLCodec.Decode(null, new XmlTextWriter(new StringWriter())));
         }
 
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void DecodeDoesNotAcceptNullXmlWriter()
         {
-            JsonMLCodec.Decode(new JsonRecorder().CreatePlayer(), null);
+            Assert.Throws<ArgumentNullException>(() => JsonMLCodec.Decode(new JsonRecorder().CreatePlayer(), null));
         }
 
         [Test]
@@ -465,10 +465,10 @@ namespace Jayrock.JsonML
             Assert.AreEqual("<root />", DecodeArray("[root]"));
         }
 
-        [Test, ExpectedException(typeof(JsonException))]
+        [Test]
         public void DecodeArrayExpectsJsonArray()
         {
-            DecodeArray("{}");
+            Assert.Throws<JsonException>(() => DecodeArray("{}"));
         }
 
         [Test]
@@ -477,16 +477,16 @@ namespace Jayrock.JsonML
             Assert.AreEqual("<root a='1' b='2' />", DecodeArray("[root,{a:1,b:2}]"));
         }
 
-        [Test, ExpectedException(typeof(JsonMLException))]
+        [Test]
         public void DecodeArrayThrowsWhenAttributeIsObject()
         {
-            DecodeArray("[root,{bad:{}}]");
+            Assert.Throws<JsonMLException>(() => DecodeArray("[root,{bad:{}}]"));
         }
 
-        [Test, ExpectedException(typeof(JsonMLException))]
+        [Test]
         public void DecodeArrayThrowsWhenAttributeIsArray()
         {
-            DecodeArray("[root,{bad:[]}]");
+            Assert.Throws<JsonMLException>(() => DecodeArray("[root,{bad:[]}]"));
         }
 
         [Test]
@@ -521,16 +521,16 @@ namespace Jayrock.JsonML
                 "<c san='3'>The content of c</c><d>do</d><e />" +
                 "<d>re</d><f /><d>mi</d></a>",
                 DecodeArray(@"
-                    [a, {ichi: 1, ni: 2},
-                        [b, The content of b],
-                        ' and ',
-                        [c, {san: 3}, The content of c],
-                        [d, do],
-                        [e],
-                        [d, re],
-                        [f],
-                        [d, mi]
-                    ]"));
+            [a, {ichi: 1, ni: 2},
+                [b, The content of b],
+                ' and ',
+                [c, {san: 3}, The content of c],
+                [d, do],
+                [e],
+                [d, re],
+                [f],
+                [d, mi]
+            ]"));
         }
 
         [Test]
@@ -547,10 +547,10 @@ namespace Jayrock.JsonML
             Assert.AreEqual("<e a='1' />", DecodeArray("[e,{a:1},[]]"));
         }
 
-        [Test, ExpectedException(typeof(JsonMLException))]
+        [Test]
         public void DecodeArrayDoesNotLikeEmptyRootElement()
         {
-            DecodeArray("[]");
+            Assert.Throws<JsonMLException>(() => DecodeArray("[]"));
         }
 
         [Test]
@@ -562,10 +562,10 @@ namespace Jayrock.JsonML
             JsonMLCodec.Decode(new JsonTextReader(new StringReader("[]")), writer);
         }
 
-        [Test, ExpectedException(typeof(JsonMLException))]
+        [Test]
         public void DecodeArrayDoesNotLikeObjectsAfterAttributes()
         {
-            DecodeArray("[e,{a:1},text,{/*bad*/}]");
+            Assert.Throws<JsonMLException>(() => DecodeArray("[e,{a:1},text,{/*bad*/}]"));
         }
 
         [Test]
@@ -589,10 +589,10 @@ namespace Jayrock.JsonML
             Assert.AreEqual("<root />", DecodeObject("{tagName:root}"));
         }
 
-        [Test, ExpectedException(typeof(JsonException))]
+        [Test]
         public void DecodeObjectExpectsJsonArray()
         {
-            DecodeObject("[]");
+            Assert.Throws<JsonException>(() => DecodeObject("[]"));
         }
 
         [Test]
@@ -607,16 +607,16 @@ namespace Jayrock.JsonML
             Assert.AreEqual("<root a='1' b='2' />", DecodeObject("{a:1,b:2,tagName:root}"));
         }
 
-        [Test, ExpectedException(typeof(JsonMLException))]
+        [Test]
         public void DecodeObjectThrowsWhenAttributeIsObject()
         {
-            DecodeObject("{tagName:root,bad:{}}");
+            Assert.Throws<JsonMLException>(() => DecodeObject("{tagName:root,bad:{}}"));
         }
 
-        [Test, ExpectedException(typeof(JsonMLException))]
+        [Test]
         public void DecodeObjectThrowsWhenAttributeIsArray()
         {
-            DecodeObject("{tagName:root,bad:[]}");
+            Assert.Throws<JsonMLException>(() => DecodeObject("{tagName:root,bad:[]}"));
         }
 
         [Test]
@@ -631,41 +631,41 @@ namespace Jayrock.JsonML
             Assert.AreEqual("<root />", DecodeObject("{tagName:root,tagName:root}"));
         }
 
-        [Test, ExpectedException(typeof(JsonMLException))]
+        [Test]
         public void DecodeObjectThrowsWhenTagNameIsRedefined()
         {
-            DecodeObject("{tagName:root,tagName:ROOT}");
+            Assert.Throws<JsonMLException>(() => DecodeObject("{tagName:root,tagName:ROOT}"));
         }
 
         [Test]
         public void DecodeObjectOnSingleElementWithAttributesAndContent()
         {
-            Assert.AreEqual("<root a='1' b='2'>content</root>", 
+            Assert.AreEqual("<root a='1' b='2'>content</root>",
                 DecodeObject("{tagName:root,a:1,b:2,childNodes:[content]}"));
         }
 
-        [Test, ExpectedException(typeof(JsonMLException))]
+        [Test]
         public void DecodeObjectThrowsWhenChildNodesIsObject()
         {
-            DecodeObject("{tagName:root,childNodes:{}}");
+            Assert.Throws<JsonMLException>(() => DecodeObject("{tagName:root,childNodes:{}}"));
         }
 
-        [Test, ExpectedException(typeof(JsonMLException))]
+        [Test]
         public void DecodeObjectThrowsWhenChildNodesIsString()
         {
-            DecodeObject("{tagName:root,childNodes:foo}");
+            Assert.Throws<JsonMLException>(() => DecodeObject("{tagName:root,childNodes:foo}"));
         }
 
-        [Test, ExpectedException(typeof(JsonMLException))]
+        [Test]
         public void DecodeObjectThrowsWhenChildNodesIsBoolean()
         {
-            DecodeObject("{tagName:root,childNodes:true}");
+            Assert.Throws<JsonMLException>(() => DecodeObject("{tagName:root,childNodes:true}"));
         }
 
-        [Test, ExpectedException(typeof(JsonMLException))]
+        [Test]
         public void DecodeObjectThrowsWhenChildNodesIsNumber()
         {
-            DecodeObject("{tagName:root,childNodes:123}");
+            Assert.Throws<JsonMLException>(() => DecodeObject("{tagName:root,childNodes:123}"));
         }
 
         [Test]
@@ -679,45 +679,45 @@ namespace Jayrock.JsonML
         {
             Assert.AreEqual("<root><child1 /><child2 /><child3 /></root>",
                 DecodeObject(@"{
-                    tagName: root,
-                    childNodes: [
-                        {tagName:child1},
-                        {tagName:child2},
-                        {tagName:child3}
-                    ]
-                }"));
+            tagName: root,
+            childNodes: [
+                {tagName:child1},
+                {tagName:child2},
+                {tagName:child3}
+            ]
+        }"));
         }
 
         [Test]
         public void DecodeObjectOnInterspersedElementsAndText()
         {
-            Assert.AreEqual("<root>text1<e1 />text2<e2 />text3</root>", 
+            Assert.AreEqual("<root>text1<e1 />text2<e2 />text3</root>",
                 DecodeObject(@"{
-                    tagName: root,
-                    childNodes: [
-                        text1,
-                        {tagName:e1},
-                        text2,
-                        {tagName:e2},
-                        text3
-                    ]
-                }"));
+            tagName: root,
+            childNodes: [
+                text1,
+                {tagName:e1},
+                text2,
+                {tagName:e2},
+                text3
+            ]
+        }"));
         }
 
         [Test]
         public void DecodeObjectSkipsNullsInsideChildNodes()
         {
-            Assert.AreEqual("<root>text1<e1 /><e2 /></root>", 
+            Assert.AreEqual("<root>text1<e1 /><e2 /></root>",
                 DecodeObject(@"{
-                    tagName: root,
-                    childNodes: [
-                        text1,
-                        {tagName:e1},
-                        null,
-                        {tagName:e2},
-                        null
-                    ]
-                }"));
+            tagName: root,
+            childNodes: [
+                text1,
+                {tagName:e1},
+                null,
+                {tagName:e2},
+                null
+            ]
+        }"));
         }
 
         [Test]
@@ -725,14 +725,14 @@ namespace Jayrock.JsonML
         {
             Assert.AreEqual("<root>stringtruefalse123.456</root>",
                 DecodeObject(@"{
-                    tagName:root,
-                    childNodes:[
-                        string,
-                        true,
-                        false,
-                        123.456
-                    ]
-                }"));
+            tagName:root,
+            childNodes:[
+                string,
+                true,
+                false,
+                123.456
+            ]
+        }"));
         }
 
         [Test]
@@ -740,12 +740,12 @@ namespace Jayrock.JsonML
         {
             Assert.AreEqual("<root a1='1' a2='2'>123.456foo<child1 />truefalsefalsetrue<child2 />bar456.789</root>",
             DecodeObject(@"{
-                tagName:root,
-                childNodes:[123.456,foo,null,{tagName:child1},true,false],
-                a1: 1,
-                childNodes:[false,true,{tagName:child2},null,bar,456.789],
-                a2: 2
-            }"));
+        tagName:root,
+        childNodes:[123.456,foo,null,{tagName:child1},true,false],
+        a1: 1,
+        childNodes:[false,true,{tagName:child2},null,bar,456.789],
+        a2: 2
+    }"));
         }
 
         [Test]
@@ -756,37 +756,37 @@ namespace Jayrock.JsonML
                 "<c san='3'>The content of c</c><d>do</d><e />" +
                 "<d>re</d><f /><d>mi</d></a>",
                 DecodeObject(@"{
-                    tagName: a,
-                    ichi: 1,
-                    ni: 2,
-                    childNodes: [ {
-                            tagName: b,
-                            childNodes: [ 'The content of b' ] 
-                        },
-                        ' and ', {
-                            tagName: c,
-                            san: 3,
-                            childNodes: [ 'The content of c' ] 
-                        },
-                        { tagName: d, childNodes: [ do ] },
-                        { tagName: e },
-                        { tagName: d, childNodes: [ re ] },
-                        { tagName: f },
-                        { tagName: d, childNodes: [ mi ] }
-                    ]
-                }"));
+            tagName: a,
+            ichi: 1,
+            ni: 2,
+            childNodes: [ {
+                    tagName: b,
+                    childNodes: [ 'The content of b' ] 
+                },
+                ' and ', {
+                    tagName: c,
+                    san: 3,
+                    childNodes: [ 'The content of c' ] 
+                },
+                { tagName: d, childNodes: [ do ] },
+                { tagName: e },
+                { tagName: d, childNodes: [ re ] },
+                { tagName: f },
+                { tagName: d, childNodes: [ mi ] }
+            ]
+        }"));
         }
 
-        [Test, ExpectedException(typeof(JsonMLException))]
+        [Test]
         public void DecodeObjectThrowsWhenMissingTagName()
         {
-            DecodeObject("{}");
+            Assert.Throws<JsonMLException>(() => DecodeObject("{}"));
         }
 
-        [Test, ExpectedException(typeof(JsonMLException))]
+        [Test]
         public void DecodeObjectThrowsWhenTagNameIsEmpty()
         {
-            DecodeObject("{tagName:''}");
+            Assert.Throws<JsonMLException>(() => DecodeObject("{tagName:''}"));
         }
 
         [Test]

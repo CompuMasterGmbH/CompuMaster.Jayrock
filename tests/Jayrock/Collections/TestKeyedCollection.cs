@@ -34,10 +34,10 @@ namespace Jayrock.Collections
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestKeyedCollection
     {
-        [ Test ]
+        [Test]
         public void AddValue()
         {
             NamedValueCollection values = new NamedValueCollection();
@@ -47,14 +47,14 @@ namespace Jayrock.Collections
             Assert.AreSame(value, values[value.Name]);
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void CannotAddWithNullKey()
         {
             NamedValueCollection values = new NamedValueCollection();
-            values.Add(new NamedValue(null, new object()));
+            Assert.Throws<ArgumentException>(() => values.Add(new NamedValue(null, new object())));
         }
 
-        [ Test ]
+        [Test]
         public void ValueContainment()
         {
             NamedValueCollection values = new NamedValueCollection();
@@ -64,14 +64,14 @@ namespace Jayrock.Collections
             Assert.IsTrue(values.Contains(value.Name));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotUseNullKeyForContainmentTest()
         {
             NamedValueCollection values = new NamedValueCollection();
-            values.Contains(null);
+            Assert.Throws<ArgumentNullException>(() => values.Contains(null));
         }
-        
-        [ Test ]
+
+        [Test]
         public void RemoveValue()
         {
             NamedValueCollection values = new NamedValueCollection();
@@ -83,14 +83,14 @@ namespace Jayrock.Collections
             Assert.AreEqual(0, values.Count);
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotRemoveNullKey()
         {
             NamedValueCollection values = new NamedValueCollection();
-            values.Remove(null);
+            Assert.Throws<ArgumentNullException>(() => values.Remove(null));
         }
 
-        [ Test ]
+        [Test]
         public void RemoveByIndex()
         {
             NamedValueCollection values = new NamedValueCollection();
@@ -103,7 +103,7 @@ namespace Jayrock.Collections
             Assert.AreEqual(0, values.Count);
         }
 
-        [ Test ]
+        [Test]
         public void ResetValueByIndex()
         {
             NamedValueCollection values = new NamedValueCollection();
@@ -112,13 +112,13 @@ namespace Jayrock.Collections
             Assert.IsTrue(values.Contains(value.Name));
             Assert.AreEqual(1, values.Count);
             NamedValue newValue = new NamedValue("Bar", new object());
-            ((IList) values)[0] = newValue;
+            ((IList)values)[0] = newValue;
             Assert.AreEqual(1, values.Count);
             Assert.IsFalse(values.Contains(value.Name));
             Assert.IsTrue(values.Contains(newValue.Name));
         }
 
-        [ Test ]
+        [Test]
         public void Clear()
         {
             NamedValueCollection values = new NamedValueCollection();
@@ -131,7 +131,7 @@ namespace Jayrock.Collections
             Assert.IsFalse(values.Contains(value.Name));
         }
 
-        [ Test ]
+        [Test]
         public void GetKeys()
         {
             NamedValueCollection values = new NamedValueCollection();
@@ -143,7 +143,7 @@ namespace Jayrock.Collections
             Assert.AreEqual(names, keys);
         }
 
-        [ Test ]
+        [Test]
         public void Enumeration()
         {
             NamedValueCollection values = new NamedValueCollection();
@@ -161,48 +161,42 @@ namespace Jayrock.Collections
             Assert.IsFalse(e.MoveNext());
         }
 
-        [ Test ]
+        [Test]
         public void RemoveNonExistingKey()
         {
             NamedValueCollection values = new NamedValueCollection();
             Assert.IsFalse(values.Remove("something"));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotSendNullArrayToBaseListKeysByIndex()
         {
-            (new NamedValueCollection()).ListKeysTo(null);
+            Assert.Throws<ArgumentNullException>(() => (new NamedValueCollection()).ListKeysTo(null));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void CannotSendMultiDimensionalArrayToBaseListKeysByIndex()
         {
-            (new NamedValueCollection()).ListKeysTo(new string[0, 0]);
+            Assert.Throws<ArgumentException>(() => (new NamedValueCollection()).ListKeysTo(new string[0, 0]));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotIndexByNullKey()
         {
-            /* object unused = */ new NamedValueCollection()[null] /* [1] */ .ToString();
-
-            //
-            // [1] The ToString call is unnecessary but it is added here
-            //     instead of taking the indexed value into an unused 
-            //     variable to avoid the CS0219 warning issue from Mono's 
-            //     C# compiler. See: 
-            //     http://bugzilla.novell.com/show_bug.cgi?id=316137
+            Assert.Throws<ArgumentNullException>(() => new NamedValueCollection()[null].ToString());
         }
 
-        [ Test ]
+        [Test]
         public void AddsNoSerializableState()
         {
             MemberInfo[] members = FormatterServices.GetSerializableMembers(typeof(KeyedCollection));
             foreach (MemberInfo member in members)
-            Assert.AreNotEqual(typeof(KeyedCollection), member.DeclaringType);
+                Assert.AreNotEqual(typeof(KeyedCollection), member.DeclaringType);
         }
 
 #if NETFRAMEWORK
-        [Test ]
+        //not supported at .NET any more: BinaryFormatter: "BinaryFormatter serialization is obsolete and should not be used. See https://aka.ms/binaryformatter for more information."
+        [Test]
         public void MappingIsRestoredUponDeserialization()
         {
             NamedValueCollection collection = new NamedValueCollection();
@@ -212,16 +206,16 @@ namespace Jayrock.Collections
             MemoryStream ms = new MemoryStream();
             formatter.Serialize(ms, collection);
             ms.Position = 0; // rewind
-            collection = (NamedValueCollection) formatter.Deserialize(ms);
+            collection = (NamedValueCollection)formatter.Deserialize(ms);
             Assert.IsTrue(collection.OnDeserializationCallbackCalled);
             NamedValue entry = collection["foo"];
             Assert.IsNotNull(entry);
-            Assert.AreEqual("foo", entry.Name); 
+            Assert.AreEqual("foo", entry.Name);
             Assert.AreEqual("bar", entry.Value);
         }
 #endif
 
-        [ Serializable ]
+        [Serializable]
         private sealed class NamedValue
         {
             public string Name;
@@ -233,22 +227,22 @@ namespace Jayrock.Collections
                 Value = value;
             }
         }
-        
-        [ Serializable ]
+
+        [Serializable]
         private sealed class NamedValueCollection : KeyedCollection
         {
             public bool OnDeserializationCallbackCalled;
 
             public NamedValue this[string key]
             {
-                get { return (NamedValue) GetByKey(key); }
+                get { return (NamedValue)GetByKey(key); }
             }
 
             public void Add(NamedValue value)
             {
                 base.Add(value);
             }
-            
+
             public bool Contains(string key)
             {
                 return base.Contains(key);
@@ -273,7 +267,7 @@ namespace Jayrock.Collections
 
             protected override object KeyFromValue(object value)
             {
-                return ((NamedValue) value).Name;
+                return ((NamedValue)value).Name;
             }
 
             protected override void OnDeserializationCallback(object sender)

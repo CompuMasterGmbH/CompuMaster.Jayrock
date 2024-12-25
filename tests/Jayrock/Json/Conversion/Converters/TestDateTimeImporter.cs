@@ -30,106 +30,106 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestDateTimeImporter
     {
-        [ Test ]
+        [Test]
         public void ImportNull()
         {
             Assert.IsNull(Import("null"));
         }
 
-        [ Test ]
+        [Test]
         public void ImportString()
         {
             DateTime time = new DateTime(1999, 12, 31, 23, 30, 59, 999);
             AssertImport(time, "\"1999-12-31T23:30:59.9990000" + Tzd(time) + "\"");
         }
 
-        [ Test ]
+        [Test]
         public void ImportNumber()
         {
             AssertImport(new DateTime(2006, 7, 17, 10, 56, 56), "1153133816", true);
         }
 
-        [ Test ]
+        [Test]
         public void ImportNegativeNumber()
         {
             AssertImport(new DateTime(1098, 7, 6, 5, 43, 21), "-27501531399", true);
         }
 
-        [ Test ]
+        [Test]
         public void ImportFractionalNumber()
         {
             AssertImport(new DateTime(2006, 7, 17, 10, 56, 56, 456), "1153133816.456", true);
         }
 
-        [ Test ]
+        [Test]
         public void ImportNegativeFractionalNumber()
         {
             AssertImport(new DateTime(1098, 7, 6, 5, 43, 21, 234), "-27501531398.766", true);
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportTrue()
         {
-            Import("true");
+            Assert.Throws<JsonException>(() => Import("true"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportFalse()
         {
-            Import("false");
+            Assert.Throws<JsonException>(() => Import("false"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportArray()
         {
-            Import("[]");
+            Assert.Throws<JsonException>(() => Import("[]"));
         }
-        
-        [ Test, ExpectedException(typeof(JsonException)) ]
+
+        [Test]
         public void CannotImportObject()
         {
-            Import("{}");
+            Assert.Throws<JsonException>(() => Import("{}"));
         }
-        
-        [ Test, ExpectedException(typeof(JsonException)) ]
+
+        [Test]
         public void CannotImportOutOfRangeNumber()
         {
-            Import(new string('9', 309));
+            Assert.Throws<JsonException>(() => Import(new string('9', 309)));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportBadIsoDate()
         {
-            Import("'1999-12=31T23:30:59'");
+            Assert.Throws<JsonException>(() => Import("'1999-12=31T23:30:59'"));
         }
 
-        [ Test ]
+        [Test]
         public void ImportMicrosoftAjaxFormat()
         {
             AssertImport(new DateTime(2006, 7, 17, 10, 56, 56, 456), @"'\/Date(1153133816456)\/'", true);
             AssertImport(new DateTime(1098, 7, 06, 05, 43, 21, 234), @"'\/Date(-27501531398766)\/'", true);
         }
 
-        [ Test ]
+        [Test]
         public void ImportMicrosoftAjaxFormatWithUpperCase()
         {
             AssertImport(new DateTime(2006, 7, 17, 10, 56, 56, 456), @"'\/DATE(1153133816456)\/'", true);
             AssertImport(new DateTime(1098, 7, 06, 05, 43, 21, 234), @"'\/DATE(-27501531398766)\/'", true);
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportBadMicrosoftAjaxFormat()
         {
-            Import(@"'/Date[1285511729000]/'");
+            Assert.Throws<JsonException>(() => Import(@"'/Date[1285511729000]/'"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportMicrosoftAjaxFormatCausingOverflow()
         {
-            Import(@"'\/Date(9999999999999999999)\/'");
+            Assert.Throws<JsonException>(() => Import(@"'\/Date(9999999999999999999)\/'"));
         }
 
         [Test(Description = @"http://code.google.com/p/jayrock/issues/detail?id=54")]
@@ -147,10 +147,10 @@ namespace Jayrock.Json.Conversion.Converters
         private static void AssertImport(DateTime expected, string input, bool expectingUTC)
         {
             object o = Import(input);
-            Assert.IsInstanceOfType(typeof(DateTime), o);
+            Assert.IsInstanceOf<DateTime>(o);
             if (expectingUTC)
-                Assert.AreEqual(expected, ((DateTime) o).ToUniversalTime());
-            else 
+                Assert.AreEqual(expected, ((DateTime)o).ToUniversalTime());
+            else
                 Assert.AreEqual(expected, o);
         }
 
@@ -161,7 +161,7 @@ namespace Jayrock.Json.Conversion.Converters
             object value = context.Import(typeof(DateTime), reader);
             Assert.IsTrue(reader.EOF, "Reader must be at EOF.");
             if (value != null)
-                Assert.IsInstanceOfType(typeof(DateTime), value);
+                Assert.IsInstanceOf<DateTime>(value);
             return value;
         }
 
@@ -169,8 +169,8 @@ namespace Jayrock.Json.Conversion.Converters
         {
             TimeSpan offset = TimeZone.CurrentTimeZone.GetUtcOffset(localTime);
             string offsetString = offset.ToString();
-            return offset.Ticks < 0 ? 
-                   (offsetString.Substring(0, 6)) : 
+            return offset.Ticks < 0 ?
+                   (offsetString.Substring(0, 6)) :
                    ("+" + offsetString.Substring(0, 5));
         }
     }

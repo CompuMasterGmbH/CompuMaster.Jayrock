@@ -32,66 +32,66 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestArrayImporter
     {
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void ElementTypeMustBeArray()
         {
-            new ArrayImporter(typeof(object));
+            Assert.Throws<ArgumentException>(() => new ArrayImporter(typeof(object)));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void ElementTypeMustBeOneDimensionArray()
         {
-            new ArrayImporter(typeof(object[,]));
+            Assert.Throws<ArgumentException>(() => new ArrayImporter(typeof(object[,])));
         }
 
-        [ Test ]
+        [Test]
         public void ImportNull()
         {
             ArrayImporter importer = new ArrayImporter();
             Assert.IsNull(importer.Import(new ImportContext(), CreateReader("null")));
         }
 
-        [ Test ]
+        [Test]
         public void ImportEmptyArray()
         {
             AssertImport(new int[0], "[]");
         }
 
-        [ Test ]
+        [Test]
         public void ImportInt32Array()
         {
             AssertImport(new int[] { 123, 789, 456 }, "[ 123, 789, 456 ]");
         }
-        
-        [ Test ]
+
+        [Test]
         public void ImportStringArray()
         {
-            AssertImport(new string[] { "see no evil", "hear no evil", "speak no evil" }, 
+            AssertImport(new string[] { "see no evil", "hear no evil", "speak no evil" },
                 "[ 'see no evil', 'hear no evil', 'speak no evil' ]");
         }
 
-        [ Test ]
+        [Test]
         public void ImportDateArray()
         {
-            AssertImport(new DateTime[] { new DateTime(1999, 12, 31), new DateTime(2000, 1, 1),  }, "[ '1999-12-31', '2000-01-01' ]");
+            AssertImport(new DateTime[] { new DateTime(1999, 12, 31), new DateTime(2000, 1, 1), }, "[ '1999-12-31', '2000-01-01' ]");
         }
-        
-        [ Test ]
+
+        [Test]
         public void ImportStringAsArray()
         {
             AssertImport(new string[] { "foobar" }, "'foobar'");
         }
 
-        [ Test ]
+        [Test]
         public void ImportNumberAsArray()
         {
             AssertImport(new int[] { 123 }, "123");
         }
 
-        [ Test ]
+        [Test]
         public void ImportBooleanAsArray()
         {
             AssertImport(new bool[] { true }, "true");
@@ -103,14 +103,14 @@ namespace Jayrock.Json.Conversion.Converters
         private static void AssertImport(Array expected, string s)
         {
             JsonReader reader = CreateReader(s);
-            
-            ImportContext context = new ImportContext();            
+
+            ImportContext context = new ImportContext();
             object o = context.Import(expected.GetType(), reader);
             Assert.IsTrue(reader.EOF);
 
             if (expected == null)
                 Assert.IsNull(o);
-            
+
             Assert.AreEqual(expected, o);
         }
 

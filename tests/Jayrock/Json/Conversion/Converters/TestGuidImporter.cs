@@ -30,51 +30,51 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestGuidImporter
     {
-        [ Test ]
+        [Test]
         public void ImportString()
         {
             AssertImport(new Guid("89158d71-cf6a-4f3c-b180-063b8910f658"), "'89158d71-cf6a-4f3c-b180-063b8910f658'");
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportBadlyFormattedGuidString()
         {
-            AssertImport(null, "'foo'");
+            Assert.Throws<JsonException>(() => AssertImport(null, "'foo'"));
         }
 
-        [ Test ]
+        [Test]
         public void ImportNull()
         {
             AssertImport(null, "null");
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportNumber()
         {
-            AssertImport(null, "123");
+            Assert.Throws<JsonException>(() => AssertImport(null, "123"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportBoolean()
         {
-            AssertImport(null, "true");
+            Assert.Throws<JsonException>(() => AssertImport(null, "true"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportArray()
         {
-            AssertImport(null, "[]");
+            Assert.Throws<JsonException>(() => AssertImport(null, "[]"));
         }
-        
-        [ Test, ExpectedException(typeof(JsonException)) ]
+
+        [Test]
         public void CannotImportObject()
         {
-            AssertImport(null, "{}");
+            Assert.Throws<JsonException>(() => AssertImport(null, "{}"));
         }
-        
+
         private static void AssertImport(object expected, string input)
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(input));
@@ -82,8 +82,10 @@ namespace Jayrock.Json.Conversion.Converters
             object o = importer.Import(new ImportContext(), reader);
             Assert.IsTrue(reader.EOF, "Reader must be at EOF.");
             if (expected != null)
-                Assert.IsInstanceOfType(typeof(Guid), o);
+                Assert.IsInstanceOf<Guid>(o);
             Assert.AreEqual(expected, o);
         }
     }
 }
+
+
