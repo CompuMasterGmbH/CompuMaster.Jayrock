@@ -30,7 +30,7 @@ namespace Jayrock.JsonRpc
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonRpcMethodAttribute
     {
         [Test]
@@ -44,12 +44,12 @@ namespace Jayrock.JsonRpc
             IMethodReflector reflector = attribute;
             MethodBuilder mb = scb.DefineMethod();
             reflector.Build(mb);
-            Assert.AreEqual(0, mb.Parameters.Count);
+            Assert.That(mb.Parameters.Count, Is.EqualTo(0));
         }
 
         private sealed class ServiceWithStaticMethod
         {
-            public static void StaticMethod(IService service) {}
+            public static void StaticMethod(IService service) { }
         }
     }
 }

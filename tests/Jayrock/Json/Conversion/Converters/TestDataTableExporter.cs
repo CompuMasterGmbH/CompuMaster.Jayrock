@@ -30,22 +30,22 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestDataTableExporter
     {
-        [ Test ]
+        [Test]
         public void Superclass()
         {
-            Assert.IsInstanceOfType(typeof(ExporterBase), new DataTableExporter());
+            Assert.That(new DataTableExporter(), Is.InstanceOf<ExporterBase>());
         }
 
-        [ Test ]
+        [Test]
         public void InputTypeIsDataTable()
         {
-            Assert.AreSame(typeof(DataTable), (new DataTableExporter()).InputType);
+            Assert.That(new DataTableExporter().InputType, Is.SameAs(typeof(DataTable)));
         }
 
-        [ Test ]
+        [Test]
         public void TableExportedViaDataView()
         {
             DataTable table = new DataTable();
@@ -55,22 +55,19 @@ namespace Jayrock.Json.Conversion.Converters
             context.Register(exporter);
             context.Export(table, new JsonRecorder());
 
-            Assert.AreSame(table.DefaultView, exporter.LastExported);
+            Assert.That(exporter.LastExported, Is.SameAs(table.DefaultView));
         }
 
         private sealed class TestDataViewExporter : IExporter
         {
             public DataView LastExported;
 
-            public Type InputType
-            {
-                get { return typeof(DataView); }
-            }
+            public Type InputType => typeof(DataView);
 
             public void Export(ExportContext context, object value, JsonWriter writer)
             {
-                LastExported = (DataView) value;
-                (new DataViewExporter(InputType)).Export(context, value, writer);
+                LastExported = (DataView)value;
+                new DataViewExporter(InputType).Export(context, value, writer);
             }
         }
     }

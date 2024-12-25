@@ -29,31 +29,31 @@ namespace Jayrock.Json
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonReader
     {
         private bool _disposed;
-        
-        [ SetUp ]
+
+        [SetUp]
         public void Init()
         {
             _disposed = false;
         }
-        
-        [ Test ]
+
+        [Test]
         public void ClosingRaisesDisposed()
         {
-            JsonReader reader = new StubJsonReader();   
+            JsonReader reader = new StubJsonReader();
             reader.Disposed += new EventHandler(Reader_Disposed);
-            Assert.IsFalse(_disposed);
+            Assert.That(_disposed, Is.False);
             reader.Close();
-            Assert.IsTrue(_disposed);
+            Assert.That(_disposed, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void CloseWithoutDisposedHandlerHarmless()
         {
-            JsonReader reader = new StubJsonReader();   
+            JsonReader reader = new StubJsonReader();
             reader.Close();
         }
 
@@ -62,7 +62,7 @@ namespace Jayrock.Json
             _disposed = true;
         }
 
-        private sealed class StubJsonReader : JsonReader 
+        private sealed class StubJsonReader : JsonReader
         {
             public override bool Read()
             {

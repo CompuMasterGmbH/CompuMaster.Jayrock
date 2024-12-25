@@ -38,7 +38,8 @@ namespace Jayrock.Tests
         private Type _targetType;
 
         protected TestUtilityBase() :
-            this(null) {}
+            this(null)
+        { }
 
         protected TestUtilityBase(Type targetType)
         {
@@ -49,8 +50,8 @@ namespace Jayrock.Tests
         {
             get
             {
-                return _targetType != null 
-                     ? _targetType 
+                return _targetType != null
+                     ? _targetType
                      : (_targetType = InferTargetType());
             }
         }
@@ -58,17 +59,17 @@ namespace Jayrock.Tests
         private Type InferTargetType()
         {
             Type thisType = GetType();
-            
+
             string name = thisType.Name;
             if (!CultureInfo.InvariantCulture.CompareInfo.IsPrefix(name, "Test", CompareOptions.Ordinal))
                 throw new Exception(string.Format("{0} is not an appropriate target for this base class.", name));
-            
+
             string suffix = name.Substring(4);
             if (suffix.Length == 0)
                 throw new Exception(string.Format("{0} is not an appropriate target for this base class.", name));
-            
+
             string targetTypeName = thisType.Namespace + "." + suffix;
-            
+
             Assembly[] assemblies = new Assembly[] { typeof(JsonText).Assembly, typeof(IService).Assembly };
             foreach (Assembly assembly in assemblies)
             {
@@ -80,7 +81,7 @@ namespace Jayrock.Tests
             throw new Exception(string.Format("{0} not found.", targetTypeName));
         }
 
-        [ Test ]
+        [Test]
         public void CannotBeCreated()
         {
             try
@@ -90,7 +91,7 @@ namespace Jayrock.Tests
             }
             catch (TargetInvocationException e)
             {
-                Assert.IsTrue(e.InnerException is NotSupportedException);
+                Assert.That(e.InnerException, Is.InstanceOf<NotSupportedException>());
             }
         }
     }
