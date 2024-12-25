@@ -30,19 +30,19 @@ namespace Jayrock.Json
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestObjectSurrogateConstructorBase
     {
-        [ Test ]
+        [Test]
         public void ImplementsIObjectSurrogateConstructor()
         {
-            Assert.IsInstanceOfType(typeof(IObjectSurrogateConstructor), new Surrogate(new object()));
+            Assert.That(new Surrogate(new object()), Is.InstanceOf<IObjectSurrogateConstructor>());
         }
 
         [Test]
         public void ImplementsINonObjectMemberImporter()
         {
-            Assert.IsInstanceOfType(typeof(INonObjectMemberImporter), new Surrogate(new object()));
+            Assert.That(new Surrogate(new object()), Is.InstanceOf<INonObjectMemberImporter>());
         }
 
         [Test]
@@ -53,8 +53,8 @@ namespace Jayrock.Json
             surrogate.Import(context, "foo", JsonText.CreateReader("bar"));
             JsonReader tail = surrogate.CreateObject(context).TailReader;
             tail.ReadToken(JsonTokenClass.Object);
-            Assert.AreEqual("foo", tail.ReadMember());
-            Assert.AreEqual("bar", tail.ReadString());
+            Assert.That(tail.ReadMember(), Is.EqualTo("foo"));
+            Assert.That(tail.ReadString(), Is.EqualTo("bar"));
             tail.ReadToken(JsonTokenClass.EndObject);
         }
 
@@ -65,30 +65,30 @@ namespace Jayrock.Json
             Surrogate surrogate = new Surrogate(obj);
             ImportContext context = new ImportContext();
             ObjectConstructionResult result = surrogate.CreateObject(context);
-            Assert.AreSame(obj, result.Object);
+            Assert.That(result.Object, Is.SameAs(obj));
             JsonReader tail = result.TailReader;
             tail.ReadToken(JsonTokenClass.Object);
             tail.ReadToken(JsonTokenClass.EndObject);
         }
 
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void CannotImportNonObjectMemberWithNullContext()
         {
             Surrogate surrogate = new Surrogate(new object());
-            surrogate.Import(null, "foo", StockJsonBuffers.EmptyObject.CreateReader());
+            Assert.Throws<ArgumentNullException>(() => surrogate.Import(null, "foo", StockJsonBuffers.EmptyObject.CreateReader()));
         }
 
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void CannotImportNonObjectMemberWithNullReader()
         {
             Surrogate surrogate = new Surrogate(new object());
-            surrogate.Import(new ImportContext(), "foo", null);
+            Assert.Throws<ArgumentNullException>(() => surrogate.Import(new ImportContext(), "foo", null));
         }
 
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void CannotCreateObjectWithNullContext()
         {
-            new Surrogate(new object()).CreateObject(null);
+            Assert.Throws<ArgumentNullException>(() => new Surrogate(new object()).CreateObject(null));
         }
 
         class Surrogate : ObjectSurrogateConstructorBase
@@ -107,3 +107,7 @@ namespace Jayrock.Json
         }
     }
 }
+
+
+
+

@@ -31,61 +31,64 @@ namespace Jayrock.Reflection
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestReflector : TestUtilityBase
     {
-        #if !NET_1_0 && !NET_1_1
+#if !NET_1_0 && !NET_1_1
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotIsConstructionOfNullableWithNullType()
         {
-            Reflector.IsConstructionOfNullable(null);
+            Assert.Throws<ArgumentNullException>(() => Reflector.IsConstructionOfNullable(null));
         }
 
-        [ Test ]
+        [Test]
         public void IsConstructionOfNullable()
         {
-            Assert.IsFalse(Reflector.IsConstructionOfNullable(typeof(int)));
-            Assert.IsFalse(Reflector.IsConstructionOfNullable(typeof(System.Collections.Generic.IList<int>)));
-            Assert.IsFalse(Reflector.IsConstructionOfNullable(typeof(Nullable<>)));
-            Assert.IsTrue(Reflector.IsConstructionOfNullable(typeof(int?)));
+            Assert.That(Reflector.IsConstructionOfNullable(typeof(int)), Is.False);
+            Assert.That(Reflector.IsConstructionOfNullable(typeof(System.Collections.Generic.IList<int>)), Is.False);
+            Assert.That(Reflector.IsConstructionOfNullable(typeof(Nullable<>)), Is.False);
+            Assert.That(Reflector.IsConstructionOfNullable(typeof(int?)), Is.True);
         }
 
-        #endif // !NET_1_0 && !NET_1_1
-        
-        #if !NET_1_0 && !NET_1_1 && !NET_2_0 
-        
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+#endif // !NET_1_0 && !NET_1_1
+
+#if !NET_1_0 && !NET_1_1 && !NET_2_0
+
+        [Test]
         public void CannotIsTupleFamilyWithNullType()
         {
-            Reflector.IsTupleFamily(null);
+            Assert.Throws<ArgumentNullException>(() => Reflector.IsTupleFamily(null));
         }
 
-        [ Test ]
+        [Test]
         public void IsTupleFamilyOnTupleGenericTypeDefinition()
         {
-            Assert.IsFalse(Reflector.IsTupleFamily(typeof(Tuple<>)));
+            Assert.That(Reflector.IsTupleFamily(typeof(Tuple<>)), Is.False);
         }
 
-        [ Test ]
+        [Test]
         public void IsTupleFamilyOnNonGenericType()
         {
-            Assert.IsFalse(Reflector.IsTupleFamily(typeof(object)));
+            Assert.That(Reflector.IsTupleFamily(typeof(object)), Is.False);
         }
 
-        [ Test ]
+        [Test]
         public void IsTupleFamily()
         {
-            Assert.IsTrue(Reflector.IsTupleFamily(typeof(Tuple<int>)));
-            Assert.IsTrue(Reflector.IsTupleFamily(typeof(Tuple<int, int>)));
-            Assert.IsTrue(Reflector.IsTupleFamily(typeof(Tuple<int, int, int>)));
-            Assert.IsTrue(Reflector.IsTupleFamily(typeof(Tuple<int, int, int, int>)));
-            Assert.IsTrue(Reflector.IsTupleFamily(typeof(Tuple<int, int, int, int, int>)));
-            Assert.IsTrue(Reflector.IsTupleFamily(typeof(Tuple<int, int, int, int, int, int>)));
-            Assert.IsTrue(Reflector.IsTupleFamily(typeof(Tuple<int, int, int, int, int, int, int>)));
-            Assert.IsTrue(Reflector.IsTupleFamily(typeof(Tuple<int, int, int, int, int, int, int, int>)));
+            Assert.That(Reflector.IsTupleFamily(typeof(Tuple<int>)), Is.True);
+            Assert.That(Reflector.IsTupleFamily(typeof(Tuple<int, int>)), Is.True);
+            Assert.That(Reflector.IsTupleFamily(typeof(Tuple<int, int, int>)), Is.True);
+            Assert.That(Reflector.IsTupleFamily(typeof(Tuple<int, int, int, int>)), Is.True);
+            Assert.That(Reflector.IsTupleFamily(typeof(Tuple<int, int, int, int, int>)), Is.True);
+            Assert.That(Reflector.IsTupleFamily(typeof(Tuple<int, int, int, int, int, int>)), Is.True);
+            Assert.That(Reflector.IsTupleFamily(typeof(Tuple<int, int, int, int, int, int, int>)), Is.True);
+            Assert.That(Reflector.IsTupleFamily(typeof(Tuple<int, int, int, int, int, int, int, int>)), Is.True);
         }
 
-        #endif // !NET_1_0 && !NET_1_1 && !NET_2_0
+#endif // !NET_1_0 && !NET_1_1 && !NET_2_0
     }
 }
+
+
+

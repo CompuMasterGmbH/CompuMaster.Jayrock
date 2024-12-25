@@ -33,10 +33,10 @@ namespace Jayrock.Services
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestMethod
     {
-        [ Test ]
+        [Test]
         public void FailedMethodYieldsInvocationException()
         {
             try
@@ -47,35 +47,35 @@ namespace Jayrock.Services
             }
             catch (TargetMethodException e)
             {
-                Assert.IsTrue(e.InnerException.GetType() == typeof(ApplicationException), "Unexpected inner exception ({0}).", e.InnerException.GetType().FullName);
+                Assert.That(e.InnerException.GetType(), Is.EqualTo(typeof(ApplicationException)), $"Unexpected inner exception ({e.InnerException.GetType().FullName}).");
             }
         }
 
-        [ Test ]
+        [Test]
         public void VariableArguments()
         {
             TestService service = new TestService();
             Method method = service.GetClass().FindMethodByName("VarMethod");
             object[] args = new object[] { 1, 2, 3, 4 };
             object[] invokeArgs = method.TransposeVariableArguments(args);
-            Assert.AreEqual(1, invokeArgs.Length);
-            Assert.AreEqual(args, invokeArgs[0]);
+            Assert.That(invokeArgs.Length, Is.EqualTo(1));
+            Assert.That(invokeArgs[0], Is.EqualTo(args));
         }
 
-        [ Test ]
+        [Test]
         public void FixedAndVariableArguments()
         {
             TestService service = new TestService();
             Method method = service.GetClass().FindMethodByName("FixedVarMethod");
             object[] args = new object[] { 1, 2, 3, 4 };
             args = method.TransposeVariableArguments(args);
-            Assert.AreEqual(3, args.Length);
-            Assert.AreEqual(1, args[0]);
-            Assert.AreEqual(2, args[1]);
-            Assert.AreEqual(new object[] { 3, 4 }, args[2]);
+            Assert.That(args.Length, Is.EqualTo(3));
+            Assert.That(args[0], Is.EqualTo(1));
+            Assert.That(args[1], Is.EqualTo(2));
+            Assert.That(args[2], Is.EqualTo(new object[] { 3, 4 }));
         }
 
-        [ Test ]
+        [Test]
         public void RetransposingYieldsTheSame()
         {
             TestService service = new TestService();
@@ -83,61 +83,61 @@ namespace Jayrock.Services
             object[] args = new object[] { 1, 2, 3, 4 };
             args = method.TransposeVariableArguments(args);
             args = method.TransposeVariableArguments(args);
-            Assert.AreEqual(3, args.Length);
-            Assert.AreEqual(1, args[0]);
-            Assert.AreEqual(2, args[1]);
-            Assert.AreEqual(new object[] { 3, 4 }, args[2]);
+            Assert.That(args.Length, Is.EqualTo(3));
+            Assert.That(args[0], Is.EqualTo(1));
+            Assert.That(args[1], Is.EqualTo(2));
+            Assert.That(args[2], Is.EqualTo(new object[] { 3, 4 }));
         }
 
-        [ Test ]
+        [Test]
         public void Bug8131()
         {
             //
             // Bug #8131: Varargs transposition when last arg is collection
             // http://developer.berlios.de/bugs/?func=detailbug&bug_id=8131&group_id=4638
             //
-            
+
             TestService service = new TestService();
             Method method = service.GetClass().FindMethodByName("VarMethod");
             object[] args = new object[] { 1, 2, new int[] { 3, 4 } };
             args = method.TransposeVariableArguments(args);
-            Assert.AreEqual(1, args.Length);
-            object[] varargs = (object[]) args[0];
-            Assert.AreEqual(3, varargs.Length);
-            Assert.AreEqual(1, varargs[0]);
-            Assert.AreEqual(2, varargs[1]);
-            Assert.AreEqual(new int[] { 3, 4 }, varargs[2]);
+            Assert.That(args.Length, Is.EqualTo(1));
+            object[] varargs = (object[])args[0];
+            Assert.That(varargs.Length, Is.EqualTo(3));
+            Assert.That(varargs[0], Is.EqualTo(1));
+            Assert.That(varargs[1], Is.EqualTo(2));
+            Assert.That(varargs[2], Is.EqualTo(new int[] { 3, 4 }));
         }
-        
-        [ Test ]
+
+        [Test]
         public void Bug8148()
         {
             //
             // Bug #8148: Varargs transposition drops args
             // http://developer.berlios.de/bugs/?func=detailbug&bug_id=8148&group_id=4638
             //
-            
+
             TestService service = new TestService();
             Method method = service.GetClass().FindMethodByName("FixedVarMethod");
-            object[] args = new object[] { 1, 2, 
-                new int[] { 3, 4 }, 
+            object[] args = new object[] { 1, 2,
+                new int[] { 3, 4 },
                 new JsonObject(new string[] { "five", "six" }, new object[] { 5, 6 }) };
             args = method.TransposeVariableArguments(args);
-            Assert.AreEqual(3, args.Length);
-            Assert.AreEqual(1, args[0]);
-            Assert.AreEqual(2, args[1]);
-            object[] varargs = (object[]) args[2];
-            Assert.AreEqual(2, varargs.Length);
-            Assert.AreEqual(new int[] { 3, 4 }, varargs[0]);
-            JsonObject o = (JsonObject) varargs[1];
-            Assert.AreEqual(5, o["five"]);
-            Assert.AreEqual(6, o["six"]);
+            Assert.That(args.Length, Is.EqualTo(3));
+            Assert.That(args[0], Is.EqualTo(1));
+            Assert.That(args[1], Is.EqualTo(2));
+            object[] varargs = (object[])args[2];
+            Assert.That(varargs.Length, Is.EqualTo(2));
+            Assert.That(varargs[0], Is.EqualTo(new int[] { 3, 4 }));
+            JsonObject o = (JsonObject)varargs[1];
+            Assert.That(o["five"], Is.EqualTo(5));
+            Assert.That(o["six"], Is.EqualTo(6));
         }
 
-        [Test, ExpectedException(typeof(SecurityException))]
-        #if MONO
+        [Test]
+#if MONO
         [Ignore("See http://code.google.com/p/jayrock/issues/detail?id=23")]
-        #endif
+#endif
         public void Issue12()
         {
             // Issue #12: PrincipalPermissionAttribute causes InvalidCastException when applied to service methods 
@@ -151,25 +151,25 @@ namespace Jayrock.Services
             }
             catch (TargetMethodException e)
             {
-                Assert.IsNotNull(e.InnerException);
+                Assert.That(e.InnerException, Is.Not.Null);
                 throw e.InnerException;
             }
         }
 
         private sealed class TestService : JsonRpcService
         {
-            [ JsonRpcMethod ]
+            [JsonRpcMethod]
             public void BadMethod()
             {
                 throw new ApplicationException();
             }
 
-            [ JsonRpcMethod ]
+            [JsonRpcMethod]
             public void VarMethod(params object[] args)
             {
             }
 
-            [ JsonRpcMethod ]
+            [JsonRpcMethod]
             public void FixedVarMethod(int a, int b, params object[] args)
             {
             }
@@ -185,4 +185,7 @@ namespace Jayrock.Services
         }
     }
 }
+
+
+
 

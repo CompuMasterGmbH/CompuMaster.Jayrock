@@ -30,63 +30,65 @@ namespace Jayrock.Services
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestServiceClass
     {
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void NullType()
         {
-            JsonRpcServices.GetClassFromType(null);
+            Assert.Throws<ArgumentNullException>(() => JsonRpcServices.GetClassFromType(null));
         }
 
-        [ Test ]
+        [Test]
         public void ServiceNameIsTypeName()
         {
             ServiceClass clazz = JsonRpcServices.GetClassFromType(typeof(EmptyService));
-            Assert.AreEqual("EmptyService", clazz.Name);
+            Assert.That(clazz.Name, Is.EqualTo("EmptyService"));
         }
 
-        [ Test ]
+        [Test]
         public void UntaggedMethodsNotExported()
         {
             ServiceClass clazz = JsonRpcServices.GetClassFromType(typeof(EmptyService));
-            Assert.AreEqual(0, clazz.GetMethods().Length);
+            Assert.That(clazz.GetMethods().Length, Is.EqualTo(0));
         }
 
-        [ Test ]
+        [Test]
         public void TaggedMethodsExported()
         {
             ServiceClass clazz = JsonRpcServices.GetClassFromType(typeof(TestService));
-            Assert.AreEqual(2, clazz.GetMethods().Length);
+            Assert.That(clazz.GetMethods().Length, Is.EqualTo(2));
         }
 
-        [ Test ]
+        [Test]
         public void CustomServiceName()
         {
             ServiceClass clazz = JsonRpcServices.GetClassFromType(typeof(TestService));
-            Assert.AreEqual("MyService", clazz.Name);
+            Assert.That(clazz.Name, Is.EqualTo("MyService"));
         }
 
-        [ Test ]
+        [Test]
         public void MethodLookupIsCaseInsensitive()
         {
             ServiceClass clazz = JsonRpcServices.GetClassFromType(typeof(TestService));
-            Assert.IsNotNull(clazz.FindMethodByName("FOO"));
+            Assert.That(clazz.FindMethodByName("FOO"), Is.Not.Null);
         }
-        
+
         private sealed class EmptyService
         {
         }
 
-        [ JsonRpcService("MyService") ]
+        [JsonRpcService("MyService")]
         private sealed class TestService
         {
-            [ JsonRpcMethod ]
-            public void Foo() {}
+            [JsonRpcMethod]
+            public void Foo() { }
 
-            [ JsonRpcMethod ]
-            public void Bar() {}
+            [JsonRpcMethod]
+            public void Bar() { }
         }
     }
 }
+
+
 

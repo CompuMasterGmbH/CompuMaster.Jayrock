@@ -35,170 +35,173 @@ namespace Jayrock.Json
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonTokenClass
     {
-        [ Test ]
+        [Test]
         public void Names()
         {
-            Assert.AreEqual("Null", JsonTokenClass.Null.Name);
-            Assert.AreEqual("Array", JsonTokenClass.Array.Name);
-            Assert.AreEqual("String", JsonTokenClass.String.Name);
-            Assert.AreEqual("Boolean", JsonTokenClass.Boolean.Name);
-            Assert.AreEqual("Number", JsonTokenClass.Number.Name);
-            Assert.AreEqual("Object", JsonTokenClass.Object.Name);
+            Assert.That(JsonTokenClass.Null.Name, Is.EqualTo("Null"));
+            Assert.That(JsonTokenClass.Array.Name, Is.EqualTo("Array"));
+            Assert.That(JsonTokenClass.String.Name, Is.EqualTo("String"));
+            Assert.That(JsonTokenClass.Boolean.Name, Is.EqualTo("Boolean"));
+            Assert.That(JsonTokenClass.Number.Name, Is.EqualTo("Number"));
+            Assert.That(JsonTokenClass.Object.Name, Is.EqualTo("Object"));
         }
 
-        [ Test ]
+        [Test]
         public void ToStringReturnsName()
         {
             foreach (JsonTokenClass tokenClass in JsonTokenClass.All)
-                Assert.IsTrue(tokenClass.Name.Equals(tokenClass.ToString()));
+                Assert.That(tokenClass.Name, Is.EqualTo(tokenClass.ToString()));
         }
-        
-        [ Test ]
+
+        [Test]
         public void HashCodeFromName()
         {
             foreach (JsonTokenClass tokenClass in JsonTokenClass.All)
-                Assert.IsTrue(tokenClass.GetHashCode().Equals(tokenClass.Name.GetHashCode()));
+                Assert.That(tokenClass.GetHashCode(), Is.EqualTo(tokenClass.Name.GetHashCode()));
         }
 
-        [ Test ]
+        [Test]
         public void AllIsReadOnly()
         {
-            Assert.IsTrue(((IList) JsonTokenClass.All).IsReadOnly);
+            Assert.That(((IList)JsonTokenClass.All).IsReadOnly, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void AllIsFixedSize()
         {
-            Assert.IsTrue(((IList) JsonTokenClass.All).IsFixedSize);
+            Assert.That(((IList)JsonTokenClass.All).IsFixedSize, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void All()
         {
             ArrayList list = new ArrayList();
-            
+
             foreach (FieldInfo field in typeof(JsonTokenClass).GetFields(BindingFlags.Static | BindingFlags.Public))
             {
                 if (typeof(JsonTokenClass).IsAssignableFrom(field.FieldType))
                     list.Add(field.GetValue(null));
             }
-           
-            Assert.AreEqual(list.Count, JsonTokenClass.All.Count);
-            
+
+            Assert.That(JsonTokenClass.All.Count, Is.EqualTo(list.Count));
+
             foreach (JsonTokenClass tokenClass in JsonTokenClass.All)
                 list.Remove(tokenClass);
-            
+
             if (list.Count > 0)
                 Assert.Fail("{0} not found in All collection.", list[0]);
         }
-        
-        [ Test ]
+
+        [Test]
         public void NullToken()
         {
-            Assert.AreEqual(JsonTokenClass.Null, JsonToken.Null().Class);
+            Assert.That(JsonToken.Null().Class, Is.EqualTo(JsonTokenClass.Null));
         }
-        
-        [ Test ]
+
+        [Test]
         public void StringToken()
         {
             JsonToken token = JsonToken.String("hello");
-            Assert.AreEqual(JsonTokenClass.String, token.Class);
-            Assert.AreEqual("hello", token.Text);
+            Assert.That(token.Class, Is.EqualTo(JsonTokenClass.String));
+            Assert.That(token.Text, Is.EqualTo("hello"));
         }
 
-        [ Test ]
+        [Test]
         public void StringTokenNeverNull()
         {
-            Assert.IsNotNull(JsonToken.String(null).Text);
+            Assert.That(JsonToken.String(null).Text, Is.Not.Null);
         }
 
-        [ Test ]
+        [Test]
         public void NumberToken()
         {
             JsonToken token = JsonToken.Number("123");
-            Assert.AreEqual(JsonTokenClass.Number, token.Class);
-            Assert.AreEqual("123", token.Text);
+            Assert.That(token.Class, Is.EqualTo(JsonTokenClass.Number));
+            Assert.That(token.Text, Is.EqualTo("123"));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void NumberTokenTextCannotBeNull()
         {
-            JsonToken.Number(null);
+            Assert.Throws<ArgumentNullException>(() => JsonToken.Number(null));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void NumberTokenTextCannotBeZeroLength()
         {
-            JsonToken.Number("");
+            Assert.Throws<ArgumentException>(() => JsonToken.Number(""));
         }
 
-        [ Test ]
+        [Test]
         public void BooleanToken()
         {
             JsonToken token = JsonToken.Boolean(true);
-            Assert.AreEqual(JsonTokenClass.Boolean, token.Class);
-            Assert.AreEqual("true", token.Text);
+            Assert.That(token.Class, Is.EqualTo(JsonTokenClass.Boolean));
+            Assert.That(token.Text, Is.EqualTo("true"));
 
             token = JsonToken.Boolean(false);
-            Assert.AreEqual(JsonTokenClass.Boolean, token.Class);
-            Assert.AreEqual("false", token.Text);
+            Assert.That(token.Class, Is.EqualTo(JsonTokenClass.Boolean));
+            Assert.That(token.Text, Is.EqualTo("false"));
         }
 
-        [ Test ]
+        [Test]
         public void ObjectToken()
         {
-            Assert.AreEqual(JsonTokenClass.Object, JsonToken.Object().Class);
-            Assert.AreEqual(JsonTokenClass.EndObject, JsonToken.EndObject().Class);
+            Assert.That(JsonToken.Object().Class, Is.EqualTo(JsonTokenClass.Object));
+            Assert.That(JsonToken.EndObject().Class, Is.EqualTo(JsonTokenClass.EndObject));
         }
 
-        [ Test ]
+        [Test]
         public void ArrayToken()
         {
-            Assert.AreEqual(JsonTokenClass.Array, JsonToken.Array().Class);
-            Assert.AreEqual(JsonTokenClass.EndArray, JsonToken.EndArray().Class);
+            Assert.That(JsonToken.Array().Class, Is.EqualTo(JsonTokenClass.Array));
+            Assert.That(JsonToken.EndArray().Class, Is.EqualTo(JsonTokenClass.EndArray));
         }
-        
-        [ Test ]
+
+        [Test]
         public void BOFEOF()
         {
-            Assert.AreEqual(JsonTokenClass.BOF, JsonToken.BOF().Class);
-            Assert.AreEqual(JsonTokenClass.EOF, JsonToken.EOF().Class);
+            Assert.That(JsonToken.BOF().Class, Is.EqualTo(JsonTokenClass.BOF));
+            Assert.That(JsonToken.EOF().Class, Is.EqualTo(JsonTokenClass.EOF));
         }
 
 #if NETFRAMEWORK
-        [Test ]
+        [Test]
         public void DeserializesToFactoryInstance()
         {
             IFormatter formatter = new BinaryFormatter();
             MemoryStream stream = new MemoryStream();
             formatter.Serialize(stream, JsonTokenClass.Null);
             stream.Seek(0, SeekOrigin.Begin);
-            Assert.AreSame(JsonTokenClass.Null, formatter.Deserialize(stream));
+            Assert.That(formatter.Deserialize(stream), Is.SameAs(JsonTokenClass.Null));
         }
 #endif
 
-        [ Test ]
+        [Test]
         public void EqualityByReference()
         {
             foreach (JsonTokenClass clazz in JsonTokenClass.All)
-                Assert.IsTrue(clazz.Equals(clazz), clazz.ToString());
+                Assert.That(clazz.Equals(clazz), Is.True, clazz.ToString());
         }
 
-        [ Test ]
+        [Test]
         public void InequalityWithNull()
         {
             foreach (JsonTokenClass clazz in JsonTokenClass.All)
-                Assert.IsFalse(clazz.Equals(null), clazz.ToString());
+                Assert.That(clazz.Equals(null), Is.False, clazz.ToString());
         }
 
-        [ Test ]
+        [Test]
         public void InequalityWithIncompatibleType()
         {
             foreach (JsonTokenClass clazz in JsonTokenClass.All)
-                Assert.IsFalse(clazz.Equals(new object()), clazz.ToString());
+                Assert.That(clazz.Equals(new object()), Is.False, clazz.ToString());
         }
     }
 }
+
+
+

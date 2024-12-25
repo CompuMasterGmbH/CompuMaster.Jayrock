@@ -29,158 +29,158 @@ namespace Jayrock.Json
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonWriterBase
     {
         private JsonWriter _writer;
-        
-        [ SetUp ]
+
+        [SetUp]
         public void Init()
         {
             _writer = new EmptyJsonWriter();
         }
 
-        [ Test ]
+        [Test]
         public void StartingDepthIsZero()
         {
-            Assert.AreEqual(0, _writer.Depth);
+            Assert.That(_writer.Depth, Is.EqualTo(0));
         }
-       
-        [ Test ]
+
+        [Test]
         public void DepthIncreasesInsideObject()
         {
             _writer.WriteStartObject();
-            Assert.AreEqual(1, _writer.Depth);
+            Assert.That(_writer.Depth, Is.EqualTo(1));
             _writer.WriteMember(string.Empty);
             _writer.WriteStartObject();
-            Assert.AreEqual(2, _writer.Depth);
+            Assert.That(_writer.Depth, Is.EqualTo(2));
             _writer.WriteEndObject();
-            Assert.AreEqual(1, _writer.Depth);
+            Assert.That(_writer.Depth, Is.EqualTo(1));
             _writer.WriteEndObject();
-            Assert.AreEqual(0, _writer.Depth);
+            Assert.That(_writer.Depth, Is.EqualTo(0));
         }
 
-        [ Test ]
+        [Test]
         public void DepthIncreasesInsideArray()
         {
             _writer.WriteStartArray();
-            Assert.AreEqual(1, _writer.Depth);
+            Assert.That(_writer.Depth, Is.EqualTo(1));
             _writer.WriteStartArray();
-            Assert.AreEqual(2, _writer.Depth);
+            Assert.That(_writer.Depth, Is.EqualTo(2));
             _writer.WriteEndArray();
-            Assert.AreEqual(1, _writer.Depth);
+            Assert.That(_writer.Depth, Is.EqualTo(1));
             _writer.WriteEndArray();
-            Assert.AreEqual(0, _writer.Depth);
+            Assert.That(_writer.Depth, Is.EqualTo(0));
         }
-        
-        [ Test, ExpectedException(typeof(JsonException)) ]
+
+        [Test]
         public void CannotWriteObjectAfterRoot()
         {
             _writer.WriteStartObject();
             _writer.WriteEndObject();
-            _writer.WriteStartObject();
+            Assert.Throws<JsonException>(() => _writer.WriteStartObject());
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotWriteArrayAfterRoot()
         {
             _writer.WriteStartObject();
             _writer.WriteEndObject();
-            _writer.WriteStartArray();
+            Assert.Throws<JsonException>(() => _writer.WriteStartArray());
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotWriteMemberInsideArray()
         {
             _writer.WriteStartArray();
-            _writer.WriteMember("Member");
+            Assert.Throws<JsonException>(() => _writer.WriteMember("Member"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotEndObjectWithArray()
         {
             _writer.WriteStartObject();
-            _writer.WriteEndArray();
+            Assert.Throws<JsonException>(() => _writer.WriteEndArray());
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotEndArrayWithObject()
         {
             _writer.WriteStartArray();
-            _writer.WriteEndObject();
+            Assert.Throws<JsonException>(() => _writer.WriteEndObject());
         }
-        
-        [ Test, ExpectedException(typeof(JsonException)) ]
+
+        [Test]
         public void CannotWriteStringWithoutMember()
         {
             _writer.WriteStartObject();
-            _writer.WriteString("string");
+            Assert.Throws<JsonException>(() => _writer.WriteString("string"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotWriteNullWithoutMember()
         {
             _writer.WriteStartObject();
-            _writer.WriteNull();
+            Assert.Throws<JsonException>(() => _writer.WriteNull());
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotWriteNumberWithoutMember()
         {
             _writer.WriteStartObject();
-            _writer.WriteNumber(123);
+            Assert.Throws<JsonException>(() => _writer.WriteNumber(123));
         }
-        
-        [ Test, ExpectedException(typeof(JsonException)) ]
+
+        [Test]
         public void CannotWriteBooleanWithoutMember()
         {
             _writer.WriteStartObject();
-            _writer.WriteBoolean(true);
+            Assert.Throws<JsonException>(() => _writer.WriteBoolean(true));
         }
-        
-        [ Test, ExpectedException(typeof(JsonException)) ]
+
+        [Test]
         public void CannotWriteNestedObjectWithoutMember()
         {
             _writer.WriteStartObject();
-            _writer.WriteStartObject();
+            Assert.Throws<JsonException>(() => _writer.WriteStartObject());
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotWriteNestedArrayWithoutMember()
         {
             _writer.WriteStartObject();
-            _writer.WriteStartArray();
+            Assert.Throws<JsonException>(() => _writer.WriteStartArray());
         }
 
-        [ Test ]
+        [Test]
         public void WriteStringInsideArray()
         {
             _writer.WriteStartArray();
             _writer.WriteString("string");
         }
 
-        [ Test ]
+        [Test]
         public void WriteNumberInsideArray()
         {
             _writer.WriteStartArray();
             _writer.WriteNumber(123);
         }
 
-        [ Test ]
+        [Test]
         public void WriteBooleanInsideArray()
         {
             _writer.WriteStartArray();
             _writer.WriteBoolean(true);
         }
-        
-        [ Test ]
+
+        [Test]
         public void WriteNullInsideArray()
         {
             _writer.WriteStartArray();
             _writer.WriteNull();
         }
-     
-        [ Test ]
+
+        [Test]
         public void WriteObjectMemberString()
         {
             _writer.WriteStartObject();
@@ -188,7 +188,7 @@ namespace Jayrock.Json
             _writer.WriteString("string");
         }
 
-        [ Test ]
+        [Test]
         public void WriteObjectMemberNumber()
         {
             _writer.WriteStartObject();
@@ -196,15 +196,15 @@ namespace Jayrock.Json
             _writer.WriteNumber(123);
         }
 
-        [ Test ]
+        [Test]
         public void WriteObjectMemberBoolean()
         {
             _writer.WriteStartObject();
             _writer.WriteMember("member");
             _writer.WriteBoolean(true);
         }
-        
-        [ Test ]
+
+        [Test]
         public void WriteObjectMemberNull()
         {
             _writer.WriteStartObject();
@@ -212,7 +212,7 @@ namespace Jayrock.Json
             _writer.WriteNull();
         }
 
-        [ Test ]
+        [Test]
         public void WriteObjectWithNullMembers()
         {
             _writer.WriteStartObject();
@@ -222,7 +222,7 @@ namespace Jayrock.Json
             _writer.WriteNull();
         }
 
-        [ Test ]
+        [Test]
         public void WriteObjectWithNumberMembers()
         {
             _writer.WriteStartObject();
@@ -232,7 +232,7 @@ namespace Jayrock.Json
             _writer.WriteNumber(456);
         }
 
-        [ Test ]
+        [Test]
         public void WriteObjectWithBooleanMembers()
         {
             _writer.WriteStartObject();
@@ -242,7 +242,7 @@ namespace Jayrock.Json
             _writer.WriteBoolean(false);
         }
 
-        [ Test ]
+        [Test]
         public void WriteObjectWithStringMembers()
         {
             _writer.WriteStartObject();
@@ -252,188 +252,189 @@ namespace Jayrock.Json
             _writer.WriteString("string2");
         }
 
-        [ Test ]
+        [Test]
         public void InitialBracket()
         {
-            Assert.AreEqual(JsonWriterBracket.Pending, _writer.Bracket);
+            Assert.That(_writer.Bracket, Is.EqualTo(JsonWriterBracket.Pending));
         }
 
-        [ Test ]
+        [Test]
         public void BracketAfterStartingObject()
         {
             _writer.WriteStartObject();
-            Assert.AreEqual(JsonWriterBracket.Object, _writer.Bracket);
+            Assert.That(_writer.Bracket, Is.EqualTo(JsonWriterBracket.Object));
         }
 
-        [ Test ]
+        [Test]
         public void BracketAfterStartingArray()
         {
             _writer.WriteStartArray();
-            Assert.AreEqual(JsonWriterBracket.Array, _writer.Bracket);
+            Assert.That(_writer.Bracket, Is.EqualTo(JsonWriterBracket.Array));
         }
 
-        [ Test ]
+        [Test]
         public void BracketAfterWritingMember()
         {
             _writer.WriteStartObject();
             _writer.WriteMember("test");
-            Assert.AreEqual(JsonWriterBracket.Member, _writer.Bracket);
+            Assert.That(_writer.Bracket, Is.EqualTo(JsonWriterBracket.Member));
         }
 
-        [ Test ]
+        [Test]
         public void BracketAfterWritingMemberValue()
         {
             _writer.WriteStartObject();
             _writer.WriteMember("test");
             _writer.WriteNull();
-            Assert.AreEqual(JsonWriterBracket.Object, _writer.Bracket);
+            Assert.That(_writer.Bracket, Is.EqualTo(JsonWriterBracket.Object));
         }
 
-        [ Test ]
+        [Test]
         public void BracketAfterEndingObject()
         {
             _writer.WriteStartObject();
             _writer.WriteEndObject();
-            Assert.AreEqual(JsonWriterBracket.Closed, _writer.Bracket);
+            Assert.That(_writer.Bracket, Is.EqualTo(JsonWriterBracket.Closed));
         }
 
-        [ Test ]
+        [Test]
         public void BracketAfterEndingArray()
         {
             _writer.WriteStartArray();
             _writer.WriteEndArray();
-            Assert.AreEqual(JsonWriterBracket.Closed, _writer.Bracket);
+            Assert.That(_writer.Bracket, Is.EqualTo(JsonWriterBracket.Closed));
         }
 
-        [ Test ]
+        [Test]
         public void NestedBracketing()
         {
-            Assert.AreEqual(JsonWriterBracket.Pending, _writer.Bracket);
+            Assert.That(_writer.Bracket, Is.EqualTo(JsonWriterBracket.Pending));
             _writer.WriteStartArray();
-            Assert.AreEqual(JsonWriterBracket.Array, _writer.Bracket);
+            Assert.That(_writer.Bracket, Is.EqualTo(JsonWriterBracket.Array));
             _writer.WriteStartObject();
-            Assert.AreEqual(JsonWriterBracket.Object, _writer.Bracket);
+            Assert.That(_writer.Bracket, Is.EqualTo(JsonWriterBracket.Object));
             _writer.WriteEndObject();
-            Assert.AreEqual(JsonWriterBracket.Array, _writer.Bracket);
+            Assert.That(_writer.Bracket, Is.EqualTo(JsonWriterBracket.Array));
             _writer.WriteEndArray();
-            Assert.AreEqual(JsonWriterBracket.Closed, _writer.Bracket);
+            Assert.That(_writer.Bracket, Is.EqualTo(JsonWriterBracket.Closed));
         }
 
-        [ Test ]
+        [Test]
         public void InitialIndex()
         {
-            Assert.AreEqual(-1, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(-1));
         }
 
-        [ Test ]
+        [Test]
         public void IndexZeroOnStartingObject()
         {
             _writer.WriteStartObject();
-            Assert.AreEqual(0, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(0));
         }
 
-        [ Test ]
+        [Test]
         public void IndexZeroAfertStartingArray()
         {
             _writer.WriteStartArray();
-            Assert.AreEqual(0, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(0));
         }
 
-        [ Test ]
+        [Test]
         public void IndexRunInsideArray()
         {
             _writer.WriteStartArray();
-            Assert.AreEqual(0, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(0));
             _writer.WriteNull();
-            Assert.AreEqual(1, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(1));
             _writer.WriteString("foo");
-            Assert.AreEqual(2, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(2));
             _writer.WriteNumber(42);
-            Assert.AreEqual(3, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(3));
             _writer.WriteBoolean(true);
-            Assert.AreEqual(4, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(4));
             _writer.WriteEndArray();
-            Assert.AreEqual(-1, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(-1));
         }
 
-        [ Test ]
+        [Test]
         public void IndexRunInsideObject()
         {
             _writer.WriteStartObject();
-            Assert.AreEqual(0, _writer.Index);
-            
+            Assert.That(_writer.Index, Is.EqualTo(0));
+
             _writer.WriteMember("m1");
-            Assert.AreEqual(0, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(0));
             _writer.WriteNull();
-            Assert.AreEqual(1, _writer.Index);
-            
+            Assert.That(_writer.Index, Is.EqualTo(1));
+
             _writer.WriteMember("m2");
-            Assert.AreEqual(1, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(1));
             _writer.WriteString("foo");
-            Assert.AreEqual(2, _writer.Index);
-            
+            Assert.That(_writer.Index, Is.EqualTo(2));
+
             _writer.WriteMember("m3");
-            Assert.AreEqual(2, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(2));
             _writer.WriteNumber(42);
-            Assert.AreEqual(3, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(3));
 
             _writer.WriteMember("m4");
-            Assert.AreEqual(3, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(3));
             _writer.WriteBoolean(true);
-            Assert.AreEqual(4, _writer.Index);
-            
+            Assert.That(_writer.Index, Is.EqualTo(4));
+
             _writer.WriteEndObject();
-            Assert.AreEqual(-1, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(-1));
         }
 
-        [ Test ]
+        [Test]
         public void IndexingAcrossNestings()
         {
             _writer.WriteStartObject();
-            
+
             _writer.WriteMember("m1");
             _writer.WriteNull();
-            Assert.AreEqual(1, _writer.Index);
-            
+            Assert.That(_writer.Index, Is.EqualTo(1));
+
             _writer.WriteMember("m2");
             _writer.WriteStartArray();
-            Assert.AreEqual(0, _writer.Index);
-        
-            _writer.WriteNull();
-            Assert.AreEqual(1, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(0));
 
             _writer.WriteNull();
-            Assert.AreEqual(2, _writer.Index);
-            
+            Assert.That(_writer.Index, Is.EqualTo(1));
+
             _writer.WriteNull();
-            Assert.AreEqual(3, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(2));
+
+            _writer.WriteNull();
+            Assert.That(_writer.Index, Is.EqualTo(3));
 
             _writer.WriteEndArray();
-            Assert.AreEqual(2, _writer.Index);
+            Assert.That(_writer.Index, Is.EqualTo(2));
         }
 
-        [ Test ]
+        [Test]
         public void DefaultMaxDepth()
         {
-            Assert.AreEqual(30, _writer.MaxDepth);
+            Assert.That(_writer.MaxDepth, Is.EqualTo(30));
         }
 
-        [ Test ]
+        [Test]
         public void SetMaxDepth()
         {
-            Assert.AreNotEqual(42, _writer.MaxDepth);
+            Assert.That(_writer.MaxDepth, Is.Not.EqualTo(42));
             _writer.MaxDepth = 42;
-            Assert.AreEqual(42, _writer.MaxDepth);
+            Assert.That(_writer.MaxDepth, Is.EqualTo(42));
         }
-        
-        [ Test ]
-        [ ExpectedException(typeof(Exception)) ]
+
+        [Test]
         public void CannotExceedMaxDepth()
         {
             _writer.MaxDepth = 2;
             _writer.WriteStartArray();
             _writer.WriteStartArray();
-            _writer.WriteStartArray();
+            Assert.Throws<Exception>(() => _writer.WriteStartArray());
         }
     }
 }
+
+

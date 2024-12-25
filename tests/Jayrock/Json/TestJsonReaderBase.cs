@@ -33,88 +33,88 @@ namespace Jayrock.Json
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonReaderBase
     {
-        [ Test ]
+        [Test]
         public void EOF()
         {
             MockedJsonReader reader = new MockedJsonReader();
             reader.Begin().End();
 
-            Assert.AreEqual(JsonTokenClass.BOF, reader.TokenClass);
-            Assert.IsFalse(reader.Read());
-            Assert.IsTrue(reader.EOF);
+            Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.BOF));
+            Assert.That(reader.Read(), Is.False);
+            Assert.That(reader.EOF, Is.True);
         }
-        
-        [ Test ]
+
+        [Test]
         public void ReadAfterEOF()
         {
             MockedJsonReader reader = new MockedJsonReader();
             reader.Begin().End();
-            
-            Assert.AreEqual(JsonTokenClass.BOF, reader.TokenClass);
-            Assert.IsFalse(reader.Read());
-            Assert.IsTrue(reader.EOF);
-            Assert.IsFalse(reader.Read());
+
+            Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.BOF));
+            Assert.That(reader.Read(), Is.False);
+            Assert.That(reader.EOF, Is.True);
+            Assert.That(reader.Read(), Is.False);
         }
-        
-        [ Test, ExpectedException(typeof(JsonException)) ]
+
+        [Test]
         public void ReadUnexpectedToken()
         {
             MockedJsonReader reader = new MockedJsonReader();
             reader.Begin().End();
 
-            reader.ReadToken(JsonTokenClass.Object);
+            Assert.Throws<JsonException>(() => reader.ReadToken(JsonTokenClass.Object));
         }
-        
-        [ Test ]
+
+        [Test]
         public void ReadNull()
         {
             MockedJsonReader reader = new MockedJsonReader();
             reader.Begin().Null().End();
-           
+
             reader.ReadNull();
-            Assert.IsTrue(reader.EOF);
+            Assert.That(reader.EOF, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void ReadString()
         {
             MockedJsonReader reader = new MockedJsonReader();
             reader.Begin().String("hello").End();
-           
-            Assert.AreEqual("hello", reader.ReadString());
-            Assert.IsTrue(reader.EOF);
+
+            Assert.That(reader.ReadString(), Is.EqualTo("hello"));
+            Assert.That(reader.EOF, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void ReadNumber()
         {
             MockedJsonReader reader = new MockedJsonReader();
             reader.Begin().Number(123456).End();
-           
-            Assert.AreEqual("123456", reader.ReadNumber().ToString());
-            Assert.IsTrue(reader.EOF);
+
+            Assert.That(reader.ReadNumber().ToString(), Is.EqualTo("123456"));
+            Assert.That(reader.EOF, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void ReadBoolean()
         {
             MockedJsonReader reader = new MockedJsonReader();
             reader.Begin().Boolean(true).End();
-           
-            Assert.IsTrue(reader.ReadBoolean());
-            Assert.IsTrue(reader.EOF);
+
+            Assert.That(reader.ReadBoolean(), Is.True);
+            Assert.That(reader.EOF, Is.True);
 
             reader = new MockedJsonReader();
             reader.Begin().Boolean(false).End();
 
-            Assert.IsFalse(reader.ReadBoolean());
-            Assert.IsTrue(reader.EOF);
+            Assert.That(reader.ReadBoolean(), Is.False);
+            Assert.That(reader.EOF, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void ReadTypedNumber()
         {
             MockedJsonReader reader = new MockedJsonReader();
@@ -125,70 +125,70 @@ namespace Jayrock.Json
                 Number(4.2).
                 Number(9.99m).
             EndArray().End();
-           
+
             reader.ReadToken(JsonTokenClass.Array);
-            Assert.AreEqual(123, (int) reader.ReadNumber());
-            Assert.AreEqual(456L, (long) reader.ReadNumber());
-            Assert.AreEqual(2.5f, (float) reader.ReadNumber());
-            Assert.AreEqual(4.2, (double) reader.ReadNumber());
-            Assert.AreEqual(9.99m, (decimal) reader.ReadNumber());
+            Assert.That((int)reader.ReadNumber(), Is.EqualTo(123));
+            Assert.That((long)reader.ReadNumber(), Is.EqualTo(456L));
+            Assert.That((float)reader.ReadNumber(), Is.EqualTo(2.5f));
+            Assert.That((double)reader.ReadNumber(), Is.EqualTo(4.2));
+            Assert.That((decimal)reader.ReadNumber(), Is.EqualTo(9.99m));
             reader.ReadToken(JsonTokenClass.EndArray);
-            Assert.IsFalse(reader.Read());
+            Assert.That(reader.Read(), Is.False);
         }
-        
-        [ Test ]
+
+        [Test]
         public void ReadMember()
         {
             MockedJsonReader reader = new MockedJsonReader();
             reader.Begin().Object().Member("mon", "Monday").EndObject().End();
-           
+
             reader.ReadToken(JsonTokenClass.Object);
-            Assert.AreEqual("mon", reader.ReadMember());
-            Assert.AreEqual("Monday", reader.ReadString());
-            Assert.AreEqual(JsonTokenClass.EndObject, reader.TokenClass);
-            Assert.IsFalse(reader.Read());
+            Assert.That(reader.ReadMember(), Is.EqualTo("mon"));
+            Assert.That(reader.ReadString(), Is.EqualTo("Monday"));
+            Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.EndObject));
+            Assert.That(reader.Read(), Is.False);
         }
-        
-        [ Test ]
+
+        [Test]
         public void StepOutOfArrayFromStart()
         {
             MockedJsonReader reader = new MockedJsonReader();
             reader.Begin().Array().String("one").String("two").String("three").EndArray().End();
-            
+
             reader.MoveToContent();
             reader.StepOut();
-            Assert.IsTrue(reader.EOF);
+            Assert.That(reader.EOF, Is.True);
         }
-        
-        [ Test ]
+
+        [Test]
         public void StepOutOfArrayFromMiddle()
         {
             MockedJsonReader reader = new MockedJsonReader();
             reader.Begin().Array().String("one").String("two").String("three").EndArray().End();
-            
+
             reader.ReadToken(JsonTokenClass.Array);
             reader.ReadString();
             reader.ReadString();
             reader.StepOut();
-            Assert.IsTrue(reader.EOF);
+            Assert.That(reader.EOF, Is.True);
         }
-        
-        [ Test ]
+
+        [Test]
         public void StepOutOfArrayFromEnd()
         {
             MockedJsonReader reader = new MockedJsonReader();
             reader.Begin().Array().String("one").String("two").String("three").EndArray().End();
-            
+
             reader.ReadToken(JsonTokenClass.Array);
             reader.ReadString();
             reader.ReadString();
             reader.ReadString();
-            Assert.AreEqual(JsonTokenClass.EndArray, reader.TokenClass);
+            Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.EndArray));
             reader.StepOut();
-            Assert.IsTrue(reader.EOF);
+            Assert.That(reader.EOF, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void StepOutFromWithinNestedArray()
         {
             MockedJsonReader reader = new MockedJsonReader();
@@ -201,15 +201,15 @@ namespace Jayrock.Json
                 .String("five")
                 .EndArray()
             .End();
-            
+
             reader.ReadToken(JsonTokenClass.Array);
             reader.ReadString();
             reader.ReadString();
             reader.StepOut();
-            Assert.AreEqual("five", reader.ReadString());
+            Assert.That(reader.ReadString(), Is.EqualTo("five"));
         }
 
-        [ Test ]
+        [Test]
         public void StepOutThroughNestedArray()
         {
             MockedJsonReader reader = new MockedJsonReader();
@@ -222,40 +222,40 @@ namespace Jayrock.Json
                 .String("five")
                 .EndArray()
             .End();
-            
+
             reader.MoveToContent();
             reader.StepOut();
-            Assert.IsTrue(reader.EOF);
+            Assert.That(reader.EOF, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void SkipScalar()
         {
             MockedJsonReader reader = new MockedJsonReader();
             reader.Begin().String("test").End();
             reader.Skip();
-            Assert.IsTrue(reader.EOF);
+            Assert.That(reader.EOF, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void SkipObject()
         {
             MockedJsonReader reader = new MockedJsonReader();
             reader.Begin().Object().Member("foo", "bar").EndObject().End();
             reader.Skip();
-            Assert.IsTrue(reader.EOF);
+            Assert.That(reader.EOF, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void SkipArray()
         {
             MockedJsonReader reader = new MockedJsonReader();
             reader.Begin().Array().String("test").EndArray().End();
             reader.Skip();
-            Assert.IsTrue(reader.EOF);
+            Assert.That(reader.EOF, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void SkipArrayElement()
         {
             MockedJsonReader reader = new MockedJsonReader();
@@ -263,10 +263,10 @@ namespace Jayrock.Json
             reader.Read();
             reader.Read();
             reader.Skip();
-            Assert.AreEqual("bar", reader.ReadString());
+            Assert.That(reader.ReadString(), Is.EqualTo("bar"));
         }
 
-        [ Test ]
+        [Test]
         public void SkipObjectMember()
         {
             MockedJsonReader reader = new MockedJsonReader();
@@ -282,20 +282,20 @@ namespace Jayrock.Json
             reader.Read();
             reader.Read();
             reader.Skip();
-            Assert.AreEqual(JsonTokenClass.Member, reader.TokenClass);
-            Assert.AreEqual("m2", reader.Text);
+            Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.Member));
+            Assert.That(reader.Text, Is.EqualTo("m2"));
             reader.Skip();
-            Assert.AreEqual("m5", reader.ReadMember());
+            Assert.That(reader.ReadMember(), Is.EqualTo("m5"));
         }
 
-        [ Test ]
+        [Test]
         public void SkipAdjacentObjects()
         {
             MockedJsonReader reader = new MockedJsonReader();
             reader.Begin().Array().Object().EndObject().Object().EndObject().EndArray().End();
             reader.ReadToken(JsonTokenClass.Array);
             reader.Skip();
-            Assert.AreEqual(JsonTokenClass.Object, reader.TokenClass);
+            Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.Object));
             reader.Skip();
             reader.ReadToken(JsonTokenClass.EndArray);
         }
@@ -304,20 +304,19 @@ namespace Jayrock.Json
         public void DefaultMaxDepth()
         {
             MockedJsonReader reader = new MockedJsonReader();
-            Assert.AreEqual(100, reader.MaxDepth);
+            Assert.That(reader.MaxDepth, Is.EqualTo(100));
         }
 
         [Test]
         public void SetMaxDepth()
         {
             MockedJsonReader reader = new MockedJsonReader();
-            Assert.AreNotEqual(42, reader.MaxDepth);
+            Assert.That(reader.MaxDepth, Is.Not.EqualTo(42));
             reader.MaxDepth = 42;
-            Assert.AreEqual(42, reader.MaxDepth);
+            Assert.That(reader.MaxDepth, Is.EqualTo(42));
         }
 
         [Test]
-        [ExpectedException(typeof(Exception))]
         public void CannotExceedMaxDepth()
         {
             MockedJsonReader reader = new MockedJsonReader();
@@ -326,11 +325,11 @@ namespace Jayrock.Json
             reader.Read();
             reader.Read();
             reader.Read();
-            
+
             // Exception will be thrown here, when attempting to read 
             // first value *after* the depth has been exceeded.
 
-            reader.Read();
+            Assert.Throws<Exception>(() => reader.Read());
         }
 
         private sealed class MockedJsonReader : JsonReaderBase
@@ -339,7 +338,7 @@ namespace Jayrock.Json
 
             protected override JsonToken ReadTokenImpl()
             {
-                return (JsonToken) _queue.Dequeue();
+                return (JsonToken)_queue.Dequeue();
             }
 
             private MockedJsonReader Append(JsonToken token)
@@ -388,7 +387,7 @@ namespace Jayrock.Json
             {
                 return Append(JsonToken.Number(i.ToString(CultureInfo.InvariantCulture)));
             }
-            
+
             public MockedJsonReader Boolean(bool b)
             {
                 return Append(JsonToken.Boolean(b));
@@ -413,7 +412,7 @@ namespace Jayrock.Json
             {
                 return Append(JsonToken.Member(name));
             }
-            
+
             public MockedJsonReader Null()
             {
                 return Append(JsonToken.Null());
@@ -421,3 +420,4 @@ namespace Jayrock.Json
         }
     }
 }
+

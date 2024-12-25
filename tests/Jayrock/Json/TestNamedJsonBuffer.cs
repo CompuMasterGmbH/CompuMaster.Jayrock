@@ -32,56 +32,56 @@ namespace Jayrock.Json
     [TestFixture]
     public class TestNamedJsonBuffer
     {
-        [ Test ]
+        [Test]
         public void IsSerializable()
         {
-            Assert.IsTrue(typeof(NamedJsonBuffer).IsSerializable);
+            Assert.That(typeof(NamedJsonBuffer).IsSerializable, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void EmptyHasNullName()
         {
-            Assert.IsNull(NamedJsonBuffer.Empty.Name);
+            Assert.That(NamedJsonBuffer.Empty.Name, Is.Null);
         }
 
         [Test]
         public void EmptyHasEmptyBuffer()
         {
-            Assert.IsTrue(NamedJsonBuffer.Empty.IsEmpty);
+            Assert.That(NamedJsonBuffer.Empty.IsEmpty, Is.True);
         }
 
         [Test]
         public void EmptyIsEmpty()
         {
-            Assert.IsTrue(NamedJsonBuffer.Empty.IsEmpty);
+            Assert.That(NamedJsonBuffer.Empty.IsEmpty, Is.True);
         }
 
         [Test]
         public void EmptyToString()
         {
             string str = NamedJsonBuffer.Empty.ToString();
-            Assert.IsNotNull(str);
-            Assert.AreEqual(0, str.Length);
+            Assert.That(str, Is.Not.Null);
+            Assert.That(str.Length, Is.EqualTo(0));
         }
 
-        [Test,ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void CannotBeInitializedWithNullName()
         {
-            new NamedJsonBuffer(null, JsonBuffer.From("null"));
+            Assert.Throws<ArgumentNullException>(() => new NamedJsonBuffer(null, JsonBuffer.From("null")));
         }
 
-        [Test, ExpectedException(typeof(ArgumentException))]
+        [Test]
         public void CannotBeInitializedWithEmptyBuffer()
         {
-            new NamedJsonBuffer("foo", JsonBuffer.Empty);
+            Assert.Throws<ArgumentException>(() => new NamedJsonBuffer("foo", JsonBuffer.Empty));
         }
 
         [Test]
         public void Initialzation()
         {
             NamedJsonBuffer nb = new NamedJsonBuffer("foo", JsonBuffer.From("bar"));
-            Assert.AreEqual("foo", nb.Name);
-            Assert.AreEqual("bar", nb.Buffer.GetString());
+            Assert.That(nb.Name, Is.EqualTo("foo"));
+            Assert.That(nb.Buffer.GetString(), Is.EqualTo("bar"));
         }
 
         [Test]
@@ -89,7 +89,7 @@ namespace Jayrock.Json
         {
             NamedJsonBuffer nb1 = new NamedJsonBuffer("foo", JsonBuffer.From("bar"));
             NamedJsonBuffer nb2 = new NamedJsonBuffer("foo", JsonBuffer.From("bar"));
-            Assert.AreEqual(nb1, nb2);
+            Assert.That(nb1, Is.EqualTo(nb2));
         }
 
         [Test]
@@ -97,7 +97,7 @@ namespace Jayrock.Json
         {
             NamedJsonBuffer nb1 = new NamedJsonBuffer("foo", JsonBuffer.From("bar"));
             NamedJsonBuffer nb2 = new NamedJsonBuffer("FOO", JsonBuffer.From("bar"));
-            Assert.AreNotEqual(nb1, nb2);
+            Assert.That(nb1, Is.Not.EqualTo(nb2));
         }
 
         [Test]
@@ -105,29 +105,32 @@ namespace Jayrock.Json
         {
             NamedJsonBuffer nb1 = new NamedJsonBuffer("foo", JsonBuffer.From("bar"));
             NamedJsonBuffer nb2 = new NamedJsonBuffer("foo", JsonBuffer.From("123"));
-            Assert.AreNotEqual(nb1, nb2);
+            Assert.That(nb1, Is.Not.EqualTo(nb2));
         }
 
         [Test]
         public void AnonymousToString()
         {
-            Assert.AreEqual("(anonymous): \"foo\"", 
-                new NamedJsonBuffer(string.Empty, JsonBuffer.From("foo")).ToString());
+            Assert.That(new NamedJsonBuffer(string.Empty, JsonBuffer.From("foo")).ToString(), Is.EqualTo("(anonymous): \"foo\""));
         }
- 
+
         [Test]
         public void ToObject()
         {
             JsonBuffer obj = NamedJsonBuffer.ToObject(
                 new NamedJsonBuffer("foo", JsonBuffer.From("bar")),
                 new NamedJsonBuffer("qux", JsonBuffer.From("quux")));
-            Assert.AreEqual(6, obj.Length);
-            Assert.AreEqual(JsonToken.Object(), obj[0]);
-            Assert.AreEqual(JsonToken.Member("foo"), obj[1]);
-            Assert.AreEqual(JsonToken.String("bar"), obj[2]);
-            Assert.AreEqual(JsonToken.Member("qux"), obj[3]);
-            Assert.AreEqual(JsonToken.String("quux"), obj[4]);
-            Assert.AreEqual(JsonToken.EndObject(), obj[5]);
+            Assert.That(obj.Length, Is.EqualTo(6));
+            Assert.That(obj[0], Is.EqualTo(JsonToken.Object()));
+            Assert.That(obj[1], Is.EqualTo(JsonToken.Member("foo")));
+            Assert.That(obj[2], Is.EqualTo(JsonToken.String("bar")));
+            Assert.That(obj[3], Is.EqualTo(JsonToken.Member("qux")));
+            Assert.That(obj[4], Is.EqualTo(JsonToken.String("quux")));
+            Assert.That(obj[5], Is.EqualTo(JsonToken.EndObject()));
         }
     }
 }
+
+
+
+

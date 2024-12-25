@@ -31,149 +31,149 @@ namespace Jayrock.Json
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonNumber
     {
-        [ Test ]
+        [Test]
         public void DefaultConstructionEqualsZero()
         {
-            Assert.AreEqual("0", (new JsonNumber()).ToString());
+            Assert.That((new JsonNumber()).ToString(), Is.EqualTo("0"));
         }
 
-        [ Test ]
+        [Test]
         public void One()
         {
-            Assert.AreEqual("1", Number("1").ToString());
+            Assert.That(Number("1").ToString(), Is.EqualTo("1"));
         }
 
-        [ Test ]
+        [Test]
         public void Float()
         {
-            Assert.AreEqual("1.2345", Number("1.2345").ToString());
+            Assert.That(Number("1.2345").ToString(), Is.EqualTo("1.2345"));
         }
 
-        [ Test ]
+        [Test]
         public void NullMeansZero()
         {
-            Assert.AreEqual("0", Number(null).ToString());
+            Assert.That(Number(null).ToString(), Is.EqualTo("0"));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void CannotInitWithBadNumber()
         {
-            Number("one");
+            Assert.Throws<ArgumentException>(() => Number("one"));
         }
-        
-        [ Test ]
+
+        [Test]
         public void ToInt32()
         {
-            Assert.AreEqual(123456789, Number("123456789").ToInt32());
+            Assert.That(Number("123456789").ToInt32(), Is.EqualTo(123456789));
         }
-        
-        [ Test ]
+
+        [Test]
         public void ToInt16()
         {
-            Assert.AreEqual(12345, Number("12345").ToInt16());
+            Assert.That(Number("12345").ToInt16(), Is.EqualTo(12345));
         }
 
-        [ Test ]
+        [Test]
         public void ToByte()
         {
-            Assert.AreEqual(123, Number("123").ToByte());
+            Assert.That(Number("123").ToByte(), Is.EqualTo(123));
         }
 
-        [ Test ]
+        [Test]
         public void ToChar()
         {
-            Assert.AreEqual('\x2126', Number("8486").ToChar());
+            Assert.That(Number("8486").ToChar(), Is.EqualTo('\x2126'));
         }
 
-        [ Test ]
+        [Test]
         public void ToBoolean()
         {
-            Assert.AreEqual(false, Number(null).ToBoolean());
-            Assert.AreEqual(false, Number("0").ToBoolean());
-            Assert.AreEqual(true, Number("1").ToBoolean());
-            Assert.AreEqual(true, Number("-123").ToBoolean());
-            Assert.AreEqual(true, Number("123").ToBoolean());
+            Assert.That(Number(null).ToBoolean(), Is.False);
+            Assert.That(Number("0").ToBoolean(), Is.False);
+            Assert.That(Number("1").ToBoolean(), Is.True);
+            Assert.That(Number("-123").ToBoolean(), Is.True);
+            Assert.That(Number("123").ToBoolean(), Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void ToInt64()
         {
-            Assert.AreEqual(123456789012345, Number("123456789012345").ToInt64());
+            Assert.That(Number("123456789012345").ToInt64(), Is.EqualTo(123456789012345));
         }
 
-        [ Test ]
+        [Test]
         public void ToSingle()
         {
-            Assert.AreEqual(1.5f, Number("1.5").ToSingle());
+            Assert.That(Number("1.5").ToSingle(), Is.EqualTo(1.5f));
         }
 
-        [ Test ]
+        [Test]
         public void ToDouble()
         {
-            Assert.AreEqual(1.5, Number("1.5").ToDouble());
+            Assert.That(Number("1.5").ToDouble(), Is.EqualTo(1.5));
         }
 
-        [ Test ]
+        [Test]
         public void ToDecimal()
         {
-            Assert.AreEqual(1.5m, Number("1.5").ToDecimal());
+            Assert.That(Number("1.5").ToDecimal(), Is.EqualTo(1.5m));
         }
 
-        [ Test ]
+        [Test]
         public void ToDateTime()
         {
-            Assert.AreEqual(new DateTime(2006, 7, 17, 10, 56, 56), Number("1153133816").ToDateTime().ToUniversalTime());
+            Assert.That(Number("1153133816").ToDateTime().ToUniversalTime(), Is.EqualTo(new DateTime(2006, 7, 17, 10, 56, 56)));
         }
 
-        #if NET_4_0
+#if NET_4_0
 
-        [ Test ]
+        [Test]
         public void ToBigInteger()
         {
             JsonNumber number = Number("784637716923335095224261902710254454442933591094742482943");
-            Assert.AreEqual(System.Numerics.BigInteger.Pow(long.MaxValue, 3), number.ToBigInteger());
+            Assert.That(number.ToBigInteger(), Is.EqualTo(System.Numerics.BigInteger.Pow(long.MaxValue, 3)));
         }
 
-        [Test, ExpectedException(typeof(FormatException)) ]
+        [Test]
         public void CannotToBigIntegerOnFloat()
         {
-            Number("1.5").ToBigInteger();
+            Assert.Throws<FormatException>(() => Number("1.5").ToBigInteger());
         }
 
-        [ Test ]
+        [Test]
         public void ConvertToBigInteger()
         {
             JsonNumber number = Number("784637716923335095224261902710254454442933591094742482943");
-            Assert.AreEqual(System.Numerics.BigInteger.Pow(long.MaxValue, 3), Convert.ChangeType(number, typeof(System.Numerics.BigInteger)));
+            Assert.That(Convert.ChangeType(number, typeof(System.Numerics.BigInteger)), Is.EqualTo(System.Numerics.BigInteger.Pow(long.MaxValue, 3)));
         }
 
-        [Test, ExpectedException(typeof(FormatException)) ]
+        [Test]
         public void CannotConvertToBigIntegerOnFloat()
         {
-            Convert.ChangeType(Number("1.5"), typeof(System.Numerics.BigInteger));
+            Assert.Throws<FormatException>(() => Convert.ChangeType(Number("1.5"), typeof(System.Numerics.BigInteger)));
         }
         
-        #endif
-        
-        [ Test ]
+#endif
+
+        [Test]
         public void LogicalEquality()
         {
-            Assert.IsFalse(Number(null).LogicallyEquals(null), "null");
-            Assert.IsTrue(Number("123").LogicallyEquals(123), "integer");
-            Assert.IsTrue(Number("123.5").LogicallyEquals(123.5m), "decimal");
+            Assert.That(Number(null).LogicallyEquals(null), Is.False, "null");
+            Assert.That(Number("123").LogicallyEquals(123), Is.True, "integer");
+            Assert.That(Number("123.5").LogicallyEquals(123.5m), Is.True, "decimal");
         }
-        
-        [ Test ]
+
+        [Test]
         public void TypeCodeIsObject()
         {
             IConvertible n = new JsonNumber();
-            Assert.AreEqual(TypeCode.Object, n.GetTypeCode());
+            Assert.That(n.GetTypeCode(), Is.EqualTo(TypeCode.Object));
         }
-        
-        [ Test ]
+
+        [Test]
         public void ConversionToDecimalUsingExponentialNotation()
         {
             //
@@ -181,25 +181,25 @@ namespace Jayrock.Json
             // http://developer.berlios.de/bugs/?func=detailbug&bug_id=13407&group_id=4638
             //
 
-            Assert.AreEqual(7.25e-5m, Number("7.25e-005").ToDecimal());
+            Assert.That(Number("7.25e-005").ToDecimal(), Is.EqualTo(7.25e-5m));
         }
 
-        [ Test ]
+        [Test]
         public void NullEquality()
         {
-            Assert.IsFalse(new JsonNumber("1234").Equals(null));
+            Assert.That(new JsonNumber("1234").Equals(null), Is.False);
         }
 
-        [ Test ]
+        [Test]
         public void TypeEquality()
         {
-            Assert.IsFalse(new JsonNumber("1234").Equals("1234"));
+            Assert.That(new JsonNumber("1234").Equals("1234"), Is.False);
         }
 
         [Test]
         public void Equality()
         {
-            Assert.IsTrue(new JsonNumber("1234").Equals(new JsonNumber("1234")));
+            Assert.That(new JsonNumber("1234").Equals(new JsonNumber("1234")), Is.True);
         }
 
         [Test]
@@ -268,8 +268,8 @@ namespace Jayrock.Json
         {
             TestValidity
             (
-                true, NumberStyles.AllowLeadingWhite, 
-                "123.456e+789", 
+                true, NumberStyles.AllowLeadingWhite,
+                "123.456e+789",
                 "\r\n\t 123.456e+789"
             );
         }
@@ -285,8 +285,8 @@ namespace Jayrock.Json
         {
             TestValidity
             (
-                true, NumberStyles.AllowTrailingWhite, 
-                "123.456e+789", 
+                true, NumberStyles.AllowTrailingWhite,
+                "123.456e+789",
                 "123.456e+789 \t\r\n"
             );
         }
@@ -302,18 +302,18 @@ namespace Jayrock.Json
         {
             TestValidity
             (
-                true, 
-                NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite, 
-                "-123.456e+789", 
+                true,
+                NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite,
+                "-123.456e+789",
                 "\r\n\t -123.456e+789",
                 "-123.456e+789 \t\r\n"
             );
         }
 
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void CannotValidateGrammarOnNullInput()
         {
-            JsonNumber.IsValid(null);
+            Assert.Throws<ArgumentNullException>(() => JsonNumber.IsValid(null));
         }
 
         [Test]
@@ -336,7 +336,7 @@ namespace Jayrock.Json
                 }
                 catch (Exception e)
                 {
-                    Assert.Fail("Failed for {0}. {1}", styles, e.Message);
+                    Assert.Fail(string.Format("Failed for {0}. {1}", styles, e.Message));
                 }
             }
         }
@@ -348,16 +348,16 @@ namespace Jayrock.Json
             Number("1.79769313486232e+308");
         }
 
-        [Test,ExpectedException(typeof(ArgumentException))]
+        [Test]
         public void CannotHaveWhiteSpace()
         {
-            Number(" 123.456 ");
+            Assert.Throws<ArgumentException>(() => Number(" 123.456 "));
         }
 
-        [Test,ExpectedException(typeof(ArgumentException))]
+        [Test]
         public void CannotHaveWhiteSpaceAroundNumberTooLargeForDouble()
         {
-            Number(" 1.79769313486232e+308 ");
+            Assert.Throws<ArgumentException>(() => Number(" 1.79769313486232e+308 "));
         }
 
         private static void TestValidity(bool expected, params string[] inputs)
@@ -368,7 +368,7 @@ namespace Jayrock.Json
         private static void TestValidity(bool expected, NumberStyles styles, params string[] inputs)
         {
             foreach (string input in inputs)
-                Assert.AreEqual(expected, JsonNumber.IsValid(input, styles), input + " (" + styles + ")");
+                Assert.That(JsonNumber.IsValid(input, styles), Is.EqualTo(expected), input + " (" + styles + ")");
         }
 
         private static JsonNumber Number(string s)
@@ -377,3 +377,8 @@ namespace Jayrock.Json
         }
     }
 }
+
+
+
+
+

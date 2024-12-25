@@ -30,40 +30,40 @@ namespace Jayrock.Json
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestObjectSurrogateConstructor
     {
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotInitializeWithNullSurrogateType()
         {
-            new ObjectSurrogateConstructor(null);
+            Assert.Throws<ArgumentNullException>(() => new ObjectSurrogateConstructor(null));
         }
 
-        [Test, ExpectedException(typeof(ArgumentException))]
+        [Test]
         public void CannotInitializeWithNonSurrogateTypeNotImpementingIObjectSurrogateConstructor()
         {
-            new ObjectSurrogateConstructor(typeof(object));
+            Assert.Throws<ArgumentException>(() => new ObjectSurrogateConstructor(typeof(object)));
         }
 
         [Test]
         public void SurrogateTypeInitialization()
         {
             ObjectSurrogateConstructor ctor = new ObjectSurrogateConstructor(typeof(Surrogate));
-            Assert.AreEqual(typeof(Surrogate), ctor.SurrogateType);
+            Assert.That(ctor.SurrogateType, Is.EqualTo(typeof(Surrogate)));
         }
 
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void CannotCreateObjectWithNullImportContext()
         {
             ObjectSurrogateConstructor ctor = new ObjectSurrogateConstructor(typeof(Surrogate));
-            ctor.CreateObject(null, StockJsonBuffers.EmptyObject.CreateReader());
+            Assert.Throws<ArgumentNullException>(() => ctor.CreateObject(null, StockJsonBuffers.EmptyObject.CreateReader()));
         }
 
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void CannotCreateObjectWithNullJsonReader()
         {
             ObjectSurrogateConstructor ctor = new ObjectSurrogateConstructor(typeof(Surrogate));
-            ctor.CreateObject(new ImportContext(), null);
+            Assert.Throws<ArgumentNullException>(() => ctor.CreateObject(new ImportContext(), null));
         }
 
         [Test]
@@ -72,8 +72,8 @@ namespace Jayrock.Json
             ObjectSurrogateConstructor ctor = new ObjectSurrogateConstructor(typeof(Surrogate));
             ImportContext context = new ImportContext();
             ObjectConstructionResult result = ctor.CreateObject(context, JsonText.CreateReader("{y:2000,m:12,d:4}"));
-            Assert.IsNotNull(result);
-            Assert.AreEqual(new DateTime(2000, 12, 4), result.Object);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Object, Is.EqualTo(new DateTime(2000, 12, 4)));
         }
 
         public class Surrogate : IObjectSurrogateConstructor
@@ -89,3 +89,6 @@ namespace Jayrock.Json
         }
     }
 }
+
+
+

@@ -29,148 +29,150 @@ namespace Jayrock.Json
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonToken
     {
-        [ Test ]
+        [Test]
         public void NullToken()
         {
-            Assert.AreEqual(JsonTokenClass.Null, JsonToken.Null().Class);
+            Assert.That(JsonToken.Null().Class, Is.EqualTo(JsonTokenClass.Null));
         }
-        
-        [ Test ]
+
+        [Test]
         public void StringToken()
         {
             JsonToken token = JsonToken.String("hello");
-            Assert.AreEqual(JsonTokenClass.String, token.Class);
-            Assert.AreEqual("hello", token.Text);
+            Assert.That(token.Class, Is.EqualTo(JsonTokenClass.String));
+            Assert.That(token.Text, Is.EqualTo("hello"));
         }
 
-        [ Test ]
+        [Test]
         public void StringTokenNeverNull()
         {
-            Assert.IsNotNull(JsonToken.String(null).Text);
+            Assert.That(JsonToken.String(null).Text, Is.Not.Null);
         }
 
-        [ Test ]
+        [Test]
         public void NumberToken()
         {
             JsonToken token = JsonToken.Number("123");
-            Assert.AreEqual(JsonTokenClass.Number, token.Class);
-            Assert.AreEqual("123", token.Text);
+            Assert.That(token.Class, Is.EqualTo(JsonTokenClass.Number));
+            Assert.That(token.Text, Is.EqualTo("123"));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void NumberTokenTextCannotBeNull()
         {
-            JsonToken.Number(null);
+            Assert.Throws<ArgumentNullException>(() => JsonToken.Number(null));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void NumberTokenTextCannotBeZeroLength()
         {
-            JsonToken.Number("");
+            Assert.Throws<ArgumentException>(() => JsonToken.Number(""));
         }
 
-        [ Test ]
+        [Test]
         public void BooleanToken()
         {
             JsonToken token = JsonToken.Boolean(true);
-            Assert.AreEqual(JsonTokenClass.Boolean, token.Class);
-            Assert.AreEqual("true", token.Text);
+            Assert.That(token.Class, Is.EqualTo(JsonTokenClass.Boolean));
+            Assert.That(token.Text, Is.EqualTo("true"));
 
             token = JsonToken.Boolean(false);
-            Assert.AreEqual(JsonTokenClass.Boolean, token.Class);
-            Assert.AreEqual("false", token.Text);
+            Assert.That(token.Class, Is.EqualTo(JsonTokenClass.Boolean));
+            Assert.That(token.Text, Is.EqualTo("false"));
         }
 
-        [ Test ]
+        [Test]
         public void ObjectTokens()
         {
-            Assert.AreEqual(JsonTokenClass.Object, JsonToken.Object().Class);
-            Assert.AreEqual(JsonTokenClass.EndObject, JsonToken.EndObject().Class);
+            Assert.That(JsonToken.Object().Class, Is.EqualTo(JsonTokenClass.Object));
+            Assert.That(JsonToken.EndObject().Class, Is.EqualTo(JsonTokenClass.EndObject));
         }
 
-        [ Test ]
+        [Test]
         public void MemberToken()
         {
             JsonToken token = JsonToken.Member("test");
-            Assert.AreEqual(JsonTokenClass.Member, token.Class);
-            Assert.AreEqual("test", token.Text);
+            Assert.That(token.Class, Is.EqualTo(JsonTokenClass.Member));
+            Assert.That(token.Text, Is.EqualTo("test"));
         }
 
-        [ Test ]
+        [Test]
         public void ArrayTokens()
         {
-            Assert.AreEqual(JsonTokenClass.Array, JsonToken.Array().Class);
-            Assert.AreEqual(JsonTokenClass.EndArray, JsonToken.EndArray().Class);
-        }
-        
-        [ Test ]
-        public void BOFEOF()
-        {
-            Assert.AreEqual(JsonTokenClass.BOF, JsonToken.BOF().Class);
-            Assert.AreEqual(JsonTokenClass.EOF, JsonToken.EOF().Class);
-        }
-        
-        [ Test ]
-        public void JsonTokenString()
-        {
-            Assert.AreEqual("String:hello", JsonToken.String("hello").ToString());
-            Assert.AreEqual("Number:123", JsonToken.Number("123").ToString());
-            Assert.AreEqual("Boolean:true", JsonToken.Boolean(true).ToString());
-            Assert.AreEqual("Boolean:false", JsonToken.Boolean(false).ToString());
-            Assert.AreEqual("Null:null", JsonToken.Null().ToString());
-            Assert.AreEqual("Array", JsonToken.Array().ToString());
-            Assert.AreEqual("EndArray", JsonToken.EndArray().ToString());
-            Assert.AreEqual("Object", JsonToken.Object().ToString());
-            Assert.AreEqual("EndObject", JsonToken.EndObject().ToString());
-            Assert.AreEqual("Member:test", JsonToken.Member("test").ToString());
-            Assert.AreEqual("BOF", JsonToken.BOF().ToString());
-            Assert.AreEqual("EOF", JsonToken.EOF().ToString());
+            Assert.That(JsonToken.Array().Class, Is.EqualTo(JsonTokenClass.Array));
+            Assert.That(JsonToken.EndArray().Class, Is.EqualTo(JsonTokenClass.EndArray));
         }
 
-        [ Test ]
+        [Test]
+        public void BOFEOF()
+        {
+            Assert.That(JsonToken.BOF().Class, Is.EqualTo(JsonTokenClass.BOF));
+            Assert.That(JsonToken.EOF().Class, Is.EqualTo(JsonTokenClass.EOF));
+        }
+
+        [Test]
+        public void JsonTokenString()
+        {
+            Assert.That(JsonToken.String("hello").ToString(), Is.EqualTo("String:hello"));
+            Assert.That(JsonToken.Number("123").ToString(), Is.EqualTo("Number:123"));
+            Assert.That(JsonToken.Boolean(true).ToString(), Is.EqualTo("Boolean:true"));
+            Assert.That(JsonToken.Boolean(false).ToString(), Is.EqualTo("Boolean:false"));
+            Assert.That(JsonToken.Null().ToString(), Is.EqualTo("Null:null"));
+            Assert.That(JsonToken.Array().ToString(), Is.EqualTo("Array"));
+            Assert.That(JsonToken.EndArray().ToString(), Is.EqualTo("EndArray"));
+            Assert.That(JsonToken.Object().ToString(), Is.EqualTo("Object"));
+            Assert.That(JsonToken.EndObject().ToString(), Is.EqualTo("EndObject"));
+            Assert.That(JsonToken.Member("test").ToString(), Is.EqualTo("Member:test"));
+            Assert.That(JsonToken.BOF().ToString(), Is.EqualTo("BOF"));
+            Assert.That(JsonToken.EOF().ToString(), Is.EqualTo("EOF"));
+        }
+
+        [Test]
         public void EqualityWhenSameClassAndText()
         {
-            Assert.IsTrue(JsonToken.String("hello").Equals(JsonToken.String("hello")));
+            Assert.That(JsonToken.String("hello").Equals(JsonToken.String("hello")), Is.True);
         }
 
         [Test]
         public void InEqualityWhenSameClassDifferentText()
         {
-            Assert.IsFalse(JsonToken.String("hello").Equals(JsonToken.String("world")));
+            Assert.That(JsonToken.String("hello").Equals(JsonToken.String("world")), Is.False);
         }
 
         [Test]
         public void InEqualityWhenDifferentClassSameText()
         {
-            Assert.IsFalse(JsonToken.String("123").Equals(JsonToken.Number("123")));
+            Assert.That(JsonToken.String("123").Equals(JsonToken.Number("123")), Is.False);
         }
 
         [Test]
         public void EqualityWithTextlessClass()
         {
-            Assert.AreEqual(JsonToken.BOF(), JsonToken.BOF());
+            Assert.That(JsonToken.BOF(), Is.EqualTo(JsonToken.BOF()));
         }
 
         [Test]
         public void InEqualityWithNull()
         {
-            Assert.IsFalse(JsonToken.Null().Equals(null));
+            Assert.That(JsonToken.Null().Equals(null), Is.False);
         }
 
         [Test]
         public void InEqualityWithAnotherType()
         {
-            Assert.IsFalse(JsonToken.Null().Equals(123));
+            Assert.That(JsonToken.Null().Equals(123), Is.False);
         }
 
         [Test]
         public void HashCodeNonZero()
         {
-            Assert.AreNotEqual(0, JsonToken.EOF().GetHashCode());
-            Assert.AreNotEqual(0, JsonToken.String("string").GetHashCode());
+            Assert.That(JsonToken.EOF().GetHashCode(), Is.Not.EqualTo(0));
+            Assert.That(JsonToken.String("string").GetHashCode(), Is.Not.EqualTo(0));
         }
     }
 }
+
+

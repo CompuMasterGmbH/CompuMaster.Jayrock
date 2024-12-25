@@ -30,102 +30,102 @@ namespace Jayrock.Services
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestMethodBuilder
     {
         private MethodBuilder _builder;
         private ServiceClassBuilder _classBuilder;
 
-        [ SetUp ]
+        [SetUp]
         public void Init()
         {
             _classBuilder = new ServiceClassBuilder();
             _builder = _classBuilder.DefineMethod();
         }
 
-        [ Test ] 
+        [Test]
         public void Defaults()
         {
-            Assert.IsNotNull(_builder.Name);
-            Assert.IsNotNull(_builder.InternalName);
-            Assert.AreSame(typeof(void), _builder.ResultType);
-            Assert.IsNull(_builder.Handler);
-            Assert.IsNotNull(_builder.Description);
-            Assert.AreEqual(0, _builder.Description.Length);
-            Assert.IsNotNull(_builder.ServiceClass);
-            Assert.IsFalse(_builder.Idempotent);
-            Assert.IsFalse(_builder.HasParameters);
-            Assert.IsNotNull(_builder.CustomAttributes);
+            Assert.That(_builder.Name, Is.Not.Null);
+            Assert.That(_builder.InternalName, Is.Not.Null);
+            Assert.That(_builder.ResultType, Is.SameAs(typeof(void)));
+            Assert.That(_builder.Handler, Is.Null);
+            Assert.That(_builder.Description, Is.Not.Null);
+            Assert.That(_builder.Description.Length, Is.EqualTo(0));
+            Assert.That(_builder.ServiceClass, Is.Not.Null);
+            Assert.That(_builder.Idempotent, Is.False);
+            Assert.That(_builder.HasParameters, Is.False);
+            Assert.That(_builder.CustomAttributes, Is.Not.Null);
         }
-        
-        [ Test ]
+
+        [Test]
         public void GetSetName()
         {
             const string name = "MyMethod";
             _builder.Name = name;
-            Assert.AreEqual(name, _builder.Name);
+            Assert.That(_builder.Name, Is.EqualTo(name));
         }
-        
-        [ Test ]
+
+        [Test]
         public void GetSetInternalName()
         {
             const string name = "MyMethod";
             _builder.InternalName = name;
-            Assert.AreEqual(name, _builder.InternalName);
+            Assert.That(_builder.InternalName, Is.EqualTo(name));
         }
-        
-        [ Test ]
+
+        [Test]
         public void GetSetReturnType()
         {
             Type type = typeof(int);
             _builder.ResultType = type;
-            Assert.AreSame(type, _builder.ResultType);
+            Assert.That(_builder.ResultType, Is.SameAs(type));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void ReturnTypeCannotBeNull()
         {
-            _builder.ResultType = null;
+            Assert.Throws<ArgumentNullException>(() => _builder.ResultType = null);
         }
 
-        [ Test ]
+        [Test]
         public void HasParameters()
         {
-            Assert.IsFalse(_builder.HasParameters);
+            Assert.That(_builder.HasParameters, Is.False);
             _builder.DefineParameter();
-            Assert.IsTrue(_builder.HasParameters);
+            Assert.That(_builder.HasParameters, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void DefineTwoParameters()
         {
-            Assert.IsNotNull(_builder.DefineParameter());
-            Assert.IsNotNull(_builder.DefineParameter());
-            ParameterBuilder[] parameters = (ParameterBuilder[]) CollectionHelper.ToArray(_builder.Parameters, typeof(ParameterBuilder));
-            Assert.IsNotNull(parameters);
-            Assert.AreEqual(2, parameters.Length);
+            Assert.That(_builder.DefineParameter(), Is.Not.Null);
+            Assert.That(_builder.DefineParameter(), Is.Not.Null);
+            ParameterBuilder[] parameters = (ParameterBuilder[])CollectionHelper.ToArray(_builder.Parameters, typeof(ParameterBuilder));
+            Assert.That(parameters, Is.Not.Null);
+            Assert.That(parameters.Length, Is.EqualTo(2));
         }
-        
-        [ Test ]
+
+        [Test]
         public void GetSetHandler()
         {
             IMethodImpl handler = new DummyMethod();
             _builder.Handler = handler;
-            Assert.AreSame(handler, _builder.Handler);
+            Assert.That(_builder.Handler, Is.SameAs(handler));
         }
 
-        [ Test ]
+        [Test]
         public void ParametersAreAutoPositioned()
         {
-            Assert.AreEqual(0, _builder.DefineParameter().Position);
-            Assert.AreEqual(1, _builder.DefineParameter().Position);
-            Assert.AreEqual(2, _builder.DefineParameter().Position);
+            Assert.That(_builder.DefineParameter().Position, Is.EqualTo(0));
+            Assert.That(_builder.DefineParameter().Position, Is.EqualTo(1));
+            Assert.That(_builder.DefineParameter().Position, Is.EqualTo(2));
         }
 
-        [Test,ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void CannotSetCustomAttributesToNull()
         {
-            _builder.CustomAttributes = null;
+            Assert.Throws<ArgumentNullException>(() => _builder.CustomAttributes = null);
         }
 
         [Test]
@@ -133,34 +133,34 @@ namespace Jayrock.Services
         {
             TestCustomAttributeProvider attributes = new TestCustomAttributeProvider();
             _builder.CustomAttributes = attributes;
-            Assert.AreSame(attributes, _builder.CustomAttributes);
+            Assert.That(_builder.CustomAttributes, Is.SameAs(attributes));
         }
 
-        [ Test ]
+        [Test]
         public void GetSetDescription()
         {
             const string name = "Test description of a method.";
             _builder.Description = name;
-            Assert.AreEqual(name, _builder.Description);
+            Assert.That(_builder.Description, Is.EqualTo(name));
         }
 
-        [ Test ]
+        [Test]
         public void ServiceClassReference()
         {
-            Assert.AreSame(_classBuilder, _builder.ServiceClass);
+            Assert.That(_builder.ServiceClass, Is.SameAs(_classBuilder));
         }
 
-        [ Test ]
+        [Test]
         public void GetSetIdempotent()
         {
             _builder.Idempotent = true;
-            Assert.IsTrue(_builder.Idempotent);
+            Assert.That(_builder.Idempotent, Is.True);
         }
-        
-        [ Test ]
+
+        [Test]
         public void ParametersCollectionIsReadOnly()
         {
-            Assert.IsTrue(_builder.Parameters.IsReadOnly);
+            Assert.That(_builder.Parameters.IsReadOnly, Is.True);
         }
 
         private sealed class DummyMethod : IMethodImpl
@@ -190,4 +190,7 @@ namespace Jayrock.Services
         }
     }
 }
+
+
+
 

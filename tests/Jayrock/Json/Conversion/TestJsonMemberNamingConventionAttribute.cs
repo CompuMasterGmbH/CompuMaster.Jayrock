@@ -30,52 +30,52 @@ namespace Jayrock.Json.Conversion
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonMemberNamingConventionAttribute
     {
-        [ Test ]
+        [Test]
         public void IsSerializable()
         {
-            Assert.IsTrue(typeof(JsonMemberNamingConventionAttribute).IsSerializable);
+            Assert.That(typeof(JsonMemberNamingConventionAttribute).IsSerializable, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void DefaultInitializationYieldsNoneConvention()
         {
             JsonMemberNamingConventionAttribute attribute = new JsonMemberNamingConventionAttribute();
-            Assert.AreEqual(NamingConvention.None, attribute.Convention);
+            Assert.That(attribute.Convention, Is.EqualTo(NamingConvention.None));
         }
 
-        [ Test ]
+        [Test]
         public void InitializeConvention()
         {
             JsonMemberNamingConventionAttribute attribute = new JsonMemberNamingConventionAttribute(NamingConvention.Pascal);
-            Assert.AreEqual(NamingConvention.Pascal, attribute.Convention);
+            Assert.That(attribute.Convention, Is.EqualTo(NamingConvention.Pascal));
         }
 
-        [ Test ]
+        [Test]
         public void InitializeUnderscores()
         {
             JsonMemberNamingConventionAttribute attribute = new JsonMemberNamingConventionAttribute(NamingConvention.Pascal, UnderscoreConvention.Separate);
-            Assert.AreEqual(UnderscoreConvention.Separate, attribute.Underscores);
+            Assert.That(attribute.Underscores, Is.EqualTo(UnderscoreConvention.Separate));
         }
 
         [Test]
-        public void SetConvention() 
+        public void SetConvention()
         {
             JsonMemberNamingConventionAttribute attribute = new JsonMemberNamingConventionAttribute();
-            Assert.AreEqual(NamingConvention.None, attribute.Convention);
+            Assert.That(attribute.Convention, Is.EqualTo(NamingConvention.None));
             attribute.Convention = NamingConvention.Pascal;
-            Assert.AreEqual(NamingConvention.Pascal, attribute.Convention);
+            Assert.That(attribute.Convention, Is.EqualTo(NamingConvention.Pascal));
         }
 
         [Test]
-        public void SetUnderscores() 
+        public void SetUnderscores()
         {
             JsonMemberNamingConventionAttribute attribute = new JsonMemberNamingConventionAttribute();
-            Assert.AreEqual(UnderscoreConvention.None, attribute.Underscores);
+            Assert.That(attribute.Underscores, Is.EqualTo(UnderscoreConvention.None));
             attribute.Underscores = UnderscoreConvention.Separate;
-            Assert.AreEqual(UnderscoreConvention.Separate, attribute.Underscores);
+            Assert.That(attribute.Underscores, Is.EqualTo(UnderscoreConvention.Separate));
         }
 
         [Test]
@@ -84,61 +84,60 @@ namespace Jayrock.Json.Conversion
             TestPropertyDescriptor property = CreateTestProperty("foo");
             IPropertyDescriptorCustomization customization = new JsonMemberNamingConventionAttribute();
             customization.Apply(property);
-            Assert.IsNull(property.CustomizedName);
+            Assert.That(property.CustomizedName, Is.Null);
         }
 
-        [ Test ]
-        [ ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotApplyToNullPropertyDescriptor()
         {
             IPropertyDescriptorCustomization customization = new JsonMemberNamingConventionAttribute();
-            customization.Apply(null);
+            Assert.Throws<ArgumentNullException>(() => customization.Apply(null));
         }
 
-        [ Test ]
+        [Test]
         public void PascalCaseApplication()
         {
             TestNamingCase("pascalCase", NamingConvention.Pascal, UnderscoreConvention.None, "PascalCase");
         }
 
-        [ Test ]
+        [Test]
         public void SingleLetterPascalCaseApplication()
         {
             TestNamingCase("p", NamingConvention.Pascal, UnderscoreConvention.None, "P");
         }
 
-        [ Test ]
+        [Test]
         public void CamelCaseApplication()
         {
             TestNamingCase("CamelCase", NamingConvention.Camel, UnderscoreConvention.None, "camelCase");
             TestNamingCase("C", NamingConvention.Camel, UnderscoreConvention.None, "c");
         }
 
-        [ Test ]
+        [Test]
         public void SingleLetterCamelCaseApplication()
         {
             TestNamingCase("C", NamingConvention.Camel, UnderscoreConvention.None, "c");
         }
 
-        [ Test ]
+        [Test]
         public void UpperCaseApplication()
         {
             TestNamingCase("upper", NamingConvention.Upper, UnderscoreConvention.None, "UPPER");
         }
 
-        [ Test ]
+        [Test]
         public void SingleLetterUpperCaseApplication()
         {
             TestNamingCase("u", NamingConvention.Upper, UnderscoreConvention.None, "U");
         }
 
-        [ Test ]
+        [Test]
         public void LowerCaseApplication()
         {
             TestNamingCase("LOWER", NamingConvention.Lower, UnderscoreConvention.None, "lower");
         }
 
-        [ Test ]
+        [Test]
         public void SingleLetterLowerCaseApplication()
         {
             TestNamingCase("LOWER", NamingConvention.Lower, UnderscoreConvention.None, "lower");
@@ -146,7 +145,7 @@ namespace Jayrock.Json.Conversion
         }
 
         [Test]
-        public void UnderscorePrefixApplication() 
+        public void UnderscorePrefixApplication()
         {
             TestNamingCase("FooBarBaz", NamingConvention.Camel, UnderscoreConvention.Prefix, "_FooBarBaz");
             TestNamingCase("FooBarBaz", NamingConvention.Pascal, UnderscoreConvention.Prefix, "_FooBarBaz");
@@ -155,7 +154,7 @@ namespace Jayrock.Json.Conversion
         }
 
         [Test]
-        public void UnderscoreSeparatorApplication() 
+        public void UnderscoreSeparatorApplication()
         {
             TestNamingCase("FooBarBaz", NamingConvention.Camel, UnderscoreConvention.Separate, "foo_Bar_Baz");
             TestNamingCase("FooBarBaz", NamingConvention.Pascal, UnderscoreConvention.Separate, "Foo_Bar_Baz");
@@ -164,22 +163,22 @@ namespace Jayrock.Json.Conversion
             TestNamingCase("foobarbaz", NamingConvention.None, UnderscoreConvention.Separate, "foobarbaz");
         }
 
-        private static void TestNamingCase(string baseName, NamingConvention testCase, UnderscoreConvention testUnder, string expected) 
+        private static void TestNamingCase(string baseName, NamingConvention testCase, UnderscoreConvention testUnder, string expected)
         {
             JsonMemberNamingConventionAttribute attribute = new JsonMemberNamingConventionAttribute(testCase, testUnder);
             TestPropertyDescriptor property = CreateTestProperty(baseName);
             IPropertyDescriptorCustomization customization = attribute;
-            
+
             customization.Apply(property);
-            
-            Assert.AreEqual(expected, property.CustomizedName);
+
+            Assert.That(property.CustomizedName, Is.EqualTo(expected));
         }
 
-        private static TestPropertyDescriptor CreateTestProperty(string baseName) 
+        private static TestPropertyDescriptor CreateTestProperty(string baseName)
         {
             TestPropertyDescriptor property = new TestPropertyDescriptor(baseName);
-            Assert.AreEqual(baseName, property.Name);
-            Assert.IsNull(property.CustomizedName);
+            Assert.That(property.Name, Is.EqualTo(baseName));
+            Assert.That(property.CustomizedName, Is.Null);
             return property;
         }
 
@@ -188,7 +187,7 @@ namespace Jayrock.Json.Conversion
             public string CustomizedName;
 
             public TestPropertyDescriptor(string name)
-                : base(name, null) {}
+                : base(name, null) { }
 
             public void SetName(string name)
             {
@@ -213,3 +212,6 @@ namespace Jayrock.Json.Conversion
         }
     }
 }
+
+
+

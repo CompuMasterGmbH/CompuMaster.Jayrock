@@ -31,27 +31,27 @@ namespace Jayrock.Json
     using Jayrock.Json.Conversion;
     using NUnit.Framework;
 
-    #if !NET_1_0 && !NET_1_1
-    
+#if !NET_1_0 && !NET_1_1
+
     using System.Collections.Generic;
-    
-    #endif
-    
-    #if !NET_1_0 && !NET_1_1 && !NET_2_0
+
+#endif
+
+#if !NET_1_0 && !NET_1_1 && !NET_2_0
 
     using System.Dynamic;
     using System.Linq;
     using System.Linq.Expressions;
     using Microsoft.CSharp.RuntimeBinder;
 
-    #endif
+#endif
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonObject
     {
-        [ Test ]
+        [Test]
         public void Names()
         {
             JsonObject o = new JsonObject();
@@ -59,84 +59,84 @@ namespace Jayrock.Json
             o.Put("two", 2);
             ICollection names = o.Names;
             IEnumerator e = names.GetEnumerator();
-            e.MoveNext(); Assert.AreEqual("one", e.Current);
-            e.MoveNext(); Assert.AreEqual("two", e.Current);
+            e.MoveNext(); Assert.That(e.Current, Is.EqualTo("one"));
+            e.MoveNext(); Assert.That(e.Current, Is.EqualTo("two"));
         }
 
-        [ Test ]
+        [Test]
         public void InitWithKeyValuePairs()
         {
             JsonObject o = new JsonObject(new string[] { "one", "two", }, new object[] { 1, 2 });
-            Assert.AreEqual(2, o.Count);
-            Assert.AreEqual(1, o["one"]);
-            Assert.AreEqual(2, o["two"]);
+            Assert.That(o.Count, Is.EqualTo(2));
+            Assert.That(o["one"], Is.EqualTo(1));
+            Assert.That(o["two"], Is.EqualTo(2));
         }
 
-        [ Test ]
+        [Test]
         public void InitWithKeyValuePairsAccumulates()
         {
             JsonObject o = new JsonObject(new string[] { "one", "two", "three", "two" }, new object[] { 1, 2, 3, 4 });
-            Assert.AreEqual(3, o.Count);
-            Assert.AreEqual(1, o["one"]);
+            Assert.That(o.Count, Is.EqualTo(3));
+            Assert.That(o["one"], Is.EqualTo(1));
             IList two = o["two"] as IList;
-            Assert.IsNotNull(two, "Member 'two' should be an ordered list of accumulated values.");
-            Assert.AreEqual(2, two.Count, "Count of values under 'two'.");
-            Assert.AreEqual(2, two[0]);
-            Assert.AreEqual(4, two[1]);
-            Assert.AreEqual(3, o["three"]);
+            Assert.That(two, Is.Not.Null, "Member 'two' should be an ordered list of accumulated values.");
+            Assert.That(two.Count, Is.EqualTo(2), "Count of values under 'two'.");
+            Assert.That(two[0], Is.EqualTo(2));
+            Assert.That(two[1], Is.EqualTo(4));
+            Assert.That(o["three"], Is.EqualTo(3));
         }
 
-        [ Test ]
+        [Test]
         public void InitWithExtraKeys()
         {
             JsonObject o = new JsonObject(new string[] { "one", "two", "three" }, new object[] { 1, 2 });
-            Assert.AreEqual(3, o.Count);
-            Assert.AreEqual(1, o["one"]);
-            Assert.AreEqual(2, o["two"]);
-            Assert.IsTrue(JsonNull.LogicallyEquals(o["three"]));
+            Assert.That(o.Count, Is.EqualTo(3));
+            Assert.That(o["one"], Is.EqualTo(1));
+            Assert.That(o["two"], Is.EqualTo(2));
+            Assert.That(JsonNull.LogicallyEquals(o["three"]), Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void InitWithNullValues()
         {
             JsonObject o = new JsonObject(new string[] { "one", "two", "three" }, null);
-            Assert.AreEqual(3, o.Count);
-            Assert.IsTrue(JsonNull.LogicallyEquals(o["one"]));
-            Assert.IsTrue(JsonNull.LogicallyEquals(o["two"]));
-            Assert.IsTrue(JsonNull.LogicallyEquals(o["three"]));
+            Assert.That(o.Count, Is.EqualTo(3));
+            Assert.That(JsonNull.LogicallyEquals(o["one"]), Is.True);
+            Assert.That(JsonNull.LogicallyEquals(o["two"]), Is.True);
+            Assert.That(JsonNull.LogicallyEquals(o["three"]), Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void InitWithExtraValues()
         {
             JsonObject o = new JsonObject(new string[] { "one", "two" }, new object[] { 1, 2, 3, 4 });
-            Assert.AreEqual(2, o.Count);
-            Assert.AreEqual(1, o["one"]);
-            IList two = (IList) o["two"];
-            Assert.AreEqual(3, two.Count, "Count of values under 'two'.");
-            Assert.AreEqual(2, two[0]);
-            Assert.AreEqual(3, two[1]);
-            Assert.AreEqual(4, two[2]);
+            Assert.That(o.Count, Is.EqualTo(2));
+            Assert.That(o["one"], Is.EqualTo(1));
+            IList two = (IList)o["two"];
+            Assert.That(two.Count, Is.EqualTo(3), "Count of values under 'two'.");
+            Assert.That(two[0], Is.EqualTo(2));
+            Assert.That(two[1], Is.EqualTo(3));
+            Assert.That(two[2], Is.EqualTo(4));
         }
 
-        [ Test ]
+        [Test]
         public void InitWithNullKeys()
         {
             JsonObject o = new JsonObject(null, new object[] { 1, 2, 3, 4 });
-            Assert.AreEqual(1, o.Count);
-            IList values = (IList) o[""];
-            Assert.AreEqual(4, values.Count, "Count of values.");
-            Assert.AreEqual(1, values[0]);
-            Assert.AreEqual(2, values[1]);
-            Assert.AreEqual(3, values[2]);
-            Assert.AreEqual(4, values[3]);
+            Assert.That(o.Count, Is.EqualTo(1));
+            IList values = (IList)o[""];
+            Assert.That(values.Count, Is.EqualTo(4), "Count of values.");
+            Assert.That(values[0], Is.EqualTo(1));
+            Assert.That(values[1], Is.EqualTo(2));
+            Assert.That(values[2], Is.EqualTo(3));
+            Assert.That(values[3], Is.EqualTo(4));
         }
-        
-        [ Test ]
+
+        [Test]
         public void Import()
         {
             JsonObject article = new JsonObject();
-            
+
             article.Import(new JsonTextReader(new StringReader(@"
                 /* Article */ {
                     Title : 'Introduction to JSON',
@@ -151,61 +151,61 @@ namespace Jayrock.Json
                     ]
                 }")));
 
-            Assert.IsNotNull(article);
-            Assert.AreEqual(5, article.Count);
-            Assert.AreEqual("Introduction to JSON", article["Title"]);
-            Assert.AreEqual(2, (int) (JsonNumber) article["Rating"]);
-            Assert.AreEqual(null, article["Abstract"]);
-            
-            IDictionary author = (IDictionary) article["Author"];
-            Assert.IsNotNull(author);
-            Assert.AreEqual(2, author.Count);
-            Assert.AreEqual("John Doe", author["Name"]);
-            Assert.AreEqual("john.doe@example.com", author["E-Mail Address"]);
+            Assert.That(article, Is.Not.Null);
+            Assert.That(article.Count, Is.EqualTo(5));
+            Assert.That(article["Title"], Is.EqualTo("Introduction to JSON"));
+            Assert.That((int)(JsonNumber)article["Rating"], Is.EqualTo(2));
+            Assert.That(article["Abstract"], Is.Null);
 
-            JsonArray references = (JsonArray) article["References"];
-            Assert.IsNotNull(references);
-            Assert.AreEqual(1, references.Length);
+            IDictionary author = (IDictionary)article["Author"];
+            Assert.That(author, Is.Not.Null);
+            Assert.That(author.Count, Is.EqualTo(2));
+            Assert.That(author["Name"], Is.EqualTo("John Doe"));
+            Assert.That(author["E-Mail Address"], Is.EqualTo("john.doe@example.com"));
 
-            IDictionary reference = (IDictionary) references[0];
-            Assert.IsNotNull(reference);
-            Assert.AreEqual(2, reference.Count);
-            Assert.AreEqual("JSON RPC", reference["Title"]);
-            Assert.AreEqual("http://www.json-rpc.org/", reference["Link"]);
+            JsonArray references = (JsonArray)article["References"];
+            Assert.That(references, Is.Not.Null);
+            Assert.That(references.Length, Is.EqualTo(1));
+
+            IDictionary reference = (IDictionary)references[0];
+            Assert.That(reference, Is.Not.Null);
+            Assert.That(reference.Count, Is.EqualTo(2));
+            Assert.That(reference["Title"], Is.EqualTo("JSON RPC"));
+            Assert.That(reference["Link"], Is.EqualTo("http://www.json-rpc.org/"));
         }
-        
-        [ Test ]
+
+        [Test]
         public void ContentsClearedBeforeImporting()
         {
             JsonObject o = new JsonObject();
             o.Put("foo", "bar");
-            Assert.AreEqual(1, o.Count);
+            Assert.That(o.Count, Is.EqualTo(1));
             o.Import(new JsonTextReader(new StringReader("{}")));
-            Assert.AreEqual(0, o.Count);
+            Assert.That(o.Count, Is.EqualTo(0));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotUseNullReaderWithImport()
         {
             IJsonImportable o = new JsonObject();
-            o.Import(new ImportContext(), null);
+            Assert.Throws<ArgumentNullException>(() => o.Import(new ImportContext(), null));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotUseNullContextWithImport()
         {
             IJsonImportable o = new JsonObject();
-            o.Import(null, (new JsonRecorder()).CreatePlayer());
+            Assert.Throws<ArgumentNullException>(() => o.Import(null, (new JsonRecorder()).CreatePlayer()));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotUseNullArgWithExport()
         {
             IJsonExportable o = new JsonObject();
-            o.Export(null, null);
+            Assert.Throws<ArgumentNullException>(() => o.Export(null, null));
         }
 
-        [ Test ]
+        [Test]
         public void Export()
         {
             JsonObject o = new JsonObject();
@@ -216,88 +216,87 @@ namespace Jayrock.Json
             o.Export(writer);
             JsonReader reader = writer.CreatePlayer();
             reader.ReadToken(JsonTokenClass.Object);
-            string[] members = (string[]) o.GetNamesArray().ToArray(typeof(string));
-            Assert.AreEqual(members[0], reader.ReadMember());
-            Assert.AreEqual(o[members[0]], reader.ReadNumber().ToInt32());
-            Assert.AreEqual(members[1], reader.ReadMember());
-            Assert.AreEqual(o[members[1]], reader.ReadString());
-            Assert.AreEqual(members[2], reader.ReadMember());
-            Assert.AreEqual(o[members[2]], reader.ReadBoolean());
-            Assert.AreEqual(JsonTokenClass.EndObject, reader.TokenClass);
+            string[] members = (string[])o.GetNamesArray().ToArray(typeof(string));
+            Assert.That(reader.ReadMember(), Is.EqualTo(members[0]));
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(o[members[0]]));
+            Assert.That(reader.ReadMember(), Is.EqualTo(members[1]));
+            Assert.That(reader.ReadString(), Is.EqualTo(o[members[1]]));
+            Assert.That(reader.ReadMember(), Is.EqualTo(members[2]));
+            Assert.That(reader.ReadBoolean(), Is.EqualTo(o[members[2]]));
+            Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.EndObject));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotPutUsingNullName()
         {
-            (new JsonObject()).Put(null, new object());
+            Assert.Throws<ArgumentNullException>(() => (new JsonObject()).Put(null, new object()));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotRemoveByNullName()
         {
-            (new JsonObject()).Remove(null);
+            Assert.Throws<ArgumentNullException>(() => (new JsonObject()).Remove(null));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotTestContainmentForNullName()
         {
-            (new JsonObject()).Contains(null);
+            Assert.Throws<ArgumentNullException>(() => (new JsonObject()).Contains(null));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotListNamesToNullList()
         {
-            (new JsonObject()).ListNames(null);
+            Assert.Throws<ArgumentNullException>(() => (new JsonObject()).ListNames(null));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotExportToNullWriter()
         {
-            (new SubJsonObject()).SubExport(new ExportContext(), null);
+            Assert.Throws<ArgumentNullException>(() => (new SubJsonObject()).SubExport(new ExportContext(), null));
         }
-        
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+
+        [Test]
         public void CannotAccumulateUsingNullName()
         {
-            (new JsonObject()).Accumulate(null, new object());
+            Assert.Throws<ArgumentNullException>(() => (new JsonObject()).Accumulate(null, new object()));
         }
 
-        [ Test ]
+        [Test]
         public void NoHasMemberWhenEmpty()
         {
-            Assert.IsFalse((new JsonObject()).HasMembers);
+            Assert.That((new JsonObject()).HasMembers, Is.False);
         }
 
-        [ Test ]
+        [Test]
         public void HasMemberWhenNotEmpty()
         {
             JsonObject o = new JsonObject();
-            Assert.IsFalse(o.HasMembers);
+            Assert.That(o.HasMembers, Is.False);
             o.Put("foo", "bar");
-            Assert.IsTrue(o.HasMembers);
+            Assert.That(o.HasMembers, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void Add()
         {
             JsonObject o = new JsonObject();
             o.Add("foo", "bar");
-            Assert.AreEqual("bar", o["foo"]);
+            Assert.That(o["foo"], Is.EqualTo("bar"));
             ICollection names = o.Names;
-            Assert.AreEqual(1, names.Count);
-            Assert.AreEqual(new string[] { "foo" }, CollectionHelper.ToArray(names, typeof(string)));
+            Assert.That(names.Count, Is.EqualTo(1));
+            Assert.That(CollectionHelper.ToArray(names, typeof(string)), Is.EqualTo(new string[] { "foo" }));
         }
 
-        [ Test ]
-        [ ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void CannotAddMemberNameDuplicates()
         {
             JsonObject o = new JsonObject();
             o.Add("foo", "bar");
-            o.Add("foo", "baz");
+            Assert.Throws<ArgumentException>(() => o.Add("foo", "baz"));
         }
 
-        [ Test ]
+        [Test]
         public void Enumeration()
         {
             JsonObject o = new JsonObject();
@@ -305,28 +304,28 @@ namespace Jayrock.Json
             o.Add("two", 2);
             o.Add("three", 3);
             o.Add("four", 4);
-            
+
             JsonObject.JsonMemberEnumerator e = o.GetEnumerator();
-            
-            Assert.IsNotNull(e);
 
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreEqual("one", e.Current.Name);
-            Assert.AreEqual(1, e.Current.Value);
+            Assert.That(e, Is.Not.Null);
 
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreEqual("two", e.Current.Name);
-            Assert.AreEqual(2, e.Current.Value);
+            Assert.That(e.MoveNext(), Is.True);
+            Assert.That(e.Current.Name, Is.EqualTo("one"));
+            Assert.That(e.Current.Value, Is.EqualTo(1));
 
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreEqual("three", e.Current.Name);
-            Assert.AreEqual(3, e.Current.Value);
+            Assert.That(e.MoveNext(), Is.True);
+            Assert.That(e.Current.Name, Is.EqualTo("two"));
+            Assert.That(e.Current.Value, Is.EqualTo(2));
 
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreEqual("four", e.Current.Name);
-            Assert.AreEqual(4, e.Current.Value);
+            Assert.That(e.MoveNext(), Is.True);
+            Assert.That(e.Current.Name, Is.EqualTo("three"));
+            Assert.That(e.Current.Value, Is.EqualTo(3));
 
-            Assert.IsFalse(e.MoveNext());
+            Assert.That(e.MoveNext(), Is.True);
+            Assert.That(e.Current.Name, Is.EqualTo("four"));
+            Assert.That(e.Current.Value, Is.EqualTo(4));
+
+            Assert.That(e.MoveNext(), Is.False);
         }
 
         private sealed class SubJsonObject : JsonObject
@@ -337,13 +336,13 @@ namespace Jayrock.Json
             }
         }
 
-        #if !NET_1_0 && !NET_1_1 && !NET_2_0
+#if !NET_1_0 && !NET_1_1 && !NET_2_0
 
-        [ Test ]
+        [Test]
         public void DynamicallyGetMember()
         {
-            var obj = new JsonObject { { "foo", "bar" } };            
-            Assert.AreEqual("bar", ((dynamic) obj).foo);
+            var obj = new JsonObject { { "foo", "bar" } };
+            Assert.That(((dynamic)obj).foo, Is.EqualTo("bar"));
         }
 
         [Test, Ignore("To be completed")]
@@ -352,13 +351,14 @@ namespace Jayrock.Json
             var obj = new JsonObject { { "foo", "bar" } };
             var dmo = ((IDynamicMetaObjectProvider)obj).GetMetaObject(Expression.Parameter(typeof(JsonObject)));
             var s0 = CallSite<Func<CallSite, DynamicMetaObject, object>>.Create(new FakeGetMemberBinder("FOO", true));
-            Assert.AreEqual("bar", s0.Target(s0, dmo));
+            Assert.That(s0.Target(s0, dmo), Is.EqualTo("bar"));
         }
 
         private class FakeGetMemberBinder : GetMemberBinder
         {
-            public FakeGetMemberBinder(string name, bool ignoreCase) : 
-                base(name, ignoreCase) {}
+            public FakeGetMemberBinder(string name, bool ignoreCase) :
+                base(name, ignoreCase)
+            { }
 
             public override DynamicMetaObject FallbackGetMember(DynamicMetaObject target, DynamicMetaObject errorSuggestion)
             {
@@ -366,209 +366,209 @@ namespace Jayrock.Json
             }
         }
 
-        [ Test, ExpectedException(typeof(RuntimeBinderException)) ]
+        [Test]
         public void CannotDynamicallyGetNonExistingMember()
         {
             var obj = new JsonObject();
-            var unused = ((dynamic) obj).foo;
+            Assert.Throws<RuntimeBinderException>(() => { var unused = ((dynamic)obj).foo; });
         }
 
-        [ Test ]
+        [Test]
         public void DynamicallySetMember()
         {
             var obj = new JsonObject();
-            Assert.IsFalse(obj.HasMembers);
+            Assert.That(obj.HasMembers, Is.False);
             ((dynamic)obj).foo = "bar";
-            Assert.IsTrue(obj.HasMembers);
-            Assert.AreEqual("foo", obj.GetNamesArray()[0]);
-            Assert.AreEqual("bar", obj["foo"]);
+            Assert.That(obj.HasMembers, Is.True);
+            Assert.That(obj.GetNamesArray()[0], Is.EqualTo("foo"));
+            Assert.That(obj["foo"], Is.EqualTo("bar"));
         }
 
-        [ Test ]
+        [Test]
         public void DynamicallyGetMemberNames()
         {
-            var obj = new JsonObject {{"x", 123}, {"y", 456}};
-            var dmo = ((IDynamicMetaObjectProvider) obj).GetMetaObject(Expression.Parameter(typeof(object)));
+            var obj = new JsonObject { { "x", 123 }, { "y", 456 } };
+            var dmo = ((IDynamicMetaObjectProvider)obj).GetMetaObject(Expression.Parameter(typeof(object)));
             using (var e = dmo.GetDynamicMemberNames().GetEnumerator())
             {
-                Assert.IsTrue(e.MoveNext()); Assert.AreEqual("x", e.Current);
-                Assert.IsTrue(e.MoveNext()); Assert.AreEqual("y", e.Current);
-                Assert.IsFalse(e.MoveNext());
+                Assert.That(e.MoveNext(), Is.True); Assert.That(e.Current, Is.EqualTo("x"));
+                Assert.That(e.MoveNext(), Is.True); Assert.That(e.Current, Is.EqualTo("y"));
+                Assert.That(e.MoveNext(), Is.False);
             }
         }
 
         // TODO Add test for dynamically deleting member
 
-        #endif // !NET_1_0 && !NET_1_1 && !NET_2_0
+#endif // !NET_1_0 && !NET_1_1 && !NET_2_0
 
-        #if !NET_1_0 && !NET_1_1
+#if !NET_1_0 && !NET_1_1
 
-        [ Test ]
+        [Test]
         public void AddViaGenericDictionary()
         {
             IDictionary<string, object> obj = new JsonObject();
-            Assert.AreEqual(0, obj.Count);
+            Assert.That(obj.Count, Is.EqualTo(0));
             obj.Add("one", 1);
-            Assert.AreEqual(1, obj.Count);
+            Assert.That(obj.Count, Is.EqualTo(1));
             obj.Add("two", 2);
-            Assert.AreEqual(2, obj.Count);
+            Assert.That(obj.Count, Is.EqualTo(2));
         }
 
-        [ Test ]
+        [Test]
         public void AddViaGenericCollection()
         {
             ICollection<KeyValuePair<string, object>> obj = new JsonObject();
-            Assert.AreEqual(0, obj.Count);
+            Assert.That(obj.Count, Is.EqualTo(0));
             obj.Add(new KeyValuePair<string, object>("one", 1));
-            Assert.AreEqual(1, obj.Count);
+            Assert.That(obj.Count, Is.EqualTo(1));
             obj.Add(new KeyValuePair<string, object>("two", 2));
-            Assert.AreEqual(2, obj.Count);
+            Assert.That(obj.Count, Is.EqualTo(2));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void CannotAddDuplicateKeyViaGenericCollection()
         {
             IDictionary<string, object> obj = new JsonObject();
             obj.Add(new KeyValuePair<string, object>("foo", "bar"));
-            obj.Add(new KeyValuePair<string, object>("foo", "baz"));
+            Assert.Throws<ArgumentException>(() => obj.Add(new KeyValuePair<string, object>("foo", "baz")));
         }
 
-        [ Test ]
+        [Test]
         public void KeyContainmentViaGenericDictionary()
         {
             IDictionary<string, object> obj = new JsonObject();
-            Assert.IsFalse(obj.ContainsKey("foo"));
+            Assert.That(obj.ContainsKey("foo"), Is.False);
             obj.Add(new KeyValuePair<string, object>("foo", "bar"));
-            Assert.IsTrue(obj.ContainsKey("foo"));
+            Assert.That(obj.ContainsKey("foo"), Is.True);
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotTestKeyContainmentViaGenericDictionaryWithNullKey()
         {
             IDictionary<string, object> obj = new JsonObject();
-            obj.ContainsKey(null);
+            Assert.Throws<ArgumentNullException>(() => obj.ContainsKey(null));
         }
 
-        [ Test ]
+        [Test]
         public void KeysViaGenericDictionary()
         {
             IDictionary<string, object> obj = new JsonObject();
             obj.Add("first", 123);
-            Assert.AreEqual(new string[] { "first" }, obj.Keys);
+            Assert.That(obj.Keys, Is.EqualTo(new string[] { "first" }));
             obj.Add("second", 456);
-            Assert.AreEqual(new string[] { "first", "second" }, obj.Keys);
+            Assert.That(obj.Keys, Is.EqualTo(new string[] { "first", "second" }));
         }
 
-        [ Test ]
+        [Test]
         public void ValuesViaGenericDictionary()
         {
             IDictionary<string, object> obj = new JsonObject();
             obj.Add("first", 123);
-            Assert.AreEqual(new object[] { 123 }, obj.Values);
+            Assert.That(obj.Values, Is.EqualTo(new object[] { 123 }));
             obj.Add("second", 456);
-            Assert.AreEqual(new object[] { 123, 456 }, obj.Values);
+            Assert.That(obj.Values, Is.EqualTo(new object[] { 123, 456 }));
         }
 
-        [ Test ]
+        [Test]
         public void RemoveExistingViaGenericDictionary()
         {
             IDictionary<string, object> obj = new JsonObject();
             obj.Add("first", 123);
-            Assert.AreEqual(1, obj.Count);
-            Assert.IsTrue(obj.Remove("first"));
-            Assert.AreEqual(0, obj.Count);
+            Assert.That(obj.Count, Is.EqualTo(1));
+            Assert.That(obj.Remove("first"), Is.True);
+            Assert.That(obj.Count, Is.EqualTo(0));
         }
 
-        [ Test ]
+        [Test]
         public void RemoveNonExistingViaGenericDictionary()
         {
             IDictionary<string, object> obj = new JsonObject();
             obj.Add("first", 123);
-            Assert.AreEqual(1, obj.Count);
-            Assert.IsFalse(obj.Remove("second"));
-            Assert.AreEqual(1, obj.Count);
+            Assert.That(obj.Count, Is.EqualTo(1));
+            Assert.That(obj.Remove("second"), Is.False);
+            Assert.That(obj.Count, Is.EqualTo(1));
         }
 
-        [ Test ]
+        [Test]
         public void RemoveExistingViaGenericCollection()
         {
             ICollection<KeyValuePair<string, object>> obj = new JsonObject();
             obj.Add(new KeyValuePair<string, object>("first", 123));
-            Assert.AreEqual(1, obj.Count);
-            Assert.IsTrue(obj.Remove(new KeyValuePair<string, object>("first", 123)));
-            Assert.AreEqual(0, obj.Count);
+            Assert.That(obj.Count, Is.EqualTo(1));
+            Assert.That(obj.Remove(new KeyValuePair<string, object>("first", 123)), Is.True);
+            Assert.That(obj.Count, Is.EqualTo(0));
         }
 
-        [ Test ]
+        [Test]
         public void RemoveNonExistingViaGenericCollection()
         {
             ICollection<KeyValuePair<string, object>> obj = new JsonObject();
             obj.Add(new KeyValuePair<string, object>("first", 123));
-            Assert.AreEqual(1, obj.Count);
-            Assert.IsFalse(obj.Remove(new KeyValuePair<string, object>("second", 456)));
-            Assert.AreEqual(1, obj.Count);
+            Assert.That(obj.Count, Is.EqualTo(1));
+            Assert.That(obj.Remove(new KeyValuePair<string, object>("second", 456)), Is.False);
+            Assert.That(obj.Count, Is.EqualTo(1));
         }
 
-        [ Test ]
+        [Test]
         public void RemoveExistingKeyNonMatchingValueViaGenericCollection()
         {
             ICollection<KeyValuePair<string, object>> obj = new JsonObject();
             obj.Add(new KeyValuePair<string, object>("first", 123));
-            Assert.AreEqual(1, obj.Count);
-            Assert.IsFalse(obj.Remove(new KeyValuePair<string, object>("first", 456)));
-            Assert.AreEqual(1, obj.Count);
+            Assert.That(obj.Count, Is.EqualTo(1));
+            Assert.That(obj.Remove(new KeyValuePair<string, object>("first", 456)), Is.False);
+            Assert.That(obj.Count, Is.EqualTo(1));
         }
 
-        [ Test ]
+        [Test]
         public void RemoveNonExistingKeyMatchingValueViaGenericCollection()
         {
             ICollection<KeyValuePair<string, object>> obj = new JsonObject();
             obj.Add(new KeyValuePair<string, object>("first", 123));
-            Assert.AreEqual(1, obj.Count);
-            Assert.IsFalse(obj.Remove(new KeyValuePair<string, object>("second", 123)));
-            Assert.AreEqual(1, obj.Count);
+            Assert.That(obj.Count, Is.EqualTo(1));
+            Assert.That(obj.Remove(new KeyValuePair<string, object>("second", 123)), Is.False);
+            Assert.That(obj.Count, Is.EqualTo(1));
         }
 
-        [ Test ]
+        [Test]
         public void ContainsExistingViaGenericCollection()
         {
             ICollection<KeyValuePair<string, object>> obj = new JsonObject();
             obj.Add(new KeyValuePair<string, object>("first", 123));
-            Assert.IsTrue(obj.Contains(new KeyValuePair<string, object>("first", 123)));
+            Assert.That(obj.Contains(new KeyValuePair<string, object>("first", 123)), Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void ContainsNonExistingViaGenericCollection()
         {
             ICollection<KeyValuePair<string, object>> obj = new JsonObject();
             obj.Add(new KeyValuePair<string, object>("first", 123));
-            Assert.IsFalse(obj.Contains(new KeyValuePair<string, object>("second", 456)));
+            Assert.That(obj.Contains(new KeyValuePair<string, object>("second", 456)), Is.False);
         }
 
-        [ Test ]
+        [Test]
         public void ContainsExistingKeyNonMatchingValueViaGenericCollection()
         {
             ICollection<KeyValuePair<string, object>> obj = new JsonObject();
             obj.Add(new KeyValuePair<string, object>("first", 123));
-            Assert.IsFalse(obj.Contains(new KeyValuePair<string, object>("first", 456)));
+            Assert.That(obj.Contains(new KeyValuePair<string, object>("first", 456)), Is.False);
         }
 
-        [ Test ]
+        [Test]
         public void ContainsNonExistingKeyMatchingValueViaGenericCollection()
         {
             ICollection<KeyValuePair<string, object>> obj = new JsonObject();
             obj.Add(new KeyValuePair<string, object>("first", 123));
-            Assert.IsFalse(obj.Contains(new KeyValuePair<string, object>("second", 123)));
+            Assert.That(obj.Contains(new KeyValuePair<string, object>("second", 123)), Is.False);
         }
 
-        [ Test ]
+        [Test]
         public void IsReadOnlyViaGenericCollection()
         {
             ICollection<KeyValuePair<string, object>> obj = new JsonObject();
-            Assert.IsFalse(obj.IsReadOnly);
+            Assert.That(obj.IsReadOnly, Is.False);
         }
 
-        [ Test ]
+        [Test]
         public void CopyToViaGenericCollection()
         {
             ICollection<KeyValuePair<string, object>> obj = new JsonObject();
@@ -578,92 +578,92 @@ namespace Jayrock.Json
             obj.Add(second);
             KeyValuePair<string, object>[] pairs = new KeyValuePair<string, object>[2];
             obj.CopyTo(pairs, 0);
-            Assert.AreEqual(first, pairs[0]);
-            Assert.AreEqual(second, pairs[1]);
+            Assert.That(pairs[0], Is.EqualTo(first));
+            Assert.That(pairs[1], Is.EqualTo(second));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotCopyToViaGenericCollectionWithNullArray()
         {
             ICollection<KeyValuePair<string, object>> obj = new JsonObject();
-            obj.CopyTo(null, 0);
+            Assert.Throws<ArgumentNullException>(() => obj.CopyTo(null, 0));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentOutOfRangeException)) ]
+        [Test]
         public void CannotCopyToViaGenericCollectionWithNegativeArrayIndex()
         {
             ICollection<KeyValuePair<string, object>> obj = new JsonObject();
-            obj.CopyTo(new KeyValuePair<string, object>[0], -1);
+            Assert.Throws<ArgumentOutOfRangeException>(() => obj.CopyTo(new KeyValuePair<string, object>[0], -1));
         }
-        
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+
+        [Test]
         public void CannotCopyToViaGenericCollectionWithTooSmallArray()
         {
             ICollection<KeyValuePair<string, object>> obj = new JsonObject();
             obj.Add(new KeyValuePair<string, object>("foo", "bar"));
-            obj.CopyTo(new KeyValuePair<string, object>[1], 1);
+            Assert.Throws<ArgumentException>(() => obj.CopyTo(new KeyValuePair<string, object>[1], 1));
         }
 
-        [ Test ]
+        [Test]
         public void KeyValuePairEnumeration()
         {
             ICollection<KeyValuePair<string, object>> obj = new JsonObject();
-            
+
             KeyValuePair<string, object> first = new KeyValuePair<string, object>("first", 123);
             obj.Add(first);
-            
+
             KeyValuePair<string, object> second = new KeyValuePair<string, object>("second", 456);
             obj.Add(second);
 
             using (IEnumerator<KeyValuePair<string, object>> e = obj.GetEnumerator())
             {
-                Assert.IsNotNull(e);
-                Assert.IsTrue(e.MoveNext());
-                Assert.AreEqual(first, e.Current);
-                Assert.IsTrue(e.MoveNext());
-                Assert.AreEqual(second, e.Current);
-                Assert.IsFalse(e.MoveNext());
+                Assert.That(e, Is.Not.Null);
+                Assert.That(e.MoveNext(), Is.True);
+                Assert.That(e.Current, Is.EqualTo(first));
+                Assert.That(e.MoveNext(), Is.True);
+                Assert.That(e.Current, Is.EqualTo(second));
+                Assert.That(e.MoveNext(), Is.False);
             }
         }
 
-        [ Test ]
+        [Test]
         public void JsonMemberEnumeratorUsesSameEnumeratorAsGetEnumerator()
         {
             JsonObject obj = new JsonObject();
-            Assert.AreEqual(obj.GetEnumerator().GetType(), ((IEnumerable<JsonMember>) obj).GetEnumerator().GetType());
+            Assert.That(((IEnumerable<JsonMember>)obj).GetEnumerator().GetType(), Is.EqualTo(obj.GetEnumerator().GetType()));
         }
 
-        [ Test ]
+        [Test]
         public void NonGenericEnumeratorUsesSameEnumeratorAsGetEnumerator()
         {
             JsonObject obj = new JsonObject();
-            Assert.AreEqual(obj.GetEnumerator().GetType(), ((IEnumerable) obj).GetEnumerator().GetType());
+            Assert.That(((IEnumerable)obj).GetEnumerator().GetType(), Is.EqualTo(obj.GetEnumerator().GetType()));
         }
 
-        #if !NET_2_0
+#if !NET_2_0
 
-        [ Test ]
+        [Test]
         public void InitWithJsonMemberSequence()
         {
             JsonObject obj = new JsonObject(
                 from i in Enumerable.Range(0, 10)
                 let ch = (char)('a' + i)
                 select new JsonMember(ch.ToString(), i));
-            
-            Assert.AreEqual(10, obj.Count);
-            Assert.AreEqual(0, obj["a"]);
-            Assert.AreEqual(1, obj["b"]);
-            Assert.AreEqual(2, obj["c"]);
-            Assert.AreEqual(3, obj["d"]);
-            Assert.AreEqual(4, obj["e"]);
-            Assert.AreEqual(5, obj["f"]);
-            Assert.AreEqual(6, obj["g"]);
-            Assert.AreEqual(7, obj["h"]);
-            Assert.AreEqual(8, obj["i"]);
-            Assert.AreEqual(9, obj["j"]);
+
+            Assert.That(obj.Count, Is.EqualTo(10));
+            Assert.That(obj["a"], Is.EqualTo(0));
+            Assert.That(obj["b"], Is.EqualTo(1));
+            Assert.That(obj["c"], Is.EqualTo(2));
+            Assert.That(obj["d"], Is.EqualTo(3));
+            Assert.That(obj["e"], Is.EqualTo(4));
+            Assert.That(obj["f"], Is.EqualTo(5));
+            Assert.That(obj["g"], Is.EqualTo(6));
+            Assert.That(obj["h"], Is.EqualTo(7));
+            Assert.That(obj["i"], Is.EqualTo(8));
+            Assert.That(obj["j"], Is.EqualTo(9));
         }
 
-        #endif // !NET_2_0
-        #endif // !NET_1_0 && !NET_1_1
+#endif // !NET_2_0
+#endif // !NET_1_0 && !NET_1_1
     }
 }

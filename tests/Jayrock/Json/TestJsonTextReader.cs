@@ -31,32 +31,32 @@ namespace Jayrock.Json
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonTextReader
     {
         private JsonTextReader _reader;
 
-        [ TearDown ]
+        [TearDown]
         public void Dispose()
         {
             _reader = null;
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void Blank()
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(string.Empty));
-            reader.Read();
+            Assert.Throws<JsonException>(() => reader.Read());
         }
 
-        [ Test ]
+        [Test]
         public void BOF()
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(string.Empty));
-            Assert.AreEqual(JsonTokenClass.BOF, reader.TokenClass);
+            Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.BOF));
         }
 
-        [ Test ]
+        [Test]
         public void String()
         {
             CreateReader("'Hello World'");
@@ -64,7 +64,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void Number()
         {
             CreateReader("123");
@@ -72,7 +72,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void Null()
         {
             CreateReader("null");
@@ -80,15 +80,15 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void BooleanTrue()
         {
             CreateReader("true");
             AssertTokenText(JsonTokenClass.Boolean, "true");
             AssertEOF();
         }
-        
-        [ Test ]
+
+        [Test]
         public void BooleanFalse()
         {
             CreateReader("false");
@@ -96,7 +96,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void EmptyArray()
         {
             CreateReader("[]");
@@ -105,7 +105,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void ArrayWithOneNumber()
         {
             CreateReader("[ 123 ]");
@@ -115,7 +115,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void ArrayWithPrimitives()
         {
             CreateReader("[ 123, 'string', true, false, null ]");
@@ -129,7 +129,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void EmptyObject()
         {
             CreateReader("{}");
@@ -138,7 +138,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void ObjectWithOneMember()
         {
             CreateReader("{ 'num' : 123 }");
@@ -149,7 +149,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void ObjectWithPrimitiveMembers()
         {
             CreateReader("{ m1 : 123, m2 : 'string', m3 : true, m4 : false, m5 : null }");
@@ -163,7 +163,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void Complex()
         {
             CreateReader(@"
@@ -187,11 +187,11 @@ namespace Jayrock.Json
             AssertMember("menu", JsonTokenClass.Object);
             AssertMember("header", "SVG Viewer");
             AssertMember("items", JsonTokenClass.Array);
-            
+
             AssertToken(JsonTokenClass.Object);
             AssertMember("id", "Open");
             AssertToken(JsonTokenClass.EndObject);
-            
+
             AssertToken(JsonTokenClass.Object);
             AssertMember("id", "OpenNew");
             AssertMember("label", "Open New");
@@ -215,7 +215,7 @@ namespace Jayrock.Json
             AssertToken(JsonTokenClass.EndObject);
 
             AssertToken(JsonTokenClass.Null);
-            
+
             AssertToken(JsonTokenClass.Object);
             AssertMember("id", "Quality");
             AssertToken(JsonTokenClass.EndObject);
@@ -227,49 +227,49 @@ namespace Jayrock.Json
             AssertToken(JsonTokenClass.Object);
             AssertMember("id", "Mute");
             AssertToken(JsonTokenClass.EndObject);
-            
+
             AssertToken(JsonTokenClass.EndArray);
             AssertToken(JsonTokenClass.EndObject);
             AssertToken(JsonTokenClass.EndObject);
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void OneLevelDepth()
         {
-         
+
             CreateReader("[]");
-            Assert.AreEqual(0, _reader.Depth);
+            Assert.That(_reader.Depth, Is.EqualTo(0));
             AssertToken(JsonTokenClass.Array);
-            Assert.AreEqual(1, _reader.Depth);
+            Assert.That(_reader.Depth, Is.EqualTo(1));
             AssertToken(JsonTokenClass.EndArray);
-            Assert.AreEqual(1, _reader.Depth);
+            Assert.That(_reader.Depth, Is.EqualTo(1));
             AssertEOF();
-            Assert.AreEqual(0, _reader.Depth);
+            Assert.That(_reader.Depth, Is.EqualTo(0));
         }
 
-        [ Test ]
+        [Test]
         public void TwoLevelDepth()
-        {         
+        {
             CreateReader("[{}]");
-            Assert.AreEqual(0, _reader.Depth);
+            Assert.That(_reader.Depth, Is.EqualTo(0));
 
             AssertToken(JsonTokenClass.Array);
-            Assert.AreEqual(1, _reader.Depth);
+            Assert.That(_reader.Depth, Is.EqualTo(1));
 
             AssertToken(JsonTokenClass.Object);
-            Assert.AreEqual(2, _reader.Depth);
+            Assert.That(_reader.Depth, Is.EqualTo(2));
             AssertToken(JsonTokenClass.EndObject);
-            Assert.AreEqual(2, _reader.Depth);
-            
+            Assert.That(_reader.Depth, Is.EqualTo(2));
+
             AssertToken(JsonTokenClass.EndArray);
-            Assert.AreEqual(1, _reader.Depth);
+            Assert.That(_reader.Depth, Is.EqualTo(1));
 
             AssertEOF();
-            Assert.AreEqual(0, _reader.Depth);
+            Assert.That(_reader.Depth, Is.EqualTo(0));
         }
-        
-        [ Test ]
+
+        [Test]
         public void NestedDepths()
         {
             CreateReader("[{a:[{}]}]");
@@ -277,8 +277,8 @@ namespace Jayrock.Json
             const int maxDepth = 4;
             for (int i = 0; i < maxDepth; i++)
             {
-                Assert.AreEqual(i, _reader.Depth);
-                
+                Assert.That(_reader.Depth, Is.EqualTo(i));
+
                 if (i % 2 == 0)
                 {
                     AssertToken(JsonTokenClass.Array);
@@ -290,51 +290,51 @@ namespace Jayrock.Json
                         AssertToken(JsonTokenClass.Member);
                 }
 
-                Assert.AreEqual(i + 1, _reader.Depth);
+                Assert.That(_reader.Depth, Is.EqualTo(i + 1));
             }
 
             for (int i = 0; i < maxDepth; i++)
             {
                 AssertToken(i % 2 == 0 ? JsonTokenClass.EndObject : JsonTokenClass.EndArray);
-                Assert.AreEqual(maxDepth - i, _reader.Depth);
+                Assert.That(_reader.Depth, Is.EqualTo(maxDepth - i));
             }
 
             AssertEOF();
-            Assert.AreEqual(0, _reader.Depth);
+            Assert.That(_reader.Depth, Is.EqualTo(0));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void UnclosedComment()
         {
-            Read(@"/* This is an unclosed comment");
+            Assert.Throws<JsonException>(() => Read(@"/* This is an unclosed comment"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void UnterminatedString()
         {
-            Read("\"Hello World'");
+            Assert.Throws<JsonException>(() => Read("\"Hello World'"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void EmptyInput()
         {
-            Read(string.Empty);
+            Assert.Throws<JsonException>(() => Read(string.Empty));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void BadNumber()
         {
-            Read("1234.S6");
+            Assert.Throws<JsonException>(() => Read("1234.S6"));
         }
 
-        [ Test ]
+        [Test]
         public void UnquotedStringsMayWork()
         {
             CreateReader("hello");
-            Assert.AreEqual("hello", _reader.ReadString());
+            Assert.That(_reader.ReadString(), Is.EqualTo("hello"));
         }
 
-        [ Test ]
+        [Test]
         public void Shred()
         {
             JsonReader reader = CreateReader(@"
@@ -438,7 +438,7 @@ namespace Jayrock.Json
                 }
             }
 
-            Assert.AreEqual(new string[] { "cofaxCDS", "cofaxEmail", "cofaxAdmin", "fileServlet", "cofaxTools" }, items.ToArray(typeof(string)));
+            Assert.That(items.ToArray(typeof(string)), Is.EqualTo(new string[] { "cofaxCDS", "cofaxEmail", "cofaxAdmin", "fileServlet", "cofaxTools" }));
         }
 
         private void AssertToken(JsonTokenClass token)
@@ -446,106 +446,102 @@ namespace Jayrock.Json
             AssertTokenText(token, null);
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void UnterminatedObject()
         {
             JsonReader reader = CreateReader("{x:1,y:2");
-            reader.MoveToContent();
-            reader.StepOut();
+            Assert.Throws<JsonException>(() => { reader.MoveToContent(); reader.StepOut(); });
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void UnterminatedArray()
         {
             JsonReader reader = CreateReader("[1,2");
-            reader.MoveToContent();
-            reader.StepOut();
+            Assert.Throws<JsonException>(() => { reader.MoveToContent(); reader.StepOut(); });
         }
-        
-        [ Test, ExpectedException(typeof(JsonException)) ]
+
+        [Test]
         public void MissingObjectMember()
         {
             JsonReader reader = CreateReader("{x:1,/*y:2*/,z:3}");
-            reader.MoveToContent();
-            reader.StepOut();
+            Assert.Throws<JsonException>(() => { reader.MoveToContent(); reader.StepOut(); });
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void MissingObjectMemberNameValueDelimiter()
         {
             JsonReader reader = CreateReader("{x 1}");
-            reader.MoveToContent();
-            reader.StepOut();
+            Assert.Throws<JsonException>(() => { reader.MoveToContent(); reader.StepOut(); });
         }
 
-        [ Test ]
+        [Test]
         public void NullMemberNameHarmless()
         {
             JsonReader reader = CreateReader("{null:null}");
             reader.MoveToContent();
             reader.ReadToken(JsonTokenClass.Object);
-            Assert.AreEqual("null", reader.ReadMember());
+            Assert.That(reader.ReadMember(), Is.EqualTo("null"));
             reader.ReadNull();
-            Assert.AreSame(JsonTokenClass.EndObject, reader.TokenClass);
-            Assert.IsFalse(reader.Read());
+            Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.EndObject));
+            Assert.That(reader.Read(), Is.False);
         }
 
-        [ Test ]
+        [Test]
         public void ExtraCommaAfterLastObjectMemberAllowded()
         {
             JsonReader reader = CreateReader("{ 'member':'value',}");
             reader.ReadToken(JsonTokenClass.Object);
-            Assert.AreEqual("member", reader.ReadMember());
-            Assert.AreEqual("value", reader.ReadString());
-            Assert.AreSame(JsonTokenClass.EndObject, reader.TokenClass);
+            Assert.That(reader.ReadMember(), Is.EqualTo("member"));
+            Assert.That(reader.ReadString(), Is.EqualTo("value"));
+            Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.EndObject));
         }
 
-        [ Test ]
+        [Test]
         public void ExtraCommaAfterLastArrayElementAllowed()
         {
             JsonReader reader = CreateReader("[4,2,]");
             reader.ReadToken(JsonTokenClass.Array);
-            Assert.AreEqual(4, reader.ReadNumber().ToInt32());
-            Assert.AreEqual(2, reader.ReadNumber().ToInt32());
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(4));
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(2));
             reader.ReadToken(JsonTokenClass.EndArray);
         }
 
-        [ Test ]
+        [Test]
         public void AlternateKeyDelimiters()
         {
             JsonReader reader = CreateReader("{ 'm1' = 'v1', 'm2' => 'v2' }");
             reader.ReadToken(JsonTokenClass.Object);
-            Assert.AreEqual("m1", reader.ReadMember());
-            Assert.AreEqual("v1", reader.ReadString());
-            Assert.AreEqual("m2", reader.ReadMember());
-            Assert.AreEqual("v2", reader.ReadString());
-            Assert.AreSame(JsonTokenClass.EndObject, reader.TokenClass);
+            Assert.That(reader.ReadMember(), Is.EqualTo("m1"));
+            Assert.That(reader.ReadString(), Is.EqualTo("v1"));
+            Assert.That(reader.ReadMember(), Is.EqualTo("m2"));
+            Assert.That(reader.ReadString(), Is.EqualTo("v2"));
+            Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.EndObject));
         }
 
-        [ Test ]
+        [Test]
         public void MemberValuesMayBeDelimitedBySemiColon()
         {
             JsonReader reader = CreateReader("{ 'm1' = 'v1'; 'm2' => 'v2' }");
             reader.ReadToken(JsonTokenClass.Object);
-            Assert.AreEqual("m1", reader.ReadMember());
-            Assert.AreEqual("v1", reader.ReadString());
-            Assert.AreEqual("m2", reader.ReadMember());
-            Assert.AreEqual("v2", reader.ReadString());
-            Assert.AreSame(JsonTokenClass.EndObject, reader.TokenClass);
+            Assert.That(reader.ReadMember(), Is.EqualTo("m1"));
+            Assert.That(reader.ReadString(), Is.EqualTo("v1"));
+            Assert.That(reader.ReadMember(), Is.EqualTo("m2"));
+            Assert.That(reader.ReadString(), Is.EqualTo("v2"));
+            Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.EndObject));
         }
 
-        [ Test ]
+        [Test]
         public void ArrayValuesMayBeDelimitedBySemiColon()
         {
             JsonReader reader = CreateReader("[1;2;3]");
             reader.ReadToken(JsonTokenClass.Array);
-            Assert.AreEqual(1, reader.ReadNumber().ToInt32());
-            Assert.AreEqual(2, reader.ReadNumber().ToInt32());
-            Assert.AreEqual(3, reader.ReadNumber().ToInt32());
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(1));
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(2));
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(3));
             reader.ReadToken(JsonTokenClass.EndArray);
         }
 
-        [ Test ]
+        [Test]
         public void SlashSlashComment()
         {
             JsonReader reader = CreateReader(@"
@@ -555,12 +551,12 @@ namespace Jayrock.Json
                 3
             ]");
             reader.ReadToken(JsonTokenClass.Array);
-            Assert.AreEqual(1, reader.ReadNumber().ToInt32());
-            Assert.AreEqual(3, reader.ReadNumber().ToInt32());
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(1));
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(3));
             reader.ReadToken(JsonTokenClass.EndArray);
         }
 
-        [ Test ]
+        [Test]
         public void SlashStarComment()
         {
             JsonReader reader = CreateReader(@"
@@ -573,7 +569,7 @@ namespace Jayrock.Json
             reader.ReadToken(JsonTokenClass.EndArray);
         }
 
-        [ Test ]
+        [Test]
         public void HashComment()
         {
             JsonReader reader = CreateReader(@"
@@ -583,52 +579,52 @@ namespace Jayrock.Json
                 3  # three
             ]");
             reader.ReadToken(JsonTokenClass.Array);
-            Assert.AreEqual(1, reader.ReadNumber().ToInt32());
-            Assert.AreEqual(2, reader.ReadNumber().ToInt32());
-            Assert.AreEqual(3, reader.ReadNumber().ToInt32());
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(1));
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(2));
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(3));
             reader.ReadToken(JsonTokenClass.EndArray);
         }
 
-        [ Test ]
+        [Test]
         public void StringWithHexEncodedChars()
         {
-            Assert.AreEqual("1234\x1234\x56781234\xffff", CreateReader(@"'1234\u1234\u56781234\uffff'").ReadString());
+            Assert.That(CreateReader(@"'1234\u1234\u56781234\uffff'").ReadString(), Is.EqualTo("1234\x1234\x56781234\xffff"));
         }
 
-        [ Test ]
+        [Test]
         public void StringWithEscapedBackspace()
         {
-            Assert.AreEqual("\b", CreateReader("'\\b'").ReadString());
+            Assert.That(CreateReader("'\\b'").ReadString(), Is.EqualTo("\b"));
         }
 
-        [ Test ]
+        [Test]
         public void StringWithEscapedTab()
         {
-            Assert.AreEqual("\t", CreateReader("'\\t'").ReadString());
+            Assert.That(CreateReader("'\\t'").ReadString(), Is.EqualTo("\t"));
         }
 
-        [ Test ]
+        [Test]
         public void StringWithEscapedLineFeed()
         {
-            Assert.AreEqual("\n", CreateReader("'\\n'").ReadString());
-        }
-        
-        [ Test ]
-        public void StringWithEscapedFormFeed()
-        {
-            Assert.AreEqual("\f", CreateReader("'\\f'").ReadString());
+            Assert.That(CreateReader("'\\n'").ReadString(), Is.EqualTo("\n"));
         }
 
-        [ Test ]
+        [Test]
+        public void StringWithEscapedFormFeed()
+        {
+            Assert.That(CreateReader("'\\f'").ReadString(), Is.EqualTo("\f"));
+        }
+
+        [Test]
         public void StringWithEscapedCarriageReturn()
         {
-            Assert.AreEqual("\r", CreateReader("'\\r'").ReadString());
+            Assert.That(CreateReader("'\\r'").ReadString(), Is.EqualTo("\r"));
         }
-        
-        [ Test, ExpectedException(typeof(JsonException)) ]
+
+        [Test]
         public void StringWithIncompleteHexEscaping()
         {
-            Read(@"'\u1'");
+            Assert.Throws<JsonException>(() => Read(@"'\u1'"));
         }
 
         [Test]
@@ -642,17 +638,15 @@ namespace Jayrock.Json
             try
             {
                 CreateReader("-Infinity").Read();
-                Assert.Fail("Expected exception of type {0}.", typeof(JsonException));
+                Assert.Fail(string.Format("Expected exception of type {0}.", typeof(JsonException)));
             }
             catch (JsonException e)
             {
-                Assert.AreEqual(
-                    "The text '-Infinity' has the incorrect syntax for a number.", 
-                    e.Message.Substring(0, e.Message.IndexOf('.') + 1));
+                Assert.That(e.Message.Substring(0, e.Message.IndexOf('.') + 1), Is.EqualTo("The text '-Infinity' has the incorrect syntax for a number."));
             }
         }
 
-        [ Test ]
+        [Test]
         public void OctalNumber()
         {
             CreateReader("0123");
@@ -660,7 +654,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void BadOctalNumberSurfacesAsString()
         {
             CreateReader("0123456789");
@@ -668,7 +662,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void HexNumber()
         {
             CreateReader("0xc001ba55");
@@ -676,7 +670,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void HexNumberWithBigX()
         {
             CreateReader("0Xc001ba55");
@@ -684,7 +678,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void BadHexNumberSurfacesAsString()
         {
             CreateReader("0x1boo");
@@ -692,7 +686,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void LongHexNumberSurfacesAsString()
         {
             string str = "0x" + new string('4', 100);
@@ -701,7 +695,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void LongOctalNumberSurfacesAsString()
         {
             string str = "0" + new string('4', 100);
@@ -710,7 +704,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void RealNumber()
         {
             CreateReader("51.0376480");
@@ -718,7 +712,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void RealNumberWithZeroIntegralPart()
         {
             CreateReader("0.3386980");
@@ -726,7 +720,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void NegativeInteger()
         {
             CreateReader("-42");
@@ -734,7 +728,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void RealNumberWithLowerAndNegativeExp()
         {
             CreateReader("0.123456789e-12");
@@ -742,7 +736,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void RealNumberWithUpperAndPositiveExp()
         {
             CreateReader("1.234567890E+34");
@@ -750,7 +744,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void LargeIntegerUsingExpNotation()
         {
             CreateReader("23456789012E66");
@@ -758,7 +752,7 @@ namespace Jayrock.Json
             AssertEOF();
         }
 
-        [ Test ]
+        [Test]
         public void NumberLargerThanDoubleMaxValue()
         {
             // http://code.google.com/p/jayrock/issues/detail?id=17
@@ -766,17 +760,18 @@ namespace Jayrock.Json
             AssertTokenText(JsonTokenClass.Number, "1.79769313486232e+308");
             AssertEOF();
         }
-        [ Test ]
+
+        [Test]
         public void ReadPositionsAfterEof()
         {
             JsonTextReader reader = new JsonTextReader(new StringReader("[ \nhello ]"));
             while (reader.Read()) { /* NOP */ }
-            Assert.AreEqual(2, reader.LineNumber, "Line number");
-            Assert.AreEqual(7, reader.LinePosition, "Line position");
-            Assert.AreEqual(10, reader.CharCount, "Character count");
+            Assert.That(reader.LineNumber, Is.EqualTo(2), "Line number");
+            Assert.That(reader.LinePosition, Is.EqualTo(7), "Line position");
+            Assert.That(reader.CharCount, Is.EqualTo(10), "Character count");
         }
 
-        [ Test ]
+        [Test]
         public void ReadTwoJsonTextsFromSameString()
         {
             const string json = @"{foo:bar/*baz*/}[foo,bar]";
@@ -786,7 +781,7 @@ namespace Jayrock.Json
             AssertTokenText(JsonTokenClass.String, "bar");
             AssertToken(JsonTokenClass.EndObject);
             AssertEOF();
-            Assert.AreEqual(16, reader.CharCount);
+            Assert.That(reader.CharCount, Is.EqualTo(16));
             _reader = new JsonTextReader(new StringReader(json.Substring(reader.CharCount)));
             AssertToken(JsonTokenClass.Array);
             AssertTokenText(JsonTokenClass.String, "foo");
@@ -797,10 +792,10 @@ namespace Jayrock.Json
 
         private void AssertTokenText(JsonTokenClass token, string text)
         {
-            Assert.IsTrue(_reader.Read());
-            Assert.AreEqual(token, _reader.TokenClass, "Found {0} (with text \x201c{1}\x201d) when expecting {2} (with text \x201c{3}\x201d).", _reader.TokenClass, _reader.Text, token, text);
+            Assert.That(_reader.Read(), Is.True);
+            Assert.That(_reader.TokenClass, Is.EqualTo(token), $"Found {_reader.TokenClass} (with text \x201c{_reader.Text}\x201d) when expecting {token} (with text \x201c{text}\x201d).");
             if (text != null)
-                Assert.AreEqual(text, _reader.Text);
+                Assert.That(_reader.Text, Is.EqualTo(text));
         }
 
         private void AssertMember(string name, JsonTokenClass valueToken)
@@ -812,7 +807,7 @@ namespace Jayrock.Json
         {
             AssertMember(name, JsonTokenClass.String, value);
         }
-        
+
         private void AssertMember(string name, JsonTokenClass valueToken, string valueText)
         {
             AssertTokenText(JsonTokenClass.Member, name);
@@ -821,8 +816,8 @@ namespace Jayrock.Json
 
         private void AssertEOF()
         {
-            Assert.IsFalse(_reader.Read(), "Expected EOF.");
-            Assert.AreEqual(JsonTokenClass.EOF, _reader.TokenClass);
+            Assert.That(_reader.Read(), Is.False, "Expected EOF.");
+            Assert.That(_reader.TokenClass, Is.EqualTo(JsonTokenClass.EOF));
         }
 
         private void Read(string s)
