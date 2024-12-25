@@ -36,40 +36,40 @@ namespace Jayrock.Tests.Json.Conversion
     [TestFixture]
     public class TestObjectConstructor
     {
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void CannotInitializeWithNullType()
         {
-            new ObjectConstructor(null);
+            Assert.Throws<ArgumentNullException>(() => new ObjectConstructor(null));
         }
 
-        [Test, ExpectedException(typeof(ArgumentException))]
+        [Test]
         public void CannotInitializeWithConstructorsFromDifferentTypes()
         {
             ConstructorInfo[] fc = typeof(FooBase).GetConstructors();
-            Assert.AreEqual(1, fc.Length);
+            Assert.That(fc.Length, Is.EqualTo(1));
             ConstructorInfo[] fdc = typeof(FooDerived).GetConstructors();
-            Assert.AreEqual(1, fdc.Length);
+            Assert.That(fdc.Length, Is.EqualTo(1));
             ConstructorInfo[] ctors = new ConstructorInfo[fc.Length + fdc.Length];
             Array.Copy(fc, 0, ctors, 0, fc.Length);
             Array.Copy(fdc, 0, ctors, fc.Length, fdc.Length);
-            new ObjectConstructor(typeof(FooDerived), ctors);
+            Assert.Throws<ArgumentException>(() => new ObjectConstructor(typeof(FooDerived), ctors));
         }
 
-        class FooBase {}
-        class FooDerived : FooBase {}
+        class FooBase { }
+        class FooDerived : FooBase { }
 
-        [Test, ExpectedException(typeof(ArgumentException))]
+        [Test]
         public void CannotInitializeWithNonConstructibleType()
         {
-            new ObjectConstructor(typeof(PrivateThing));
+            Assert.Throws<ArgumentException>(() => new ObjectConstructor(typeof(PrivateThing)));
         }
 
-        class PrivateThing { private PrivateThing() {} }
+        class PrivateThing { private PrivateThing() { } }
 
-        [Test, ExpectedException(typeof(ArgumentException))]
+        [Test]
         public void CannotInitializeWithZeroConstructors()
         {
-            new ObjectConstructor(typeof(object), new ConstructorInfo[0]);
+            Assert.Throws<ArgumentException>(() => new ObjectConstructor(typeof(object), new ConstructorInfo[0]));
         }
 
         [Test]
@@ -80,9 +80,9 @@ namespace Jayrock.Tests.Json.Conversion
             const string json = "{ y: 456, x: 123 }";
             ObjectConstructionResult result = ctor.CreateObject(context, JsonText.CreateReader(json));
             Point point = (Point)result.Object;
-            Assert.AreEqual(123, point.X);
-            Assert.AreEqual(456, point.Y);
-            Assert.AreEqual(0, JsonBuffer.From(result.TailReader).GetMemberCount());
+            Assert.That(point.X, Is.EqualTo(123));
+            Assert.That(point.Y, Is.EqualTo(456));
+            Assert.That(JsonBuffer.From(result.TailReader).GetMemberCount(), Is.EqualTo(0));
         }
 
         [Test]
@@ -92,22 +92,22 @@ namespace Jayrock.Tests.Json.Conversion
             ImportContext context = JsonConvert.CreateImportContext();
             const string json = "{ y: 456, z: 789, x: 123 }";
             ObjectConstructionResult result = ctor.CreateObject(context, JsonText.CreateReader(json));
-            Point point = (Point) result.Object;
-            Assert.AreEqual(123, point.X);
-            Assert.AreEqual(456, point.Y);
+            Point point = (Point)result.Object;
+            Assert.That(point.X, Is.EqualTo(123));
+            Assert.That(point.Y, Is.EqualTo(456));
             NamedJsonBuffer[] tail = JsonBuffer.From(result.TailReader).GetMembersArray();
-            Assert.AreEqual(1, tail.Length);
+            Assert.That(tail.Length, Is.EqualTo(1));
             NamedJsonBuffer z = tail[0];
-            Assert.AreEqual("z", z.Name);
-            Assert.AreEqual(789, z.Buffer.GetNumber().ToInt32());
+            Assert.That(z.Name, Is.EqualTo("z"));
+            Assert.That(z.Buffer.GetNumber().ToInt32(), Is.EqualTo(789));
         }
 
-        [Test, ExpectedException(typeof(JsonException))]
+        [Test]
         public void CannotCreateIfNoneConstructorsMatch()
         {
             ObjectConstructor ctor = new ObjectConstructor(typeof(Point));
             ImportContext context = JsonConvert.CreateImportContext();
-            ctor.CreateObject(context, JsonText.CreateReader("{ z: x: 123 }"));
+            Assert.Throws<JsonException>(() => ctor.CreateObject(context, JsonText.CreateReader("{ z: x: 123 }")));
         }
 
         class Point
@@ -129,28 +129,28 @@ namespace Jayrock.Tests.Json.Conversion
         public void ConstructorSpecificity()
         {
             Thing thing = CreateThing("{ num: 42 }");
-            Assert.AreEqual(42, thing.Number);
-            Assert.AreEqual(GetThingConstructor(typeof(int)), thing.Constructor);
+            Assert.That(thing.Number, Is.EqualTo(42));
+            Assert.That(thing.Constructor, Is.EqualTo(GetThingConstructor(typeof(int))));
 
             thing = CreateThing("{ num: 42, flag: true }");
-            Assert.AreEqual(42, thing.Number);
-            Assert.IsTrue(thing.Flag);
-            Assert.AreEqual(GetThingConstructor(typeof(int), typeof(bool)), thing.Constructor);
+            Assert.That(thing.Number, Is.EqualTo(42));
+            Assert.That(thing.Flag, Is.True);
+            Assert.That(thing.Constructor, Is.EqualTo(GetThingConstructor(typeof(int), typeof(bool))));
 
             thing = CreateThing("{ num: 42, flag: true, str: hello }");
-            Assert.AreEqual(42, thing.Number);
-            Assert.IsTrue(thing.Flag);
-            Assert.AreEqual("hello", thing.String);
-            Assert.AreEqual(GetThingConstructor(typeof(int), typeof(bool), typeof(string)), thing.Constructor);
+            Assert.That(thing.Number, Is.EqualTo(42));
+            Assert.That(thing.Flag, Is.True);
+            Assert.That(thing.String, Is.EqualTo("hello"));
+            Assert.That(thing.Constructor, Is.EqualTo(GetThingConstructor(typeof(int), typeof(bool), typeof(string))));
 
             thing = CreateThing("{ num: 42, flag: true, str: hello, obj: { a: 123, b: 456 } }");
-            Assert.AreEqual(42, thing.Number);
-            Assert.IsTrue(thing.Flag);
-            Assert.AreEqual("hello", thing.String);
-            Assert.AreEqual(2, thing.Object.Count);
-            Assert.AreEqual(123, Convert.ToInt32(thing.Object["a"]));
-            Assert.AreEqual(456, Convert.ToInt32(thing.Object["b"]));
-            Assert.AreEqual(GetThingConstructor(typeof(int), typeof(bool), typeof(string), typeof(IDictionary)), thing.Constructor);
+            Assert.That(thing.Number, Is.EqualTo(42));
+            Assert.That(thing.Flag, Is.True);
+            Assert.That(thing.String, Is.EqualTo("hello"));
+            Assert.That(thing.Object.Count, Is.EqualTo(2));
+            Assert.That(Convert.ToInt32(thing.Object["a"]), Is.EqualTo(123));
+            Assert.That(Convert.ToInt32(thing.Object["b"]), Is.EqualTo(456));
+            Assert.That(thing.Constructor, Is.EqualTo(GetThingConstructor(typeof(int), typeof(bool), typeof(string), typeof(IDictionary))));
         }
 
         private static ConstructorInfo GetThingConstructor(params Type[] types)
@@ -163,7 +163,7 @@ namespace Jayrock.Tests.Json.Conversion
             ObjectConstructor ctor = new ObjectConstructor(typeof(Thing));
             ImportContext context = JsonConvert.CreateImportContext();
             ObjectConstructionResult result = ctor.CreateObject(context, JsonText.CreateReader(json));
-            return (Thing) result.Object;
+            return (Thing)result.Object;
         }
 
         class Thing
@@ -176,16 +176,18 @@ namespace Jayrock.Tests.Json.Conversion
 
             // ReSharper disable UnusedMember.Local
             public Thing(int num)
-                : this(num, false, null, null, (ConstructorInfo)MethodBase.GetCurrentMethod()) {}
+                : this(num, false, null, null, (ConstructorInfo)MethodBase.GetCurrentMethod()) { }
 
             public Thing(int num, bool flag)
-                : this(num, flag, null, null, (ConstructorInfo)MethodBase.GetCurrentMethod()) {}
+                : this(num, flag, null, null, (ConstructorInfo)MethodBase.GetCurrentMethod()) { }
 
             public Thing(int num, bool flag, string str) :
-                this(num, flag, str, null, (ConstructorInfo)MethodBase.GetCurrentMethod()) { }
+                this(num, flag, str, null, (ConstructorInfo)MethodBase.GetCurrentMethod())
+            { }
 
-            public Thing(int num, bool flag, string str, IDictionary obj) : 
-                this(num, flag, str, obj, (ConstructorInfo) MethodBase.GetCurrentMethod()) {}
+            public Thing(int num, bool flag, string str, IDictionary obj) :
+                this(num, flag, str, obj, (ConstructorInfo)MethodBase.GetCurrentMethod())
+            { }
 
             private Thing(int num, bool flag, string str, IDictionary obj, ConstructorInfo ctor)
             {
@@ -209,14 +211,18 @@ namespace Jayrock.Tests.Json.Conversion
         {
             ObjectConstructor constructor = new ObjectConstructor(typeof(ValueThing));
             ObjectConstructionResult result = constructor.CreateObject(new ImportContext(), JsonText.CreateReader("{foo:bar}"));
-            Assert.IsInstanceOfType(typeof(ValueThing), result.Object);
+            Assert.That(result.Object, Is.InstanceOf<ValueThing>());
             JsonReader tail = result.TailReader;
             tail.ReadToken(JsonTokenClass.Object);
-            Assert.AreEqual("foo", tail.ReadMember());
-            Assert.AreEqual("bar", tail.ReadString());
+            Assert.That(tail.ReadMember(), Is.EqualTo("foo"));
+            Assert.That(tail.ReadString(), Is.EqualTo("bar"));
             tail.ReadToken(JsonTokenClass.EndObject);
         }
 
-        struct ValueThing {}
+        struct ValueThing { }
     }
 }
+
+
+
+

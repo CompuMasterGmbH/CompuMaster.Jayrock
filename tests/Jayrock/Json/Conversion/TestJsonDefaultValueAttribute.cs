@@ -34,91 +34,91 @@ namespace Jayrock.Json.Conversion
     [TestFixture]
     public class TestJsonDefaultValueAttribute
     {
-        [ Test ]
+        [Test]
         public void ByteInitialization()
         {
-            AssertInitialization((byte) 42);
+            AssertInitialization((byte)42);
         }
 
-        [ Test ]
+        [Test]
         public void Int16Initialization()
         {
-            AssertInitialization((short) 42);
+            AssertInitialization((short)42);
         }
 
-        [ Test ]
+        [Test]
         public void Int32Initialization()
         {
             AssertInitialization(42);
         }
 
-        [ Test ]
+        [Test]
         public void Int64Initialization()
         {
             AssertInitialization(42L);
         }
 
-        [ Test ]
+        [Test]
         public void SingleInitialization()
         {
             AssertInitialization(42f);
         }
 
-        [ Test ]
+        [Test]
         public void DoubleInitialization()
         {
             AssertInitialization(42.0);
         }
 
-        [ Test ]
+        [Test]
         public void CharInitialization()
         {
             AssertInitialization('X');
         }
 
-        [ Test ]
+        [Test]
         public void StringInitialization()
         {
             AssertInitialization("foobar");
         }
 
-        [ Test ]
+        [Test]
         public void BooleanInitialization()
         {
             AssertInitialization(true);
             AssertInitialization(false);
         }
 
-        [ Test ]
+        [Test]
         public void ObjectInitialization()
         {
             AssertInitialization(new object());
         }
 
-        [ Test ]
+        [Test]
         public void TypedInitialization()
         {
             const string guidString = "79588595-234b-4abc-9624-d221feb2a816";
             JsonDefaultValueAttribute attribute = new JsonDefaultValueAttribute(typeof(Guid), guidString);
-            Assert.IsNotNull(attribute.Value);
-            Assert.IsInstanceOfType(typeof(Guid), attribute.Value);
-            Assert.AreEqual(new Guid(guidString), attribute.Value);
+            Assert.That(attribute.Value, Is.Not.Null);
+            Assert.That(attribute.Value, Is.InstanceOf<Guid>());
+            Assert.That(attribute.Value, Is.EqualTo(new Guid(guidString)));
         }
 
-        [ Test ]
+        [Test]
         public void PropertyDescriptorCustomizedAsJsonObjectMemberExporter()
         {
             TestPropertyDescriptor property = new TestPropertyDescriptor("prop", 42);
             JsonDefaultValueAttribute attribute = new JsonDefaultValueAttribute(42);
             IServiceProvider sp = property;
-            Assert.IsNull(sp.GetService(typeof(IObjectMemberExporter)));
+            Assert.That(sp.GetService(typeof(IObjectMemberExporter)), Is.Null);
             IPropertyDescriptorCustomization customization = attribute;
             customization.Apply(property);
-            IObjectMemberExporter exporter = (IObjectMemberExporter) sp.GetService(typeof(IObjectMemberExporter));
-            Assert.IsNotNull(exporter);
+            IObjectMemberExporter exporter = (IObjectMemberExporter)sp.GetService(typeof(IObjectMemberExporter));
+            Assert.That(exporter, Is.Not.Null);
         }
 
-        [ Test ]
+        [Test]
         public void PropertyDescriptorNotCustomizedWhenDefaultValueIsNull()
         {
             TestPropertyDescriptor property = new TestPropertyDescriptor("prop", null);
@@ -126,10 +126,10 @@ namespace Jayrock.Json.Conversion
             IServiceProvider sp = property;
             IPropertyDescriptorCustomization customization = attribute;
             customization.Apply(property);
-            Assert.IsNull(sp.GetService(typeof(IObjectMemberExporter)));
+            Assert.That(sp.GetService(typeof(IObjectMemberExporter)), Is.Null);
         }
 
-        [ Test ]
+        [Test]
         public void ExportsPropertyValueWhenNotEqualsSpecfiedDefault()
         {
             const string propertyName = "prop";
@@ -140,14 +140,14 @@ namespace Jayrock.Json.Conversion
             writer.WriteStartObject();
             exporter.Export(context, writer, new object());
             writer.WriteEndObject();
-            
+
             JsonReader reader = writer.CreatePlayer();
             reader.ReadToken(JsonTokenClass.Object);
-            Assert.AreEqual(propertyName, reader.ReadMember());
-            Assert.AreEqual(42, reader.ReadNumber().ToInt32());
+            Assert.That(reader.ReadMember(), Is.EqualTo(propertyName));
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(42));
         }
 
-        [ Test ]
+        [Test]
         public void DoesNotExportPropertyValueWhenEqualsSpecfiedDefault()
         {
             IObjectMemberExporter exporter = CreatePropertyExporter("prop", 0, 0);
@@ -163,47 +163,47 @@ namespace Jayrock.Json.Conversion
             reader.ReadToken(JsonTokenClass.EndObject);
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void ThrowsWhenExportingWithNullContext()
         {
-            CreatePropertyExporter("prop", 1, 0).Export(null, new JsonRecorder(), new object());
+            Assert.Throws<ArgumentNullException>(() => CreatePropertyExporter("prop", 1, 0).Export(null, new JsonRecorder(), new object()));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void ThrowsWhenExportingWithNullWriter()
         {
-            CreatePropertyExporter("prop", 1, 0).Export(new ExportContext(), null, new object());
+            Assert.Throws<ArgumentNullException>(() => CreatePropertyExporter("prop", 1, 0).Export(new ExportContext(), null, new object()));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void ThrowsWhenExportingWithNullSource()
         {
-            CreatePropertyExporter("prop", 1, 0).Export(new ExportContext(), new JsonRecorder(), null);
+            Assert.Throws<ArgumentNullException>(() => CreatePropertyExporter("prop", 1, 0).Export(new ExportContext(), new JsonRecorder(), null));
         }
 
-        [ Test ]
+        [Test]
         public void ResetValue()
         {
             JsonDefaultValueAttribute attribute = new JsonDefaultValueAttribute(42);
             attribute.Value = "foobar";
-            Assert.AreEqual("foobar", attribute.Value);
+            Assert.That(attribute.Value, Is.EqualTo("foobar"));
         }
 
-        private static IObjectMemberExporter CreatePropertyExporter(string name, int value, int defaultValue) 
+        private static IObjectMemberExporter CreatePropertyExporter(string name, int value, int defaultValue)
         {
             TestPropertyDescriptor property = new TestPropertyDescriptor(name, value);
             JsonDefaultValueAttribute attribute = new JsonDefaultValueAttribute(defaultValue);
             ((IPropertyDescriptorCustomization)attribute).Apply(property);
             IServiceProvider sp = property;
-            return (IObjectMemberExporter) sp.GetService(typeof(IObjectMemberExporter));
+            return (IObjectMemberExporter)sp.GetService(typeof(IObjectMemberExporter));
         }
 
         private static void AssertInitialization(object value)
         {
             JsonDefaultValueAttribute attribute = new JsonDefaultValueAttribute(value);
-            Assert.IsNotNull(attribute.Value);
-            Assert.IsInstanceOfType(value.GetType(), attribute.Value);
-            Assert.AreEqual(value, attribute.Value);
+            Assert.That(attribute.Value, Is.Not.Null);
+            Assert.That(attribute.Value, Is.InstanceOf(value.GetType()));
+            Assert.That(attribute.Value, Is.EqualTo(value));
         }
 
         private sealed class TestPropertyDescriptor : PropertyDescriptor, IServiceContainer
@@ -256,3 +256,6 @@ namespace Jayrock.Json.Conversion
         }
     }
 }
+
+
+

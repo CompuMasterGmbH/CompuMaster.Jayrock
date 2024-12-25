@@ -8,60 +8,62 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestUriImporter
     {
-        [ Test ]
+        [Test]
         public void ImportString()
         {
             AssertImport(new Uri("http://jayrock.berlios.de/"), "\"http://jayrock.berlios.de/\"");
         }
 
-        [ Test ]
+        [Test]
         public void ImportNull()
         {
             AssertImport(null, "null");
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportNumber()
         {
-            AssertImport(null, "123");
+            Assert.Throws<JsonException>(() => AssertImport(null, "123"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportTrue()
         {
-            AssertImport(null, "true");
+            Assert.Throws<JsonException>(() => AssertImport(null, "true"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportFalse()
         {
-            AssertImport(null, "false");
+            Assert.Throws<JsonException>(() => AssertImport(null, "false"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportArray()
         {
-            AssertImport(null, "[]");
+            Assert.Throws<JsonException>(() => AssertImport(null, "[]"));
         }
-        
-        [ Test, ExpectedException(typeof(JsonException)) ]
+
+        [Test]
         public void CannotImportObject()
         {
-            AssertImport(null, "{}");
+            Assert.Throws<JsonException>(() => AssertImport(null, "{}"));
         }
-        
+
         private static void AssertImport(Uri expected, string input)
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(input));
             UriImporter importer = new UriImporter();
             object o = importer.Import(new ImportContext(), reader);
-            Assert.IsTrue(reader.EOF, "Reader must be at EOF.");
+            Assert.That(reader.EOF, Is.True, "Reader must be at EOF.");
             if (expected != null)
-                Assert.IsInstanceOfType(typeof(Uri), o);
-            Assert.AreEqual(expected, o);
+                Assert.That(o, Is.InstanceOf<Uri>());
+            Assert.That(o, Is.EqualTo(expected));
         }
     }
 }
+
+

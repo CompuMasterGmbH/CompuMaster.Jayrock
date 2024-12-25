@@ -29,56 +29,56 @@ namespace Jayrock.Json
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonBuffer
     {
-        [ Test ]
+        [Test]
         public void IsSerializable()
         {
-            Assert.IsTrue(typeof(JsonBuffer).IsSerializable);
+            Assert.That(typeof(JsonBuffer).IsSerializable, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void EmptyHasZeroLength()
         {
-            Assert.AreEqual(0, JsonBuffer.Empty.Length);
+            Assert.That(JsonBuffer.Empty.Length, Is.EqualTo(0));
         }
 
         [Test]
         public void EmptyIsNotNull()
         {
-            Assert.IsFalse(JsonBuffer.Empty.IsNull);
+            Assert.That(JsonBuffer.Empty.IsNull, Is.False);
         }
 
         [Test]
         public void EmptyIsNotScalar()
         {
-            Assert.IsFalse(JsonBuffer.Empty.IsScalar);
+            Assert.That(JsonBuffer.Empty.IsScalar, Is.False);
         }
 
         [Test]
         public void EmptyIsNotStructured()
         {
-            Assert.IsFalse(JsonBuffer.Empty.IsStructured);
+            Assert.That(JsonBuffer.Empty.IsStructured, Is.False);
         }
 
         [Test]
         public void EmptyIsEmpty()
         {
-            Assert.IsTrue(JsonBuffer.Empty.IsEmpty);
+            Assert.That(JsonBuffer.Empty.IsEmpty, Is.True);
         }
 
-        [Test, ExpectedException(typeof(InvalidOperationException))]
+        [Test]
         public void EmptyCannotBeRead()
         {
-            JsonBuffer.Empty.CreateReader();
+            Assert.Throws<InvalidOperationException>(() => JsonBuffer.Empty.CreateReader());
         }
 
-        [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [Test]
         public void EmptyCannotBeIndexedInto()
         {
-            /* JsonBuffer unused = */ JsonBuffer.Empty[0] /* [1] */ .ToString();
-            
+            Assert.Throws<ArgumentOutOfRangeException>(() => JsonBuffer.Empty[0].ToString()); /* [1] */
+
             //
             // [1] The ToString call is unnecessary but it is added here
             //     instead of taking the indexed value into an unused 
@@ -97,14 +97,14 @@ namespace Jayrock.Json
             writer.WriteString("baz");
             writer.WriteEndArray();
             JsonBuffer buffer = writer.GetBuffer();
-            Assert.AreEqual(5, buffer.Length);
+            Assert.That(buffer.Length, Is.EqualTo(5));
             JsonBufferReader reader = buffer.CreateReader();
             reader.ReadToken(JsonTokenClass.Array);
-            Assert.AreEqual("foo", reader.ReadString());
-            Assert.AreEqual("bar", reader.ReadString());
-            Assert.AreEqual("baz", reader.ReadString());
+            Assert.That(reader.ReadString(), Is.EqualTo("foo"));
+            Assert.That(reader.ReadString(), Is.EqualTo("bar"));
+            Assert.That(reader.ReadString(), Is.EqualTo("baz"));
             reader.ReadToken(JsonTokenClass.EndArray);
-            Assert.IsTrue(reader.EOF);
+            Assert.That(reader.EOF, Is.True);
         }
 
         [Test]
@@ -132,7 +132,7 @@ namespace Jayrock.Json
             reader.Read(); // outer array start
             reader.Read(); // inner array start
             reader.Read(); // inner array end
-            Assert.AreEqual(JsonToken.String("foo"), reader.BufferValue()[0]);
+            Assert.That(reader.BufferValue()[0], Is.EqualTo(JsonToken.String("foo")));
         }
 
         [Test]
@@ -144,7 +144,7 @@ namespace Jayrock.Json
             reader.Read(); // outer object start
             reader.Read(); // inner object start
             reader.Read(); // inner object end
-            Assert.AreEqual(JsonToken.String("foo"), reader.BufferValue()[0]);
+            Assert.That(reader.BufferValue()[0], Is.EqualTo(JsonToken.String("foo")));
         }
 
         [Test]
@@ -155,7 +155,7 @@ namespace Jayrock.Json
             JsonBufferReader reader = writer.GetBuffer().CreateReader();
             reader.Read(); // object start
             reader.Read(); // foo
-            Assert.AreEqual(JsonToken.String("bar"), reader.BufferValue().CreateReader().Token);
+            Assert.That(reader.BufferValue().CreateReader().Token, Is.EqualTo(JsonToken.String("bar")));
         }
 
         [Test]
@@ -166,7 +166,7 @@ namespace Jayrock.Json
             JsonBufferReader reader = writer.GetBuffer().CreateReader();
             reader.Read(); // array start
             reader.Read(); // array end
-            Assert.IsTrue(reader.BufferValue().IsEmpty);
+            Assert.That(reader.BufferValue().IsEmpty, Is.True);
         }
 
         [Test]
@@ -175,9 +175,9 @@ namespace Jayrock.Json
             JsonBufferWriter writer = new JsonBufferWriter();
             writer.WriteFromReader(JsonText.CreateReader("[]"));
             JsonBuffer buffer = writer.GetBuffer().CreateReader().BufferValue();
-            Assert.AreEqual(2, buffer.Length);
-            Assert.AreEqual(JsonToken.Array(), buffer[0]);
-            Assert.AreEqual(JsonToken.EndArray(), buffer[1]);
+            Assert.That(buffer.Length, Is.EqualTo(2));
+            Assert.That(buffer[0], Is.EqualTo(JsonToken.Array()));
+            Assert.That(buffer[1], Is.EqualTo(JsonToken.EndArray()));
         }
 
         [Test]
@@ -189,13 +189,13 @@ namespace Jayrock.Json
             JsonBufferReader reader = buffer.CreateReader();
             reader.Read(); // array start
             reader.Read(); // string
-            Assert.AreEqual("foobar", reader.BufferValue().CreateReader().BufferValue().CreateReader().ReadString());
+            Assert.That(reader.BufferValue().CreateReader().BufferValue().CreateReader().ReadString(), Is.EqualTo("foobar"));
         }
 
         [Test]
         public void GetArrayLength()
         {
-            Assert.AreEqual(3, JsonBuffer.From("[1,2,3]").GetArrayLength());
+            Assert.That(JsonBuffer.From("[1,2,3]").GetArrayLength(), Is.EqualTo(3));
         }
 
         [Test]
@@ -203,10 +203,10 @@ namespace Jayrock.Json
         {
             JsonBuffer[] values = new JsonBuffer[3];
             int count = JsonBuffer.From("[1,2,3]").GetArray(values);
-            Assert.AreEqual(3, count);
-            Assert.AreEqual(1, (int)values[0].GetNumber());
-            Assert.AreEqual(2, (int)values[1].GetNumber());
-            Assert.AreEqual(3, (int)values[2].GetNumber());
+            Assert.That(count, Is.EqualTo(3));
+            Assert.That((int)values[0].GetNumber(), Is.EqualTo(1));
+            Assert.That((int)values[1].GetNumber(), Is.EqualTo(2));
+            Assert.That((int)values[2].GetNumber(), Is.EqualTo(3));
         }
 
         [Test]
@@ -214,9 +214,9 @@ namespace Jayrock.Json
         {
             JsonBuffer[] values = new JsonBuffer[2];
             int count = JsonBuffer.From("[1,2,3]").GetArray(values);
-            Assert.AreEqual(~2, count);
-            Assert.AreEqual(1, (int)values[0].GetNumber());
-            Assert.AreEqual(2, (int)values[1].GetNumber());
+            Assert.That(count, Is.EqualTo(~2));
+            Assert.That((int)values[0].GetNumber(), Is.EqualTo(1));
+            Assert.That((int)values[1].GetNumber(), Is.EqualTo(2));
         }
 
         [Test]
@@ -224,23 +224,23 @@ namespace Jayrock.Json
         {
             JsonBuffer[] values = new JsonBuffer[4];
             int count = JsonBuffer.From("[1,2,3]").GetArray(values);
-            Assert.AreEqual(3, count);
-            Assert.AreEqual(1, (int)values[0].GetNumber());
-            Assert.AreEqual(2, (int)values[1].GetNumber());
-            Assert.AreEqual(3, (int)values[2].GetNumber());
-            Assert.IsTrue(values[3].IsEmpty);
+            Assert.That(count, Is.EqualTo(3));
+            Assert.That((int)values[0].GetNumber(), Is.EqualTo(1));
+            Assert.That((int)values[1].GetNumber(), Is.EqualTo(2));
+            Assert.That((int)values[2].GetNumber(), Is.EqualTo(3));
+            Assert.That(values[3].IsEmpty, Is.True);
         }
 
         [Test]
         public void GetArrayLengthOnNull()
         {
-            Assert.AreEqual(0, JsonBuffer.From("[null]").GetArray()[0].GetArrayLength());
+            Assert.That(JsonBuffer.From("[null]").GetArray()[0].GetArrayLength(), Is.EqualTo(0));
         }
 
         [Test]
         public void GetMemberCount()
         {
-            Assert.AreEqual(3, JsonBuffer.From("{a:1,b:2,c:3}").GetMemberCount());
+            Assert.That(JsonBuffer.From("{a:1,b:2,c:3}").GetMemberCount(), Is.EqualTo(3));
         }
 
         [Test]
@@ -248,13 +248,13 @@ namespace Jayrock.Json
         {
             NamedJsonBuffer[] members = new NamedJsonBuffer[3];
             int count = JsonBuffer.From("{a:1,b:2,c:3}").GetMembers(members);
-            Assert.AreEqual(3, count);
-            Assert.AreEqual("a", members[0].Name);
-            Assert.AreEqual(1, (int) members[0].Buffer.GetNumber());
-            Assert.AreEqual("b", members[1].Name);
-            Assert.AreEqual(2, (int) members[1].Buffer.GetNumber());
-            Assert.AreEqual("c", members[2].Name);
-            Assert.AreEqual(3, (int) members[2].Buffer.GetNumber());
+            Assert.That(count, Is.EqualTo(3));
+            Assert.That(members[0].Name, Is.EqualTo("a"));
+            Assert.That((int)members[0].Buffer.GetNumber(), Is.EqualTo(1));
+            Assert.That(members[1].Name, Is.EqualTo("b"));
+            Assert.That((int)members[1].Buffer.GetNumber(), Is.EqualTo(2));
+            Assert.That(members[2].Name, Is.EqualTo("c"));
+            Assert.That((int)members[2].Buffer.GetNumber(), Is.EqualTo(3));
         }
 
         [Test]
@@ -262,11 +262,11 @@ namespace Jayrock.Json
         {
             NamedJsonBuffer[] members = new NamedJsonBuffer[2];
             int count = JsonBuffer.From("{a:1,b:2,c:3}").GetMembers(members);
-            Assert.AreEqual(~2, count);
-            Assert.AreEqual("a", members[0].Name);
-            Assert.AreEqual(1, (int) members[0].Buffer.GetNumber());
-            Assert.AreEqual("b", members[1].Name);
-            Assert.AreEqual(2, (int) members[1].Buffer.GetNumber());
+            Assert.That(count, Is.EqualTo(~2));
+            Assert.That(members[0].Name, Is.EqualTo("a"));
+            Assert.That((int)members[0].Buffer.GetNumber(), Is.EqualTo(1));
+            Assert.That(members[1].Name, Is.EqualTo("b"));
+            Assert.That((int)members[1].Buffer.GetNumber(), Is.EqualTo(2));
         }
 
         [Test]
@@ -274,124 +274,124 @@ namespace Jayrock.Json
         {
             NamedJsonBuffer[] members = new NamedJsonBuffer[4];
             int count = JsonBuffer.From("{a:1,b:2,c:3}").GetMembers(members);
-            Assert.AreEqual(3, count);
-            Assert.AreEqual("a", members[0].Name);
-            Assert.AreEqual(1, (int) members[0].Buffer.GetNumber());
-            Assert.AreEqual("b", members[1].Name);
-            Assert.AreEqual(2, (int) members[1].Buffer.GetNumber());
-            Assert.AreEqual("c", members[2].Name);
-            Assert.AreEqual(3, (int) members[2].Buffer.GetNumber());
-            Assert.IsTrue(members[3].IsEmpty);
+            Assert.That(count, Is.EqualTo(3));
+            Assert.That(members[0].Name, Is.EqualTo("a"));
+            Assert.That((int)members[0].Buffer.GetNumber(), Is.EqualTo(1));
+            Assert.That(members[1].Name, Is.EqualTo("b"));
+            Assert.That((int)members[1].Buffer.GetNumber(), Is.EqualTo(2));
+            Assert.That(members[2].Name, Is.EqualTo("c"));
+            Assert.That((int)members[2].Buffer.GetNumber(), Is.EqualTo(3));
+            Assert.That(members[3].IsEmpty, Is.True);
         }
-        
+
         [Test]
         public void GetMembersIntoArrayPermitsNull()
         {
-            Assert.AreEqual(3, JsonBuffer.From("{a:1,b:2,c:3}").GetMembers(null));
+            Assert.That(JsonBuffer.From("{a:1,b:2,c:3}").GetMembers(null), Is.EqualTo(3));
         }
 
         [Test]
         public void GetMembersArray()
         {
             NamedJsonBuffer[] members = JsonBuffer.From("{a:1,b:2,c:3}").GetMembersArray();
-            Assert.AreEqual(3, members.Length);
-            Assert.AreEqual("a", members[0].Name);
-            Assert.AreEqual(1, (int) members[0].Buffer.GetNumber());
-            Assert.AreEqual("b", members[1].Name);
-            Assert.AreEqual(2, (int) members[1].Buffer.GetNumber());
-            Assert.AreEqual("c", members[2].Name);
-            Assert.AreEqual(3, (int) members[2].Buffer.GetNumber());
+            Assert.That(members.Length, Is.EqualTo(3));
+            Assert.That(members[0].Name, Is.EqualTo("a"));
+            Assert.That((int)members[0].Buffer.GetNumber(), Is.EqualTo(1));
+            Assert.That(members[1].Name, Is.EqualTo("b"));
+            Assert.That((int)members[1].Buffer.GetNumber(), Is.EqualTo(2));
+            Assert.That(members[2].Name, Is.EqualTo("c"));
+            Assert.That((int)members[2].Buffer.GetNumber(), Is.EqualTo(3));
         }
 
         [Test]
         public void GetMembersCountOnNull()
         {
-            Assert.AreEqual(0, JsonBuffer.From("[null]").GetArray()[0].GetMemberCount());
+            Assert.That(JsonBuffer.From("[null]").GetArray()[0].GetMemberCount(), Is.EqualTo(0));
         }
 
         [Test]
         public void IsObject()
         {
-            Assert.IsTrue(JsonBuffer.From("{}").IsObject);
+            Assert.That(JsonBuffer.From("{}").IsObject, Is.True);
         }
 
         [Test]
         public void IsArray()
         {
-            Assert.IsTrue(JsonBuffer.From("[]").IsArray);
+            Assert.That(JsonBuffer.From("[]").IsArray, Is.True);
         }
 
         [Test]
         public void Equality()
         {
-            Assert.AreEqual(JsonBuffer.From("[1,2,3]"), JsonBuffer.From("[1,2,3]"));
+            Assert.That(JsonBuffer.From("[1,2,3]"), Is.EqualTo(JsonBuffer.From("[1,2,3]")));
         }
 
         [Test]
         public void EmptyEquality()
         {
-            Assert.AreEqual(JsonBuffer.Empty, JsonBuffer.Empty);
+            Assert.That(JsonBuffer.Empty, Is.EqualTo(JsonBuffer.Empty));
         }
 
         [Test]
         public void Inequality()
         {
-            Assert.AreNotEqual(JsonBuffer.From("[1,2,three,4]"), JsonBuffer.From("[1,2,THREE,4]"));
+            Assert.That(JsonBuffer.From("[1,2,three,4]"), Is.Not.EqualTo(JsonBuffer.From("[1,2,THREE,4]")));
         }
 
         [Test]
         public void OpEquality()
         {
-            Assert.IsTrue(JsonBuffer.From("[1,2,3]") == JsonBuffer.From("[1,2,3]"));
+            Assert.That(JsonBuffer.From("[1,2,3]") == JsonBuffer.From("[1,2,3]"), Is.True);
         }
 
         [Test]
         public void OpInequality()
         {
-            Assert.IsTrue(JsonBuffer.From("[1,2,three,4]") != JsonBuffer.From("[1,2,THREE,4]"));
+            Assert.That(JsonBuffer.From("[1,2,three,4]") != JsonBuffer.From("[1,2,THREE,4]"), Is.True);
         }
 
         [Test]
         public void StringRepresentation()
         {
             string str = JsonBuffer.From("[42,foobar,null,true,false,{x:123,y:456}]").ToString();
-            Assert.AreEqual("[42,\"foobar\",null,true,false,{\"x\":123,\"y\":456}]", str);
+            Assert.That(str, Is.EqualTo("[42,\"foobar\",null,true,false,{\"x\":123,\"y\":456}]"));
         }
 
         [Test]
         public void StringRepresentationForEmpty()
         {
-            Assert.AreEqual(string.Empty, JsonBuffer.Empty.ToString());
+            Assert.That(JsonBuffer.Empty.ToString(), Is.EqualTo(string.Empty));
         }
 
         [Test]
         public void StringRepresentationForNull()
         {
-            Assert.AreEqual("null", JsonBuffer.From(JsonToken.Null()).ToString());
+            Assert.That(JsonBuffer.From(JsonToken.Null()).ToString(), Is.EqualTo("null"));
         }
 
         [Test]
         public void StringRepresentationForString()
         {
-            Assert.AreEqual("\"foo\\nbar\"", JsonBuffer.From(JsonToken.String("foo\nbar")).ToString());
+            Assert.That(JsonBuffer.From(JsonToken.String("foo\nbar")).ToString(), Is.EqualTo("\"foo\\nbar\""));
         }
 
         [Test]
         public void StringRepresentationForNumber()
         {
-            Assert.AreEqual("42", JsonBuffer.From(JsonToken.Number("42")).ToString());
+            Assert.That(JsonBuffer.From(JsonToken.Number("42")).ToString(), Is.EqualTo("42"));
         }
 
         [Test]
         public void StringRepresentationForTrue()
         {
-            Assert.AreEqual("true", JsonBuffer.From(JsonToken.True()).ToString());
+            Assert.That(JsonBuffer.From(JsonToken.True()).ToString(), Is.EqualTo("true"));
         }
 
         [Test]
         public void StringRepresentationForFalse()
         {
-            Assert.AreEqual("false", JsonBuffer.From(JsonToken.False()).ToString());
+            Assert.That(JsonBuffer.From(JsonToken.False()).ToString(), Is.EqualTo("false"));
         }
 
         [Test(Description = @"http://code.google.com/p/jayrock/issues/detail?id=26")]
@@ -411,10 +411,10 @@ namespace Jayrock.Json
             JsonBuffer subBuffer = JsonBuffer.From(reader);
             //    ...create reader from the subbuffer
             JsonBufferReader reader2 = subBuffer.CreateReader();
-            
+
             // 3. Call reader.BufferValue() this should break
             JsonBuffer buffer2 = reader2.BufferValue();
-            Assert.IsTrue(buffer2.IsObject);
+            Assert.That(buffer2.IsObject, Is.True);
         }
 
         [Test(Description = @"http://code.google.com/p/jayrock/issues/detail?id=57")]
@@ -425,7 +425,7 @@ namespace Jayrock.Json
             JsonBuffer.From(json);
         }
 
-        private static void AssertBufferedValueScalarOrNull(JsonToken expected, JsonBufferWriter writer) 
+        private static void AssertBufferedValueScalarOrNull(JsonToken expected, JsonBufferWriter writer)
         {
             JsonBuffer buffer = writer.GetBuffer();
             JsonBufferReader reader = buffer.CreateReader();
@@ -433,15 +433,19 @@ namespace Jayrock.Json
             reader.Read();
             JsonBuffer value = reader.BufferValue();
             if (expected.Class == JsonTokenClass.Null)
-                Assert.IsTrue(value.IsNull);
+                Assert.That(value.IsNull, Is.True);
             else
-                Assert.IsTrue(value.IsScalar);
+                Assert.That(value.IsScalar, Is.True);
             JsonBufferReader vr = value.CreateReader();
-            Assert.AreEqual(1, vr.Depth);
-            Assert.AreEqual(expected, vr.Token);
+            Assert.That(vr.Depth, Is.EqualTo(1));
+            Assert.That(vr.Token, Is.EqualTo(expected));
             vr.Read();
             vr.ReadToken(JsonTokenClass.EndArray);
-            Assert.IsTrue(vr.EOF);
+            Assert.That(vr.EOF, Is.True);
         }
     }
 }
+
+
+
+

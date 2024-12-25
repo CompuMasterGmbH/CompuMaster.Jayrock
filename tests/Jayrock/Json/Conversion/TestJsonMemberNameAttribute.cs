@@ -30,78 +30,77 @@ namespace Jayrock.Json.Conversion
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonMemberNameAttribute
     {
-        [ Test ]
+        [Test]
         public void IsSerializable()
         {
-            Assert.IsTrue(typeof(JsonMemberNameAttribute).IsSerializable);
+            Assert.That(typeof(JsonMemberNameAttribute).IsSerializable, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void DefaultInitializationYieldsEmptyName()
         {
             JsonMemberNameAttribute attribute = new JsonMemberNameAttribute();
-            Assert.IsNotNull(attribute.Name);
-            Assert.AreEqual(string.Empty, attribute.Name);
+            Assert.That(attribute.Name, Is.Not.Null);
+            Assert.That(attribute.Name, Is.EqualTo(string.Empty));
         }
 
-        [ Test ]
+        [Test]
         public void InitializingNullNameYieldsEmptyName()
         {
             JsonMemberNameAttribute attribute = new JsonMemberNameAttribute(null);
-            Assert.IsNotNull(attribute.Name);
-            Assert.AreEqual(string.Empty, attribute.Name);
+            Assert.That(attribute.Name, Is.Not.Null);
+            Assert.That(attribute.Name, Is.EqualTo(string.Empty));
         }
 
-        [ Test ]
+        [Test]
         public void InitializeName()
         {
             JsonMemberNameAttribute attribute = new JsonMemberNameAttribute("name");
-            Assert.AreEqual("name", attribute.Name);
+            Assert.That(attribute.Name, Is.EqualTo("name"));
         }
 
-        [ Test ]
+        [Test]
         public void SetName()
         {
             JsonMemberNameAttribute attribute = new JsonMemberNameAttribute();
-            Assert.AreEqual(string.Empty, attribute.Name);
+            Assert.That(attribute.Name, Is.EqualTo(string.Empty));
             attribute.Name = "foo";
-            Assert.AreEqual("foo", attribute.Name);
+            Assert.That(attribute.Name, Is.EqualTo("foo"));
         }
 
-        [ Test ]
+        [Test]
         public void PropertyDescriptorNameCustomization()
         {
             TestPropertyDescriptor property = CreateTestProperty("foo");
             IPropertyDescriptorCustomization customization = new JsonMemberNameAttribute("bar");
             customization.Apply(property);
-            Assert.AreEqual("bar", property.CustomizedName);
+            Assert.That(property.CustomizedName, Is.EqualTo("bar"));
         }
 
-        [ Test ]
+        [Test]
         public void PropertyDescriptorNameCustomizationSkippedOnEmptyName()
         {
             TestPropertyDescriptor property = CreateTestProperty("foo");
             IPropertyDescriptorCustomization customization = new JsonMemberNameAttribute();
             customization.Apply(property);
-            Assert.IsNull(property.CustomizedName);
+            Assert.That(property.CustomizedName, Is.Null);
         }
 
-        [ Test ]
-        [ ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotApplyToNullPropertyDescriptor()
         {
             IPropertyDescriptorCustomization customization = new JsonMemberNameAttribute();
-            customization.Apply(null);
+            Assert.Throws<ArgumentNullException>(() => customization.Apply(null));
         }
 
-        private static TestPropertyDescriptor CreateTestProperty(string baseName) 
+        private static TestPropertyDescriptor CreateTestProperty(string baseName)
         {
             TestPropertyDescriptor property = new TestPropertyDescriptor(baseName);
-            Assert.AreEqual(baseName, property.Name);
-            Assert.IsNull(property.CustomizedName);
+            Assert.That(property.Name, Is.EqualTo(baseName));
+            Assert.That(property.CustomizedName, Is.Null);
             return property;
         }
 
@@ -110,7 +109,7 @@ namespace Jayrock.Json.Conversion
             public string CustomizedName;
 
             public TestPropertyDescriptor(string name)
-                : base(name, null) {}
+                : base(name, null) { }
 
             public void SetName(string name)
             {
@@ -135,3 +134,6 @@ namespace Jayrock.Json.Conversion
         }
     }
 }
+
+
+

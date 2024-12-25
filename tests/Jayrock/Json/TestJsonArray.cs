@@ -32,39 +32,39 @@ namespace Jayrock.Json
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonArray
     {
-        [ Test ]
+        [Test]
         public void AddNullValue()
         {
             JsonArray a = new JsonArray();
             a.Add(null);
-            Assert.AreEqual(1, a.Count);
-            Assert.IsNull(a[0]);
+            Assert.That(a.Count, Is.EqualTo(1));
+            Assert.That(a[0], Is.Null);
         }
 
-        [ Test ]
+        [Test]
         public void AddNullValueViaIList()
         {
             IList list = new JsonArray();
             list.Add(null);
-            Assert.AreEqual(1, list.Count);
-            Assert.IsNull(list[0]);
+            Assert.That(list.Count, Is.EqualTo(1));
+            Assert.That(list[0], Is.Null);
         }
 
-        [ Test ]
+        [Test]
         public void Import()
         {
             JsonArray a = new JsonArray();
             a.Import(new JsonTextReader(new StringReader("[123,'Hello World',true]")));
-            Assert.AreEqual(3, a.Length);
-            Assert.AreEqual(123, (int) (JsonNumber) a[0]);
-            Assert.AreEqual("Hello World", a[1]);
-            Assert.AreEqual(true, a[2]);
+            Assert.That(a.Length, Is.EqualTo(3));
+            Assert.That((int)(JsonNumber)a[0], Is.EqualTo(123));
+            Assert.That(a[1], Is.EqualTo("Hello World"));
+            Assert.That(a[2], Is.EqualTo(true));
         }
 
-        [ Test ]
+        [Test]
         public void Export()
         {
             JsonArray a = new JsonArray(new object[] { 123, "Hello World", true });
@@ -72,29 +72,29 @@ namespace Jayrock.Json
             a.Export(writer);
             JsonReader reader = writer.CreatePlayer();
             reader.ReadToken(JsonTokenClass.Array);
-            Assert.AreEqual(a[0], reader.ReadNumber().ToInt32());
-            Assert.AreEqual(a[1], reader.ReadString());
-            Assert.AreEqual(a[2], reader.ReadBoolean());
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(a[0]));
+            Assert.That(reader.ReadString(), Is.EqualTo(a[1]));
+            Assert.That(reader.ReadBoolean(), Is.EqualTo(a[2]));
             reader.ReadToken(JsonTokenClass.EndArray);
         }
-        
-        [ Test ]
+
+        [Test]
         public void ContentsClearedBeforeImporting()
         {
             JsonArray a = new JsonArray();
             a.Add(new object());
-            Assert.AreEqual(1, a.Length);
+            Assert.That(a.Length, Is.EqualTo(1));
             a.Import(new JsonTextReader(new StringReader("[123]")));
-            Assert.AreEqual(1, a.Length);
+            Assert.That(a.Length, Is.EqualTo(1));
         }
-        
-        [ Test ]
+
+        [Test]
         public void ImportIsExceptionSafe()
         {
             JsonArray a = new JsonArray();
             object o = new object();
             a.Add(o);
-            
+
             try
             {
                 a.Import(new JsonTextReader(new StringReader("[123,456,")));
@@ -102,30 +102,34 @@ namespace Jayrock.Json
             catch (JsonException)
             {
             }
-            
-            Assert.AreEqual(1, a.Count);
-            Assert.AreSame(o, a[0]);
+
+            Assert.That(a.Count, Is.EqualTo(1));
+            Assert.That(a[0], Is.SameAs(o));
         }
-        
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+
+        [Test]
         public void CannotUseNullReaderWithImport()
         {
             IJsonImportable array = new JsonArray();
-            array.Import(new ImportContext(), null);
+            Assert.Throws<ArgumentNullException>(() => array.Import(new ImportContext(), null));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotUseNullContextWithImport()
         {
             IJsonImportable array = new JsonArray();
-            array.Import(null, (new JsonRecorder()).CreatePlayer());
+            Assert.Throws<ArgumentNullException>(() => array.Import(null, (new JsonRecorder()).CreatePlayer()));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotUseNullArgWithExport()
         {
             IJsonExportable array = new JsonArray();
-            array.Export(null, null);
+            Assert.Throws<ArgumentNullException>(() => array.Export(null, null));
         }
     }
 }
+
+
+
+

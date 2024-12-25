@@ -29,13 +29,13 @@ namespace Jayrock.Json.Conversion
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonConvert
     {
         private bool _createImportContextCalled;
         private bool _createExportContextCalled;
 
-        [ SetUp ]
+        [SetUp]
         public void Init()
         {
             _createImportContextCalled = false;
@@ -45,25 +45,25 @@ namespace Jayrock.Json.Conversion
         [Test]
         public void DefaultExportContextFactory()
         {
-            Assert.IsNotNull(JsonConvert.DefaultExportContextFactory);
+            Assert.That(JsonConvert.DefaultExportContextFactory, Is.Not.Null);
         }
 
-        [ Test ]
+        [Test]
         public void DefaultImportContextFactory()
         {
-            Assert.IsNotNull(JsonConvert.DefaultImportContextFactory);
+            Assert.That(JsonConvert.DefaultImportContextFactory, Is.Not.Null);
         }
 
-        [ Test ]
+        [Test]
         public void SetCurrentExportContextFactory()
         {
             try
             {
                 ExportContextFactoryHandler factory = new ExportContextFactoryHandler(CreateExportContext);
                 JsonConvert.CurrentExportContextFactory = factory;
-                Assert.AreSame(factory, JsonConvert.CurrentExportContextFactory);
+                Assert.That(JsonConvert.CurrentExportContextFactory, Is.SameAs(factory));
                 JsonConvert.CreateExportContext();
-                Assert.IsTrue(_createExportContextCalled);
+                Assert.That(_createExportContextCalled, Is.True);
             }
             finally
             {
@@ -71,35 +71,33 @@ namespace Jayrock.Json.Conversion
             }
         }
 
-        [ Test ]
-        [ ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotSetCurrentExportContextFactoryToNull()
         {
-            JsonConvert.CurrentExportContextFactory = null;
+            Assert.Throws<ArgumentNullException>(() => JsonConvert.CurrentExportContextFactory = null);
         }
 
-        [ Test ]
+        [Test]
         public void SetCurrentImportContextFactory()
         {
             try
             {
                 ImportContextFactoryHandler factory = new ImportContextFactoryHandler(CreateImportContext);
                 JsonConvert.CurrentImportContextFactory = factory;
-                Assert.AreSame(factory, JsonConvert.CurrentImportContextFactory);
+                Assert.That(JsonConvert.CurrentImportContextFactory, Is.SameAs(factory));
                 JsonConvert.CreateImportContext();
-                Assert.IsTrue(_createImportContextCalled);
+                Assert.That(_createImportContextCalled, Is.True);
             }
             finally
             {
-                JsonConvert.CurrentImportContextFactory = JsonConvert.DefaultImportContextFactory;                
+                JsonConvert.CurrentImportContextFactory = JsonConvert.DefaultImportContextFactory;
             }
         }
 
-        [ Test ]
-        [ ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotSetCurrentImportContextFactoryToNull()
         {
-            JsonConvert.CurrentImportContextFactory = null;
+            Assert.Throws<ArgumentNullException>(() => JsonConvert.CurrentImportContextFactory = null);
         }
 
         private ExportContext CreateExportContext()
@@ -115,3 +113,6 @@ namespace Jayrock.Json.Conversion
         }
     }
 }
+
+
+

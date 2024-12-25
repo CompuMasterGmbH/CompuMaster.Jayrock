@@ -33,17 +33,17 @@ namespace Jayrock.Json.Conversion
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestCustomTypeDescriptor
     {
-        [ Test ]
+        [Test]
         public void MembersWithIgnoreAttributeExcluded()
         {
             CustomTypeDescriptor thingType = new CustomTypeDescriptor(typeof(Thing));
             PropertyDescriptorCollection properties = thingType.GetProperties();
-            Assert.AreEqual(4, properties.Count);
-            Assert.IsNull(properties.Find("Field2", true));
-            Assert.IsNull(properties.Find("Property2", true));
+            Assert.That(properties.Count, Is.EqualTo(4));
+            Assert.That(properties.Find("Field2", true), Is.Null);
+            Assert.That(properties.Find("Property2", true), Is.Null);
         }
 
         [Test]
@@ -55,168 +55,168 @@ namespace Jayrock.Json.Conversion
             //
 
             CustomTypeDescriptor thingType = new CustomTypeDescriptor(typeof(ThingWithIndexer));
-            Assert.AreEqual(0, thingType.GetProperties().Count);
+            Assert.That(thingType.GetProperties().Count, Is.EqualTo(0));
         }
 
         [Test]
         public void TypeFieldDescriptorSupportsCustomization()
         {
             PropertyDescriptor property = Thing.GetField1Property();
-            Assert.IsInstanceOfType(typeof(IPropertyCustomization), property);
+            Assert.That(property, Is.InstanceOf<IPropertyCustomization>());
         }
 
-        [ Test ]
+        [Test]
         public void TypePropertyDescriptorSupportsCustomization()
         {
             PropertyDescriptor property = Thing.GetProperty1Property();
-            Assert.IsInstanceOfType(typeof(IPropertyCustomization), property);
+            Assert.That(property, Is.InstanceOf<IPropertyCustomization>());
         }
 
-        [ Test ]
+        [Test]
         public void PropertyNameCustomization()
         {
             PropertyDescriptor property = Thing.GetField1Property();
-            Assert.AreEqual("Field1", property.Name);
-            IPropertyCustomization customization = (IPropertyCustomization) property;
+            Assert.That(property.Name, Is.EqualTo("Field1"));
+            IPropertyCustomization customization = (IPropertyCustomization)property;
             customization.SetName("FIELD1");
-            Assert.AreEqual("FIELD1", property.Name);
+            Assert.That(property.Name, Is.EqualTo("FIELD1"));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotCustomizePropertyWithNullName()
         {
             PropertyDescriptor property = Thing.GetField1Property();
-            ((IPropertyCustomization) property).SetName(null);
+            Assert.Throws<ArgumentNullException>(() => ((IPropertyCustomization)property).SetName(null));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void CannotCustomizePropertyWithEmptyName()
         {
             PropertyDescriptor property = Thing.GetField1Property();
-            ((IPropertyCustomization) property).SetName(string.Empty);
+            Assert.Throws<ArgumentException>(() => ((IPropertyCustomization)property).SetName(string.Empty));
         }
 
-        [ Test ]
+        [Test]
         public void PropertyTypeCustomization()
         {
             PropertyDescriptor property = Thing.GetField1Property();
-            Assert.AreEqual(typeof(object), property.PropertyType);
-            IPropertyCustomization customization = (IPropertyCustomization) property;
+            Assert.That(property.PropertyType, Is.EqualTo(typeof(object)));
+            IPropertyCustomization customization = (IPropertyCustomization)property;
             customization.SetType(typeof(string));
-            Assert.AreEqual(typeof(string), property.PropertyType);
+            Assert.That(property.PropertyType, Is.EqualTo(typeof(string)));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotCustomizePropertyWithNullType()
         {
             PropertyDescriptor property = Thing.GetField1Property();
-            ((IPropertyCustomization) property).SetType(null);
+            Assert.Throws<ArgumentNullException>(() => ((IPropertyCustomization)property).SetType(null));
         }
 
-        [ Test ]
+        [Test]
         public void PropertyGetterCustomization()
         {
             Thing thing = new Thing();
             PropertyDescriptor property = Thing.GetField1Property();
             const string testValue = "test";
             thing.Field1 = testValue;
-            Assert.AreEqual(testValue, thing.Field1);
-            IPropertyCustomization customization = (IPropertyCustomization) property;
+            Assert.That(thing.Field1, Is.EqualTo(testValue));
+            IPropertyCustomization customization = (IPropertyCustomization)property;
             FakePropertyImpl impl = new FakePropertyImpl();
             impl.BaseImpl = customization.OverrideImpl(impl);
-            Assert.IsNotNull(impl.BaseImpl);
-            Assert.AreEqual("<<" + testValue, property.GetValue(thing));
+            Assert.That(impl.BaseImpl, Is.Not.Null);
+            Assert.That(property.GetValue(thing), Is.EqualTo("<<" + testValue));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotCustomizePropertyWithNullImpl()
         {
             PropertyDescriptor property = Thing.GetField1Property();
-            ((IPropertyCustomization) property).OverrideImpl(null);
+            Assert.Throws<ArgumentNullException>(() => ((IPropertyCustomization)property).OverrideImpl(null));
         }
 
-        [ Test ]
+        [Test]
         public void PropertySetterCustomization()
         {
             Thing thing = new Thing();
             PropertyDescriptor property = Thing.GetField1Property();
-            Assert.IsNull(thing.Field1);
-            IPropertyCustomization customization = (IPropertyCustomization) property;
+            Assert.That(thing.Field1, Is.Null);
+            IPropertyCustomization customization = (IPropertyCustomization)property;
             FakePropertyImpl impl = new FakePropertyImpl();
             impl.BaseImpl = customization.OverrideImpl(impl);
             property.SetValue(thing, "test");
-            Assert.AreEqual(">>test", thing.Field1);
+            Assert.That(thing.Field1, Is.EqualTo(">>test"));
         }
 
-        [ Test ]
+        [Test]
         public void AddServiceToField()
         {
-            AddServiceToServiceContainer((IServiceContainer) Thing.GetField1Property());
+            AddServiceToServiceContainer((IServiceContainer)Thing.GetField1Property());
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void CannotAddServiceTwiceToField()
         {
-            CannotAddServiceTwiceToServiceContainer((IServiceContainer) Thing.GetField1Property());
+            Assert.Throws<ArgumentException>(() => CannotAddServiceTwiceToServiceContainer((IServiceContainer)Thing.GetField1Property()));
         }
 
-        [ Test ]
+        [Test]
         public void AddThenRemoveServiceFromField()
         {
-            AddThenRemoveService((IServiceContainer) Thing.GetField1Property());
+            AddThenRemoveService((IServiceContainer)Thing.GetField1Property());
         }
 
-        [ Test ]
+        [Test]
         public void AddServiceToProperty()
         {
-            AddServiceToServiceContainer((IServiceContainer) Thing.GetProperty1Property());
+            AddServiceToServiceContainer((IServiceContainer)Thing.GetProperty1Property());
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void CannotAddServiceTwiceToProperty()
         {
-            CannotAddServiceTwiceToServiceContainer((IServiceContainer) Thing.GetProperty1Property());
+            Assert.Throws<ArgumentException>(() => CannotAddServiceTwiceToServiceContainer((IServiceContainer)Thing.GetProperty1Property()));
         }
 
-        [ Test ]
+        [Test]
         public void AddThenRemoveServiceFromProperty()
         {
-            AddThenRemoveService((IServiceContainer) Thing.GetProperty1Property());
+            AddThenRemoveService((IServiceContainer)Thing.GetProperty1Property());
         }
 
-        [ Test ]
+        [Test]
         public void ReadOnlyFieldHasReadOnlyDescriptor()
         {
-            Assert.IsTrue(Thing.GetReadOnlyFieldProperty().IsReadOnly);
+            Assert.That(Thing.GetReadOnlyFieldProperty().IsReadOnly, Is.True);
         }
 
-        [ Test, ExpectedException(typeof(NotSupportedException)) ]
+        [Test]
         public void CannotSetReadOnlyFieldViaDescriptor()
         {
-            Thing.GetReadOnlyFieldProperty().SetValue(new Thing(), new object());
+            Assert.Throws<NotSupportedException>(() => Thing.GetReadOnlyFieldProperty().SetValue(new Thing(), new object()));
         }
 
-        [ Test ]
+        [Test]
         public void ReadOnlyPropertyHasReadOnlyDescriptor()
         {
-            Assert.IsTrue(Thing.GetReadOnlyPropertyProperty().IsReadOnly);
+            Assert.That(Thing.GetReadOnlyPropertyProperty().IsReadOnly, Is.True);
         }
 
-        [ Test, ExpectedException(typeof(NotSupportedException)) ]
+        [Test]
         public void CannotSetReadOnlyPropertyViaDescriptor()
         {
-            Thing.GetReadOnlyPropertyProperty().SetValue(new Thing(), new object());
+            Assert.Throws<NotSupportedException>(() => Thing.GetReadOnlyPropertyProperty().SetValue(new Thing(), new object()));
         }
 
-        [ Test ]
+        [Test]
         public void ReadOnlyPropertyWithIncludeAttributeIsIncluded()
         {
             CustomTypeDescriptor thingType = new CustomTypeDescriptor(typeof(ThingWithSpecialReadOnlyProperty));
             PropertyDescriptorCollection properties = thingType.GetProperties();
-            Assert.AreEqual(1, properties.Count);
+            Assert.That(properties.Count, Is.EqualTo(1));
         }
 
-        [ Test ]
+        [Test]
         public void AnonymousClassPropertiesExcepted()
         {
 #if NET_1_0 || NET_1_1
@@ -224,57 +224,57 @@ namespace Jayrock.Json.Conversion
 #else
             CustomTypeDescriptor anon = CustomTypeDescriptor.TryCreateForAnonymousClass(typeof(AnonymousThing<string>));
 #endif
-            Assert.IsNotNull(anon);
+            Assert.That(anon, Is.Not.Null);
             PropertyDescriptorCollection properties = anon.GetProperties();
-            Assert.AreEqual(1, properties.Count);
+            Assert.That(properties.Count, Is.EqualTo(1));
             PropertyDescriptor property = properties[0];
-            Assert.AreEqual("Value", property.Name);
-            Assert.IsTrue(property.IsReadOnly);
+            Assert.That(property.Name, Is.EqualTo("Value"));
+            Assert.That(property.IsReadOnly, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void ImmutableClassPropertiesExpected()
         {
             CustomTypeDescriptor descriptor = new CustomTypeDescriptor(typeof(ImmutableThing));
             PropertyDescriptorCollection properties = descriptor.GetProperties();
-            Assert.AreEqual(2, properties.Count);
-            Assert.IsNotNull(properties["field"]);
-            Assert.IsNotNull(properties["property"]);
+            Assert.That(properties.Count, Is.EqualTo(2));
+            Assert.That(properties["field"], Is.Not.Null);
+            Assert.That(properties["property"], Is.Not.Null);
         }
 
-        private static void AddServiceToServiceContainer(IServiceContainer sc) 
+        private static void AddServiceToServiceContainer(IServiceContainer sc)
         {
             object service = new object();
             Type serviceType = service.GetType();
-            Assert.IsNull(sc.GetService(serviceType));
+            Assert.That(sc.GetService(serviceType), Is.Null);
             sc.AddService(serviceType, service);
-            Assert.AreSame(service, sc.GetService(serviceType));
+            Assert.That(sc.GetService(serviceType), Is.SameAs(service));
         }
 
-        private static void CannotAddServiceTwiceToServiceContainer(IServiceContainer sc) 
+        private static void CannotAddServiceTwiceToServiceContainer(IServiceContainer sc)
         {
             object service = new object();
             Type serviceType = service.GetType();
-            Assert.IsNull(sc.GetService(serviceType));
+            Assert.That(sc.GetService(serviceType), Is.Null);
             sc.AddService(serviceType, service);
             sc.AddService(serviceType, service);
         }
 
-        private static void AddThenRemoveService(IServiceContainer sc) 
+        private static void AddThenRemoveService(IServiceContainer sc)
         {
             object service = new object();
             Type serviceType = service.GetType();
-            Assert.IsNull(sc.GetService(serviceType));
+            Assert.That(sc.GetService(serviceType), Is.Null);
             sc.AddService(serviceType, service);
-            Assert.AreSame(service, sc.GetService(serviceType));
+            Assert.That(sc.GetService(serviceType), Is.SameAs(service));
             sc.RemoveService(serviceType);
-            Assert.IsNull(sc.GetService(serviceType));
+            Assert.That(sc.GetService(serviceType), Is.Null);
         }
 
         public sealed class ImmutableThing
         {
             public readonly object Field;
-            
+
             private object _property;
             public object Property { get { return _property; } }
 
@@ -289,14 +289,14 @@ namespace Jayrock.Json.Conversion
         {
             public readonly object ReadOnlyField = null;
             public object Field1;
-            [ JsonIgnore ] public object Field2;
+            [JsonIgnore] public object Field2;
             public object Field3;
 
             public object Property1 { get { return null; } set { } }
-            [ JsonIgnore ] public object Property2 { get { return null; } set { } }
+            [JsonIgnore] public object Property2 { get { return null; } set { } }
             public object Property3 { get { return null; } set { } }
             public object ReadOnlyProperty { get { return null; } }
-            
+
             public static PropertyDescriptor GetField1Property()
             {
                 return CustomTypeDescriptor.CreateProperty(typeof(Thing).GetField("Field1"));
@@ -386,3 +386,6 @@ namespace System.Runtime.CompilerServices
     internal sealed class CompilerGeneratedAttribute : Attribute {}
 }
 #endif
+
+
+

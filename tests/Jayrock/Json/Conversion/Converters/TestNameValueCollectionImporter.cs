@@ -32,95 +32,96 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestNameValueCollectionImporter
     {
-        [ Test ]
+        [Test]
         public void ImportNull()
         {
-            Assert.IsNull(UncheckedImport("null"));
+            Assert.That(UncheckedImport("null"), Is.Null);
         }
-        
-        [ Test ]
+
+        [Test]
         public void ImportEmpty()
         {
             NameValueCollection collection = Import("{}");
-            Assert.AreEqual(0, collection.Count);
+            Assert.That(collection.Count, Is.EqualTo(0));
         }
 
-        [ Test ]
+        [Test]
         public void ImportOneNameValue()
         {
             NameValueCollection collection = Import("{\"foo\":\"bar\"}");
-            Assert.AreEqual(1, collection.Count);
-            Assert.AreEqual("bar", collection["foo"]);
+            Assert.That(collection.Count, Is.EqualTo(1));
+            Assert.That(collection["foo"], Is.EqualTo("bar"));
         }
-        
-        [ Test ]
+
+        [Test]
         public void ImportEmptyName()
         {
             NameValueCollection collection = Import("{\"\":\"bar\"}");
-            Assert.AreEqual(1, collection.Count);
-            Assert.AreEqual("bar", collection[""]);
+            Assert.That(collection.Count, Is.EqualTo(1));
+            Assert.That(collection[""], Is.EqualTo("bar"));
         }
 
-        [ Test ]
+        [Test]
         public void ImportEmptyValue()
         {
             NameValueCollection collection = Import("{\"foo\":\"\"}");
-            Assert.AreEqual(1, collection.Count);
-            Assert.AreEqual("", collection["foo"]);
+            Assert.That(collection.Count, Is.EqualTo(1));
+            Assert.That(collection["foo"], Is.EqualTo(""));
         }
 
-        [ Test ]
+        [Test]
         public void ImportNullValue()
         {
             NameValueCollection collection = Import("{\"foo\":null}");
-            Assert.AreEqual(1, collection.Count);
-            Assert.AreEqual("foo", collection.Keys[0]);
-            Assert.AreEqual(null, collection.Get(0));
+            Assert.That(collection.Count, Is.EqualTo(1));
+            Assert.That(collection.Keys[0], Is.EqualTo("foo"));
+            Assert.That(collection.Get(0), Is.Null);
         }
 
-        [ Test ]
+        [Test]
         public void ImportValuesArray()
         {
             NameValueCollection collection = Import("{\"foo\":[\"bar1\",\"bar2\",\"bar3\"]}");
-            Assert.AreEqual(1, collection.Count);
-            Assert.AreEqual(new string[] { "bar1", "bar2", "bar3" }, collection.GetValues("foo"));
+            Assert.That(collection.Count, Is.EqualTo(1));
+            Assert.That(collection.GetValues("foo"), Is.EqualTo(new string[] { "bar1", "bar2", "bar3" }));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportObjectValue()
         {
-            Import("{\"foo\":{}}");
+            Assert.Throws<JsonException>(() => Import("{\"foo\":{}}"));
         }
 
-        [ Test ]
+        [Test]
         public void PositionAfterImport()
         {
             JsonReader reader = new JsonTextReader(new StringReader("[{},'end']"));
             reader.ReadToken(JsonTokenClass.Array);
-            Assert.AreSame(JsonTokenClass.Object, reader.TokenClass);
+            Assert.That(reader.TokenClass, Is.EqualTo(JsonTokenClass.Object));
             IImporter importer = new NameValueCollectionImporter();
             importer.Import(new ImportContext(), reader);
-            Assert.AreEqual("end", reader.ReadString());
+            Assert.That(reader.ReadString(), Is.EqualTo("end"));
         }
 
         private static NameValueCollection UncheckedImport(string s)
         {
             JsonReader reader = new JsonTextReader(new StringReader(s));
             IImporter importer = new NameValueCollectionImporter();
-            NameValueCollection import = (NameValueCollection) importer.Import(new ImportContext(), reader);
-            Assert.IsTrue(reader.EOF, "Reader must be at EOF.");
+            NameValueCollection import = (NameValueCollection)importer.Import(new ImportContext(), reader);
+            Assert.That(reader.EOF, Is.True, "Reader must be at EOF.");
             return import;
         }
 
         private static NameValueCollection Import(string s)
         {
             object o = UncheckedImport(s);
-            Assert.IsNotNull(o);
-            Assert.IsInstanceOfType(typeof(NameValueCollection), o);
-            return (NameValueCollection) o;
+            Assert.That(o, Is.Not.Null);
+            Assert.That(o, Is.InstanceOf<NameValueCollection>());
+            return (NameValueCollection)o;
         }
     }
 }
+

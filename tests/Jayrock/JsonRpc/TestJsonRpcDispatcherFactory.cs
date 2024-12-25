@@ -30,28 +30,27 @@ namespace Jayrock.JsonRpc
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonRpcDispatcherFactory
     {
-        [ Test ]
+        [Test]
         public void DefaultImplementationCreatesJsonRpcDispatcher()
         {
-            Assert.IsInstanceOfType(typeof(JsonRpcDispatcher), JsonRpcDispatcherFactory.Default(new TestService()));
+            Assert.That(JsonRpcDispatcherFactory.Default(new TestService()), Is.InstanceOf<JsonRpcDispatcher>());
         }
 
-        [ Test ]
-        [ ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotSetCurrentToNull()
         {
-            JsonRpcDispatcherFactory.Current = null;
+            Assert.Throws<ArgumentNullException>(() => JsonRpcDispatcherFactory.Current = null);
         }
 
-        [ Test ]
+        [Test]
         public void SetCustomHandler()
         {
             JsonRpcDispatcherFactory.Handler handler = new JsonRpcDispatcherFactory.Handler(CreateJsonRpcDispatcher);
             JsonRpcDispatcherFactory.Current = handler;
-            Assert.AreSame(handler, JsonRpcDispatcherFactory.Current);
+            Assert.That(JsonRpcDispatcherFactory.Current, Is.SameAs(handler));
         }
 
         private JsonRpcDispatcher CreateJsonRpcDispatcher(IService service)
