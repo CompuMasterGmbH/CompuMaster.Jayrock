@@ -49,9 +49,6 @@ namespace Jayrock.Json.Conversion.Converters
         {
             DateTime time = new DateTime(1999, 12, 31, 23, 30, 59, 999);
             Assert.That(Export(time), Is.EqualTo("1999-12-31T23:30:59.9990000" + Tzd(time)));
-#if NET5_0_OR_GREATER
-            Assert.That(Export(time), Is.EqualTo("1999-12-31T23:30:59.9990000" + TzdInfo(time)));
-#endif
         }
 
         private static string Export(DateTime value)
@@ -72,17 +69,6 @@ namespace Jayrock.Json.Conversion.Converters
                    (offsetString.Substring(0, 6)) :
                    ("+" + offsetString.Substring(0, 5));
         }
-
-#if NET5_0_OR_GREATER
-        private static string TzdInfo(DateTime localTime)
-        {
-            TimeSpan offset = TimeZoneInfo.Utc.GetUtcOffset(localTime);
-            string offsetString = offset.ToString();
-            return offset.Ticks < 0 ?
-                   (offsetString.Substring(0, 6)) :
-                   ("+" + offsetString.Substring(0, 5));
-        }
-#endif
     }
 }
 
