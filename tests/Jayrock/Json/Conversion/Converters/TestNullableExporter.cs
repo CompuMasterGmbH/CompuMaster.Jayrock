@@ -27,37 +27,37 @@ namespace Jayrock.Json.Conversion.Converters
     using System;
     using NUnit.Framework;
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestNullableExporter
     {
-        [ Test ]
+        [Test]
         public void Superclass()
         {
-            Assert.IsInstanceOfType(typeof(ExporterBase), new NullableExporter(typeof(int?)));
+            Assert.That(new NullableExporter(typeof(int?)), Is.InstanceOf<ExporterBase>());
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void CannotInitializeWithNonNullableType()
         {
-            new NullableExporter(typeof(int));
+            Assert.Throws<ArgumentException>(() => new NullableExporter(typeof(int)));
         }
 
-        [ Test ]
+        [Test]
         public void InputTypeIsNullable()
         {
-            Assert.AreSame(typeof(int?), (new NullableExporter(typeof(int?))).InputType);
+            Assert.That((new NullableExporter(typeof(int?))).InputType, Is.SameAs(typeof(int?)));
         }
 
-        [ Test ]
+        [Test]
         public void ExportNull()
         {
             Export(null).ReadNull();
         }
 
-        [ Test ]
+        [Test]
         public void ExportNonNull()
         {
-            Assert.AreEqual(42, Export(42).ReadNumber().ToInt32());
+            Assert.That(Export(42).ReadNumber().ToInt32(), Is.EqualTo(42));
         }
 
         private static JsonReader Export(int? value)

@@ -31,20 +31,20 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestImportAwareImporter
     {
-        [ Test ]
+        [Test]
         public void ImportTellsObjectToImportSelf()
         {
             ImportAwareImporter importer = new ImportAwareImporter(typeof(Thing));
             JsonRecorder writer = new JsonRecorder();
             writer.WriteString(string.Empty);
-            Thing thing = (Thing) importer.Import(new ImportContext(), writer.CreatePlayer());
-            Assert.IsTrue(thing.ImportCalled);
+            Thing thing = (Thing)importer.Import(new ImportContext(), writer.CreatePlayer());
+            Assert.That(thing.ImportCalled, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void ImportNull()
         {
             ImportAwareImporter importer = new ImportAwareImporter(typeof(Thing));
@@ -52,26 +52,26 @@ namespace Jayrock.Json.Conversion.Converters
             writer.WriteNull();
             JsonReader reader = writer.CreatePlayer();
             reader.ReadToken(JsonTokenClass.Array);
-            Assert.IsNull(importer.Import(new ImportContext(), reader));
+            Assert.That(importer.Import(new ImportContext(), reader), Is.Null);
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotInitWithNullType()
         {
-            new ImportAwareImporter(null);
+            Assert.Throws<ArgumentNullException>(() => new ImportAwareImporter(null));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotSendNullReaderToImport()
         {
             ImportAwareImporter importer = new ImportAwareImporter(typeof(Thing));
-            importer.Import(null, null);
+            Assert.Throws<ArgumentNullException>(() => importer.Import(null, null));
         }
-        
+
         private sealed class Thing : IJsonImportable
         {
             public bool ImportCalled;
-            
+
             public void Import(ImportContext context, JsonReader reader)
             {
                 ImportCalled = true;
@@ -79,3 +79,5 @@ namespace Jayrock.Json.Conversion.Converters
         }
     }
 }
+
+

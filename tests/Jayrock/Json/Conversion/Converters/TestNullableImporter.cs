@@ -31,52 +31,52 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestNullableImporter
     {
-        [ Test ]
+        [Test]
         public void Superclass()
         {
-            Assert.IsInstanceOfType(typeof(ImporterBase), new NullableImporter(typeof(int?)));
+            Assert.That(new NullableImporter(typeof(int?)), Is.InstanceOf<ImporterBase>());
         }
 
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void CannotInitializeWithNonNullableType()
         {
-            new NullableImporter(typeof(int));
+            Assert.Throws<ArgumentException>(() => new NullableImporter(typeof(int)));
         }
 
-        [ Test ]
+        [Test]
         public void ImportNull()
         {
-            Assert.IsNull(Import(false, "null"));
+            Assert.That(Import(false, "null"), Is.Null);
         }
 
-        [ Test ]
+        [Test]
         public void ImportNumber()
         {
             Import(true, "42");
         }
 
-        [ Test ]
+        [Test]
         public void ImportBoolean()
         {
             Import(true, "true");
         }
 
-        [ Test ]
+        [Test]
         public void ImportString()
         {
             Import(true, "'string'");
         }
-       
-        [ Test ]
+
+        [Test]
         public void ImportArray()
         {
             Import(true, "[]");
         }
-        
-        [ Test ]
+
+        [Test]
         public void ImportObject()
         {
             Import(true, "{}");
@@ -90,16 +90,16 @@ namespace Jayrock.Json.Conversion.Converters
             context.Register(thingImporter);
             NullableImporter importer = new NullableImporter(typeof(Thing?));
             object thing = importer.Import(context, reader);
-            Assert.AreEqual(hasValue, thingImporter.ImportCalled);
+            Assert.That(thingImporter.ImportCalled, Is.EqualTo(hasValue));
             if (hasValue)
-                Assert.IsInstanceOfType(typeof(Thing), thing);
+                Assert.That(thing, Is.InstanceOf<Thing>());
             else
-                Assert.IsNull(thing);
-            Assert.IsTrue(reader.EOF, "Reader must be at EOF.");
+                Assert.That(thing, Is.Null);
+            Assert.That(reader.EOF, Is.True, "Reader must be at EOF.");
             return thing;
         }
 
-        private struct Thing {}
+        private struct Thing { }
 
         private sealed class ThingImporter : IImporter
         {

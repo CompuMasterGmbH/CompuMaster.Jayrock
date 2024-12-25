@@ -31,38 +31,38 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestTupleExporter
     {
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void CannotInitializeWithNonTupleType()
         {
-            new TupleExporter(typeof(object));
+            Assert.Throws<ArgumentException>(() => new TupleExporter(typeof(object)));
         }
 
-        [ Test ]
+        [Test]
         public void Superclass()
         {
-            Assert.IsInstanceOfType(typeof(ExporterBase), new TupleExporter(typeof(Tuple<object>)));
+            Assert.That(new TupleExporter(typeof(Tuple<object>)), Is.InstanceOf<ExporterBase>());
         }
 
-        [ Test ]
+        [Test]
         public void InputTypeIsTuple()
         {
-            Assert.AreSame(typeof(Tuple<object>), new TupleExporter(typeof(Tuple<object>)).InputType);
+            Assert.That(new TupleExporter(typeof(Tuple<object>)).InputType, Is.SameAs(typeof(Tuple<object>)));
         }
 
-        [ Test ]
+        [Test]
         public void Export()
         {
             var reader = Export(Tuple.Create(123, "foo", true));
-            Assert.IsTrue(reader.MoveToContent());
+            Assert.That(reader.MoveToContent(), Is.True);
             reader.ReadToken(JsonTokenClass.Array);
-            Assert.AreEqual(123, reader.ReadNumber().ToInt32());
-            Assert.AreEqual("foo", reader.ReadString());
-            Assert.AreEqual(true, reader.ReadBoolean());
+            Assert.That(reader.ReadNumber().ToInt32(), Is.EqualTo(123));
+            Assert.That(reader.ReadString(), Is.EqualTo("foo"));
+            Assert.That(reader.ReadBoolean(), Is.EqualTo(true));
             reader.ReadToken(JsonTokenClass.EndArray);
-            Assert.IsFalse(reader.Read());
+            Assert.That(reader.Read(), Is.False);
         }
 
         private static JsonReader Export(object value)
@@ -75,3 +75,7 @@ namespace Jayrock.Json.Conversion.Converters
 }
 
 #endif
+
+
+
+

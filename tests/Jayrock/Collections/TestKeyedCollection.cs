@@ -43,8 +43,8 @@ namespace Jayrock.Collections
             NamedValueCollection values = new NamedValueCollection();
             NamedValue value = new NamedValue("Foo", new object());
             values.Add(value);
-            Assert.AreEqual(1, values.Count);
-            Assert.AreSame(value, values[value.Name]);
+            Assert.That(values.Count, Is.EqualTo(1));
+            Assert.That(values[value.Name], Is.SameAs(value));
         }
 
         [Test]
@@ -59,9 +59,9 @@ namespace Jayrock.Collections
         {
             NamedValueCollection values = new NamedValueCollection();
             NamedValue value = new NamedValue("Foo", new object());
-            Assert.IsFalse(values.Contains(value.Name));
+            Assert.That(values.Contains(value.Name), Is.False);
             values.Add(value);
-            Assert.IsTrue(values.Contains(value.Name));
+            Assert.That(values.Contains(value.Name), Is.True);
         }
 
         [Test]
@@ -77,10 +77,10 @@ namespace Jayrock.Collections
             NamedValueCollection values = new NamedValueCollection();
             NamedValue value = new NamedValue("Foo", new object());
             values.Add(value);
-            Assert.AreEqual(1, values.Count);
-            Assert.IsTrue(values.Remove(value.Name));
-            Assert.IsFalse(values.Contains(value.Name));
-            Assert.AreEqual(0, values.Count);
+            Assert.That(values.Count, Is.EqualTo(1));
+            Assert.That(values.Remove(value.Name), Is.True);
+            Assert.That(values.Contains(value.Name), Is.False);
+            Assert.That(values.Count, Is.EqualTo(0));
         }
 
         [Test]
@@ -96,11 +96,11 @@ namespace Jayrock.Collections
             NamedValueCollection values = new NamedValueCollection();
             NamedValue value = new NamedValue("Foo", new object());
             values.Add(value);
-            Assert.IsTrue(values.Contains(value.Name));
-            Assert.AreEqual(1, values.Count);
+            Assert.That(values.Contains(value.Name), Is.True);
+            Assert.That(values.Count, Is.EqualTo(1));
             values.RemoveAt(0);
-            Assert.IsFalse(values.Contains(value.Name));
-            Assert.AreEqual(0, values.Count);
+            Assert.That(values.Contains(value.Name), Is.False);
+            Assert.That(values.Count, Is.EqualTo(0));
         }
 
         [Test]
@@ -109,13 +109,13 @@ namespace Jayrock.Collections
             NamedValueCollection values = new NamedValueCollection();
             NamedValue value = new NamedValue("Foo", new object());
             values.Add(value);
-            Assert.IsTrue(values.Contains(value.Name));
-            Assert.AreEqual(1, values.Count);
+            Assert.That(values.Contains(value.Name), Is.True);
+            Assert.That(values.Count, Is.EqualTo(1));
             NamedValue newValue = new NamedValue("Bar", new object());
             ((IList)values)[0] = newValue;
-            Assert.AreEqual(1, values.Count);
-            Assert.IsFalse(values.Contains(value.Name));
-            Assert.IsTrue(values.Contains(newValue.Name));
+            Assert.That(values.Count, Is.EqualTo(1));
+            Assert.That(values.Contains(value.Name), Is.False);
+            Assert.That(values.Contains(newValue.Name), Is.True);
         }
 
         [Test]
@@ -124,11 +124,11 @@ namespace Jayrock.Collections
             NamedValueCollection values = new NamedValueCollection();
             NamedValue value = new NamedValue("Foo", new object());
             values.Add(value);
-            Assert.AreEqual(1, values.Count);
-            Assert.IsTrue(values.Contains(value.Name));
+            Assert.That(values.Count, Is.EqualTo(1));
+            Assert.That(values.Contains(value.Name), Is.True);
             values.Clear();
-            Assert.AreEqual(0, values.Count);
-            Assert.IsFalse(values.Contains(value.Name));
+            Assert.That(values.Count, Is.EqualTo(0));
+            Assert.That(values.Contains(value.Name), Is.False);
         }
 
         [Test]
@@ -138,9 +138,9 @@ namespace Jayrock.Collections
             string[] names = new string[] { "one", "two", "three" };
             foreach (string name in names)
                 values.Add(new NamedValue(name, new object()));
-            Assert.AreEqual(names.Length, values.Count);
+            Assert.That(values.Count, Is.EqualTo(names.Length));
             string[] keys = values.GetKeys();
-            Assert.AreEqual(names, keys);
+            Assert.That(keys, Is.EqualTo(names));
         }
 
         [Test]
@@ -150,22 +150,22 @@ namespace Jayrock.Collections
             NamedValue value1 = new NamedValue("one", new object()); values.Add(value1);
             NamedValue value2 = new NamedValue("two", new object()); values.Add(value2);
             NamedValue value3 = new NamedValue("three", new object()); values.Add(value3);
-            Assert.AreEqual(3, values.Count);
+            Assert.That(values.Count, Is.EqualTo(3));
             IEnumerator e = values.GetEnumerator();
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreSame(value1, e.Current);
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreSame(value2, e.Current);
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreSame(value3, e.Current);
-            Assert.IsFalse(e.MoveNext());
+            Assert.That(e.MoveNext(), Is.True);
+            Assert.That(e.Current, Is.SameAs(value1));
+            Assert.That(e.MoveNext(), Is.True);
+            Assert.That(e.Current, Is.SameAs(value2));
+            Assert.That(e.MoveNext(), Is.True);
+            Assert.That(e.Current, Is.SameAs(value3));
+            Assert.That(e.MoveNext(), Is.False);
         }
 
         [Test]
         public void RemoveNonExistingKey()
         {
             NamedValueCollection values = new NamedValueCollection();
-            Assert.IsFalse(values.Remove("something"));
+            Assert.That(values.Remove("something"), Is.False);
         }
 
         [Test]
@@ -191,7 +191,7 @@ namespace Jayrock.Collections
         {
             MemberInfo[] members = FormatterServices.GetSerializableMembers(typeof(KeyedCollection));
             foreach (MemberInfo member in members)
-                Assert.AreNotEqual(typeof(KeyedCollection), member.DeclaringType);
+                Assert.That(member.DeclaringType, Is.Not.EqualTo(typeof(KeyedCollection)));
         }
 
 #if NETFRAMEWORK
@@ -200,18 +200,18 @@ namespace Jayrock.Collections
         public void MappingIsRestoredUponDeserialization()
         {
             NamedValueCollection collection = new NamedValueCollection();
-            Assert.IsFalse(collection.OnDeserializationCallbackCalled);
+            Assert.That(collection.OnDeserializationCallbackCalled, Is.False);
             collection.Add(new NamedValue("foo", "bar"));
             BinaryFormatter formatter = new BinaryFormatter();
             MemoryStream ms = new MemoryStream();
             formatter.Serialize(ms, collection);
             ms.Position = 0; // rewind
             collection = (NamedValueCollection)formatter.Deserialize(ms);
-            Assert.IsTrue(collection.OnDeserializationCallbackCalled);
+            Assert.That(collection.OnDeserializationCallbackCalled, Is.True);
             NamedValue entry = collection["foo"];
-            Assert.IsNotNull(entry);
-            Assert.AreEqual("foo", entry.Name);
-            Assert.AreEqual("bar", entry.Value);
+            Assert.That(entry, Is.Not.Null);
+            Assert.That(entry.Name, Is.EqualTo("foo"));
+            Assert.That(entry.Value, Is.EqualTo("bar"));
         }
 #endif
 
@@ -278,3 +278,5 @@ namespace Jayrock.Collections
         }
     }
 }
+
+

@@ -33,79 +33,79 @@ namespace Jayrock.JsonRpc
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonRpcDispatcher
     {
-        [ SetUp ]
+        [SetUp]
         public void Init()
         {
         }
 
-        [ TearDown ]
+        [TearDown]
         public void Dispose()
         {
         }
 
-        [ Test, ExpectedException(typeof(NotSupportedException)) ]
+        [Test]
         public void NotificationNotSupported()
         {
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService());
-            server.Process("{ id : null, method : 'Dummy' }");
+            Assert.Throws<NotSupportedException>(() => server.Process("{ id : null, method : 'Dummy' }"));
         }
 
-        [ Test ]
+        [Test]
         public void SimpleCall()
         {
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService());
             string responseString = server.Process("{ id : 1, method : 'Say', params : [ 'Hello' ] }");
-            IDictionary response = (IDictionary) Parse(responseString);
-            Assert.AreEqual(1, (int) (JsonNumber) response["id"]);
-            Assert.AreEqual("Hello", response["result"]);
+            IDictionary response = (IDictionary)Parse(responseString);
+            Assert.That((int)(JsonNumber)response["id"], Is.EqualTo(1));
+            Assert.That(response["result"], Is.EqualTo("Hello"));
         }
 
-        [ Test ]
+        [Test]
         public void CallWithArrayResult()
         {
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService());
             string responseString = server.Process("{ id : 'F9A2CC85-79A2-489f-AE61-84348654008C', method : 'replicate', params : [ 'Hello', 3 ] }");
-            IDictionary response = (IDictionary) Parse(responseString);
-            Assert.AreEqual("F9A2CC85-79A2-489f-AE61-84348654008C", response["id"]);
-            object[] result = ((JsonArray) response["result"]).ToArray();
-            Assert.AreEqual(new string[] { "Hello", "Hello", "Hello" }, result);
+            IDictionary response = (IDictionary)Parse(responseString);
+            Assert.That(response["id"], Is.EqualTo("F9A2CC85-79A2-489f-AE61-84348654008C"));
+            object[] result = ((JsonArray)response["result"]).ToArray();
+            Assert.That(result, Is.EqualTo(new string[] { "Hello", "Hello", "Hello" }));
         }
 
-        [ Test ]
+        [Test]
         public void ProcWithArrayArg()
         {
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService());
             string responseString = server.Process("{ id : 42, method : 'rev', params : [ [ 1, 'two', 3 ] ] }");
-            IDictionary response = (IDictionary) Parse(responseString);
-            object[] result = ((JsonArray) response["result"]).ToArray();
-            Assert.AreEqual(3, (int) (JsonNumber) result[0]);
-            Assert.AreEqual("two", result[1]);
-            Assert.AreEqual(1, (int) (JsonNumber) result[2]);
+            IDictionary response = (IDictionary)Parse(responseString);
+            object[] result = ((JsonArray)response["result"]).ToArray();
+            Assert.That((int)(JsonNumber)result[0], Is.EqualTo(3));
+            Assert.That(result[1], Is.EqualTo("two"));
+            Assert.That((int)(JsonNumber)result[2], Is.EqualTo(1));
         }
 
-        [ Test ]
+        [Test]
         public void CallWithNamedArgs()
         {
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService());
             string responseString = server.Process("{ id : 42, method : 'replicate', params : { count : 3, text : 'Hello' } }");
-            IDictionary response = (IDictionary) Parse(responseString);
-            object[] result = ((JsonArray) JsonRpcServices.GetResult(response)).ToArray();
-            Assert.AreEqual(new string[] { "Hello", "Hello", "Hello" }, result);
+            IDictionary response = (IDictionary)Parse(responseString);
+            object[] result = ((JsonArray)JsonRpcServices.GetResult(response)).ToArray();
+            Assert.That(result, Is.EqualTo(new string[] { "Hello", "Hello", "Hello" }));
         }
-        
-        [ Test ]
+
+        [Test]
         public void CallWithIntArray()
         {
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService());
             string responseString = server.Process("{ id : 42, method : 'sum', params : [ [ 1, 2, 3, 4, 5 ] ] }");
-            IDictionary response = (IDictionary) Parse(responseString);
-            Assert.AreEqual(15, (int) (JsonNumber) JsonRpcServices.GetResult(response));
+            IDictionary response = (IDictionary)Parse(responseString);
+            Assert.That((int)(JsonNumber)JsonRpcServices.GetResult(response), Is.EqualTo(15));
         }
-        
-        [ Test ]
+
+        [Test]
         public void Bug8320()
         {
             //
@@ -115,79 +115,79 @@ namespace Jayrock.JsonRpc
 
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService());
             string responseString = server.Process("{ id : 42, params : [ [ 1, 2, 3, 4, 5 ] ], method : 'sum' }");
-            IDictionary response = (IDictionary) Parse(responseString);
-            Assert.AreEqual(15, (int) (JsonNumber) JsonRpcServices.GetResult(response));
+            IDictionary response = (IDictionary)Parse(responseString);
+            Assert.That((int)(JsonNumber)JsonRpcServices.GetResult(response), Is.EqualTo(15));
         }
-        
-        [ Test ]
+
+        [Test]
         public void CallWithTooManyArgsHarmless()
         {
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService());
             string responseString = server.Process("{ id : 1, method : 'Say', params : [ 'Hello', 'World' ] }");
-            IDictionary response = (IDictionary) Parse(responseString);
-            Assert.AreEqual("Hello", JsonRpcServices.GetResult(response));
+            IDictionary response = (IDictionary)Parse(responseString);
+            Assert.That(JsonRpcServices.GetResult(response), Is.EqualTo("Hello"));
         }
 
-        [ Test ]
+        [Test]
         public void CallWithUnknownArgsHarmless()
         {
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService());
             string responseString = server.Process("{ id : 1, method : 'Say', params : { message : 'Hello', bad : 'World' } }");
-            IDictionary response = (IDictionary) Parse(responseString);
-            Assert.AreEqual("Hello", JsonRpcServices.GetResult(response));
+            IDictionary response = (IDictionary)Parse(responseString);
+            Assert.That(JsonRpcServices.GetResult(response), Is.EqualTo("Hello"));
         }
 
-        [ Test ]
+        [Test]
         public void ArgWithOneOrTwoCharNameDroppedBug()
         {
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService2());
             string responseString = server.Process("{ id : 1, method : 'Echo', params : { o : 123 } }");
-            IDictionary response = (IDictionary) Parse(responseString);
-            Assert.AreEqual(123, Convert.ToInt32(JsonRpcServices.GetResult(response)));
+            IDictionary response = (IDictionary)Parse(responseString);
+            Assert.That(Convert.ToInt32(JsonRpcServices.GetResult(response)), Is.EqualTo(123));
         }
 
-        [ Test ]
+        [Test]
         public void PositionNineArgDroppedBug()
         {
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService2());
             string responseString = server.Process("{ id : 1, method : 'Echo', params : { o : 123 } }");
-            IDictionary response = (IDictionary) Parse(responseString);
-            Assert.AreEqual(123, Convert.ToInt32(JsonRpcServices.GetResult(response)));
+            IDictionary response = (IDictionary)Parse(responseString);
+            Assert.That(Convert.ToInt32(JsonRpcServices.GetResult(response)), Is.EqualTo(123));
         }
 
-        [ Test ]
+        [Test]
         public void CallWithPositionalArgs()
         {
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService2());
             string responseString = server.Process("{ id : 1, method : 'EchoMany', params : { 0:11,1:12,2:13,3:14,4:15,5:16,6:17,7:18,8:19,9:20,10:21,11:22,12:23,13:24,14:25,15:26,16:27,17:28,18:29,19:30,20:31,21:32,22:33,23:34,24:35,25:36 } }");
-            IDictionary response = (IDictionary) Parse(responseString);
-            Assert.AreEqual(new int[] { 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36 }, JsonRpcServices.GetResult(response, typeof(int[])));
+            IDictionary response = (IDictionary)Parse(responseString);
+            Assert.That(JsonRpcServices.GetResult(response, typeof(int[])), Is.EqualTo(new int[] { 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36 }));
         }
 
-        [ Test, ExpectedException(typeof(JsonRpcException)) ]
+        [Test]
         public void CannotCallNonIdempotentMethodWhenIdempotencyRequired()
         {
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService());
             server.RequireIdempotency = true;
-            JsonRpcServices.GetResult((IDictionary) Parse(server.Process("{ id : 1, method : 'Dummy', params : [] }")));
+            Assert.Throws<JsonRpcException>(() => JsonRpcServices.GetResult((IDictionary)Parse(server.Process("{ id : 1, method : 'Dummy', params : [] }"))));
         }
 
-        [ Test ]
+        [Test]
         public void CallIdempotentMethodWithIdempotencyRequired()
         {
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService());
             server.RequireIdempotency = true;
-            JsonRpcServices.GetResult((IDictionary) Parse(server.Process("{ id : 1, method : 'Idem', params : [] }")));
+            JsonRpcServices.GetResult((IDictionary)Parse(server.Process("{ id : 1, method : 'Idem', params : [] }")));
         }
 
-        [ Test ]
+        [Test]
         public void UnknownRequestMembersSkipped()
         {
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService());
-            JsonRpcServices.GetResult((IDictionary) Parse(server.Process("{ id : 1, foo : [bar], method : 'Dummy', params : [] }")));
+            JsonRpcServices.GetResult((IDictionary)Parse(server.Process("{ id : 1, foo : [bar], method : 'Dummy', params : [] }")));
         }
 
-        [ Test ]
+        [Test]
         public void RequestIdReportedEvenWhenCallingNonExistingMethod()
         {
             //
@@ -197,14 +197,14 @@ namespace Jayrock.JsonRpc
             //
 
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService());
-            IDictionary response = (IDictionary) JsonConvert.Import(server.Process("{ id : 42, method : foobaz }"));
-            Assert.IsNotNull(response["error"]);
+            IDictionary response = (IDictionary)JsonConvert.Import(server.Process("{ id : 42, method : foobaz }"));
+            Assert.That(response["error"], Is.Not.Null);
             object id = response["id"];
-            Assert.IsNotNull(id);
-            Assert.AreEqual(42, ((JsonNumber) id).ToInt32());
+            Assert.That(id, Is.Not.Null);
+            Assert.That(((JsonNumber)id).ToInt32(), Is.EqualTo(42));
         }
 
-        [ Test ]
+        [Test]
         public void RequestIdReportedEvenWhenBadJson()
         {
             //
@@ -214,106 +214,102 @@ namespace Jayrock.JsonRpc
             //
 
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService());
-            IDictionary response = (IDictionary) JsonConvert.Import(server.Process("{ id : 42, method : 'foo }"));
-            Assert.IsNotNull(response["error"]);
+            IDictionary response = (IDictionary)JsonConvert.Import(server.Process("{ id : 42, method : 'foo }"));
+            Assert.That(response["error"], Is.Not.Null);
             object id = response["id"];
-            Assert.IsNotNull(id);
-            Assert.AreEqual(42, ((JsonNumber) id).ToInt32());
+            Assert.That(id, Is.Not.Null);
+            Assert.That(((JsonNumber)id).ToInt32(), Is.EqualTo(42));
         }
 
-        [ Test ]
+        [Test]
         public void CallWithParamNamesInAltCase()
         {
             JsonRpcDispatcher server = new JsonRpcDispatcher(new TestService());
             string responseString = server.Process("{ id : 1, method : 'Say', params : { MESSAGE : 'Hello' } }");
-            Assert.AreEqual("Hello", JsonRpcServices.GetResult((IDictionary) Parse(responseString)));
+            Assert.That(JsonRpcServices.GetResult((IDictionary)Parse(responseString)), Is.EqualTo("Hello"));
         }
 
-        [ Test ]
+        [Test]
         public void DefaultJsonExporterValueNeverNull()
         {
-            Assert.IsNotNull(new JsonRpcDispatcher(new TestService()).JsonExporter);
+            Assert.That(new JsonRpcDispatcher(new TestService()).JsonExporter, Is.Not.Null);
         }
 
-        [ Test ]
+        [Test]
         public void SetJsonExporter()
         {
             JsonRpcDispatcher dispatcher = new JsonRpcDispatcher(new TestService());
             JsonExportHandler exporter = new JsonExportHandler(new ExportContext().Export);
             dispatcher.JsonExporter = exporter;
-            Assert.AreSame(exporter, dispatcher.JsonExporter);
+            Assert.That(dispatcher.JsonExporter, Is.SameAs(exporter));
         }
 
-        [ Test ]
-        [ ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotSetNullJsonExporter()
         {
-            new JsonRpcDispatcher(new TestService()).JsonExporter = null;
+            Assert.Throws<ArgumentNullException>(() => new JsonRpcDispatcher(new TestService()).JsonExporter = null);
         }
 
-        [ Test ]
+        [Test]
         public void DefaultJsonImporterValueNeverNull()
         {
-            Assert.IsNotNull(new JsonRpcDispatcher(new TestService()).JsonExporter);
+            Assert.That(new JsonRpcDispatcher(new TestService()).JsonExporter, Is.Not.Null);
         }
 
-        [ Test ]
+        [Test]
         public void SetJsonImporter()
         {
             JsonRpcDispatcher dispatcher = new JsonRpcDispatcher(new TestService());
             JsonImportHandler importer = new JsonImportHandler(new ImportContext().Import);
             dispatcher.JsonImporter = importer;
-            Assert.AreSame(importer, dispatcher.JsonImporter);
+            Assert.That(dispatcher.JsonImporter, Is.SameAs(importer));
         }
 
-        [ Test ]
-        [ ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotSetNullJsonImporter()
         {
-            new JsonRpcDispatcher(new TestService()).JsonImporter = null;
+            Assert.Throws<ArgumentNullException>(() => new JsonRpcDispatcher(new TestService()).JsonImporter = null);
         }
 
-        [ Test ]
+        [Test]
         public void CustomImportContextUsedDuringRequestProcessing()
         {
             JsonRpcDispatcher dispatcher = new JsonRpcDispatcher(new TestService());
             TestImporter importer = new TestImporter();
-            Assert.IsFalse(importer.ImportCalled);
+            Assert.That(importer.ImportCalled, Is.False);
             dispatcher.JsonImporter = new JsonImportHandler(importer.Import);
             dispatcher.Process("{ id: 1, method: Dummy }");
-            Assert.IsTrue(importer.ImportCalled);
+            Assert.That(importer.ImportCalled, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void CustomExportContextUsedDuringRequestProcessing()
         {
             JsonRpcDispatcher dispatcher = new JsonRpcDispatcher(new TestService());
             TestExporter exporter = new TestExporter();
-            Assert.IsFalse(exporter.ExportCalled);
+            Assert.That(exporter.ExportCalled, Is.False);
             dispatcher.JsonExporter = new JsonExportHandler(exporter.Export);
             dispatcher.Process("{ id: 1, method: Dummy }");
-            Assert.IsTrue(exporter.ExportCalled);
+            Assert.That(exporter.ExportCalled, Is.True);
         }
 
-        [ Test ]
+        [Test]
         public void ServiceInitialization()
         {
             TestService service = new TestService();
-            Assert.AreSame(service, new JsonRpcDispatcher(service).Service);
+            Assert.That(new JsonRpcDispatcher(service).Service, Is.SameAs(service));
         }
 
-        [ Test ]
-        [ ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotCallProcessWithNullJsonReader()
         {
-            new JsonRpcDispatcher(new TestService()).Process(null, new EmptyJsonWriter());
+            Assert.Throws<ArgumentNullException>(() => new JsonRpcDispatcher(new TestService()).Process(null, new EmptyJsonWriter()));
         }
 
-        [ Test ]
-        [ ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotCallProcessWithNullJsonWriter()
         {
-            new JsonRpcDispatcher(new TestService()).Process(new JsonRecorder().CreatePlayer(), null);
+            Assert.Throws<ArgumentNullException>(() => new JsonRpcDispatcher(new TestService()).Process(new JsonRecorder().CreatePlayer(), null));
         }
 
         public class TestImporter
@@ -330,7 +326,7 @@ namespace Jayrock.JsonRpc
         public class TestExporter
         {
             public bool ExportCalled;
-            
+
             public void Export(object value, JsonWriter writer)
             {
                 ExportCalled = true;
@@ -345,31 +341,31 @@ namespace Jayrock.JsonRpc
 
         private sealed class TestService : JsonRpcService
         {
-            [ JsonRpcMethod ]
+            [JsonRpcMethod]
             public void Dummy()
-            {                
+            {
             }
-            
-            [ JsonRpcMethod ]
+
+            [JsonRpcMethod]
             public string Say(string message)
             {
                 return message;
             }
 
-            [ JsonRpcMethod("replicate") ]
+            [JsonRpcMethod("replicate")]
             public string[] Replicate(string text, int count)
             {
-                return (string[]) ArrayList.Repeat(text, count).ToArray(typeof(string));
+                return (string[])ArrayList.Repeat(text, count).ToArray(typeof(string));
             }
 
-            [ JsonRpcMethod("rev") ]
+            [JsonRpcMethod("rev")]
             public object[] Reverse(object[] values)
             {
                 Array.Reverse(values);
                 return values;
             }
-            
-            [ JsonRpcMethod("sum") ]
+
+            [JsonRpcMethod("sum")]
             public int Sum(int[] ints)
             {
                 int sum = 0;
@@ -378,9 +374,9 @@ namespace Jayrock.JsonRpc
                 return sum;
             }
 
-            [ JsonRpcMethod(Idempotent = true) ]
+            [JsonRpcMethod(Idempotent = true)]
             public void Idem()
-            {                
+            {
             }
         }
 
@@ -390,18 +386,22 @@ namespace Jayrock.JsonRpc
             {
                 return JsonRpcServices.GetClassFromType(GetType());
             }
-            
-            [ JsonRpcMethod ]
+
+            [JsonRpcMethod]
             public object Echo(object o)
-            {                
+            {
                 return o;
             }
 
-            [ JsonRpcMethod ] // FIXME: CallWithPositionalArgs test breaks when parameters are int.
+            [JsonRpcMethod] // FIXME: CallWithPositionalArgs test breaks when parameters are int.
             public object[] EchoMany(object a, object b, object c, object d, object e, object f, object g, object h, object i, object j, object k, object l, object m, object n, object o, object p, object q, object r, object s, object t, object u, object v, object w, object x, object y, object z)
-            {                
+            {
                 return new object[] { a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z };
             }
         }
     }
 }
+
+
+
+

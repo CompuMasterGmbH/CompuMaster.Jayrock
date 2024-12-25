@@ -48,27 +48,27 @@ namespace Jayrock.Json.Conversion.Converters
         [Test]
         public void ImportNull()
         {
-            Assert.IsNull(Import(typeof(Days), JsonNull.Text));
+            Assert.That(Import(typeof(Days), JsonNull.Text), Is.Null);
         }
 
         [Test]
         public void ImportString()
         {
-            Assert.AreEqual(Days.Friday, Import(typeof(Days), "'Friday'"));
+            Assert.That(Import(typeof(Days), "'Friday'"), Is.EqualTo(Days.Friday));
         }
 
         [Test]
         public void ImportStringIgnoresCase()
         {
-            Assert.AreEqual(Days.Friday, Import(typeof(Days), "'FRIDAY'"));
-            Assert.AreEqual(Days.Friday, Import(typeof(Days), "'friday'"));
-            Assert.AreEqual(Days.Friday, Import(typeof(Days), "'FrIdAy'"));
+            Assert.That(Import(typeof(Days), "'FRIDAY'"), Is.EqualTo(Days.Friday));
+            Assert.That(Import(typeof(Days), "'friday'"), Is.EqualTo(Days.Friday));
+            Assert.That(Import(typeof(Days), "'FrIdAy'"), Is.EqualTo(Days.Friday));
         }
 
         [Test]
         public void ImportStringIgnoresWhitespace()
         {
-            Assert.AreEqual(Days.Friday, Import(typeof(Days), "' Friday '"));
+            Assert.That(Import(typeof(Days), "' Friday '"), Is.EqualTo(Days.Friday));
         }
 
         [Test]

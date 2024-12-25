@@ -31,109 +31,109 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestTupleImporter
     {
-        [ Test, ExpectedException(typeof(ArgumentException)) ]
+        [Test]
         public void CannotInitializeWithNonTupleType()
         {
-            new TupleImporter(typeof(object));
+            Assert.Throws<ArgumentException>(() => new TupleImporter(typeof(object)));
         }
 
-        [ Test ]
+        [Test]
         public void Superclass()
         {
-            Assert.IsInstanceOfType(typeof(ImporterBase), new TupleImporter(typeof(Tuple<object>)));
+            Assert.That(new TupleImporter(typeof(Tuple<object>)), Is.InstanceOf<ImporterBase>());
         }
 
-        [ Test ]
+        [Test]
         public void InputTypeIsTuple()
         {
-            Assert.AreSame(typeof(Tuple<object>), new TupleImporter(typeof(Tuple<object>)).OutputType);
+            Assert.That(new TupleImporter(typeof(Tuple<object>)).OutputType, Is.SameAs(typeof(Tuple<object>)));
         }
 
-        [ Test ]
+        [Test]
         public void ImportTuple1FromNumber()
         {
             AssertImport(Tuple.Create(42), "42");
         }
 
-        [ Test ]
+        [Test]
         public void ImportTuple1FromString()
         {
             AssertImport(Tuple.Create("foo"), "foo");
         }
 
-        [ Test ]
+        [Test]
         public void ImportTuple1FromBoolean()
         {
             AssertImport(Tuple.Create(true), "true");
         }
 
-        [ Test ]
+        [Test]
         public void ImportTuple1FromNull()
         {
             var importer = new TupleImporter(typeof(Tuple<int>));
             var result = importer.Import(JsonConvert.CreateImportContext(), JsonText.CreateReader("null"));
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
-        [ Test ]
+        [Test]
         public void ImportTuple1FromObject()
         {
             var tuple = JsonConvert.Import<Tuple<JsonObject>>("{x:123,y:456}");
-            Assert.IsNotNull(tuple.Item1);
+            Assert.That(tuple.Item1, Is.Not.Null);
             dynamic obj = tuple.Item1;
-            Assert.AreEqual(123, obj.x.ToInt32());
-            Assert.AreEqual(456, obj.y.ToInt32());
+            Assert.That(obj.x.ToInt32(), Is.EqualTo(123));
+            Assert.That(obj.y.ToInt32(), Is.EqualTo(456));
         }
 
-        [ Test ]
+        [Test]
         public void ImportTuple1FromArray()
         {
             var expected = Tuple.Create(new[] { 123, 456, 789 });
             var actual = JsonConvert.Import<Tuple<int[]>>("[123, 456, 789]");
-            Assert.IsNotNull(actual);
-            Assert.AreEqual(expected.Item1, actual.Item1);
+            Assert.That(actual, Is.Not.Null);
+            Assert.That(actual.Item1, Is.EqualTo(expected.Item1));
         }
 
-        [ Test ]
+        [Test]
         public void ImportTuple3FromArray()
         {
             AssertImport(Tuple.Create(42, "foo", true), "[42,foo,true]");
         }
-        
-        [ Test, ExpectedException(typeof(JsonException)) ]
+
+        [Test]
         public void CannotImportTuple2FromNumber()
         {
-            JsonConvert.Import<Tuple<int, int>>("42");
+            Assert.Throws<JsonException>(() => JsonConvert.Import<Tuple<int, int>>("42"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportTuple2FromString()
         {
-            JsonConvert.Import<Tuple<string, string>>("foo");
+            Assert.Throws<JsonException>(() => JsonConvert.Import<Tuple<string, string>>("foo"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportTuple2FromBoolean()
         {
-            JsonConvert.Import<Tuple<bool, bool>>("true");
+            Assert.Throws<JsonException>(() => JsonConvert.Import<Tuple<bool, bool>>("true"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportTuple2FromObject()
         {
-            JsonConvert.Import<Tuple<JsonObject, JsonObject>>("{}");
+            Assert.Throws<JsonException>(() => JsonConvert.Import<Tuple<JsonObject, JsonObject>>("{}"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportWhenArrayHasTooFewElements()
         {
-            JsonConvert.Import<Tuple<int, string, bool>>("[123,foo]");
+            Assert.Throws<JsonException>(() => JsonConvert.Import<Tuple<int, string, bool>>("[123,foo]"));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void SubClassCannotExportValueWithNullContext()
         {
             var tuple = Tuple.Create(42);
@@ -141,10 +141,10 @@ namespace Jayrock.Json.Conversion.Converters
             exporter.ForceNullContext = true;
             var context = JsonConvert.CreateExportContext();
             var writer = new JsonBufferWriter();
-            exporter.Export(context, tuple, writer);
+            Assert.Throws<ArgumentNullException>(() => exporter.Export(context, tuple, writer));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void SubClassCannotExportValueWithNullWriter()
         {
             var tuple = Tuple.Create(42);
@@ -152,7 +152,7 @@ namespace Jayrock.Json.Conversion.Converters
             exporter.ForceNullWriter = true;
             var context = JsonConvert.CreateExportContext();
             var writer = new JsonBufferWriter();
-            exporter.Export(context, tuple, writer);
+            Assert.Throws<ArgumentNullException>(() => exporter.Export(context, tuple, writer));
         }
 
         private static void AssertImport(object expected, string input)
@@ -161,8 +161,8 @@ namespace Jayrock.Json.Conversion.Converters
             var reader = JsonText.CreateReader(input);
             var context = JsonConvert.CreateImportContext();
             var actual = importer.Import(context, reader);
-            Assert.IsTrue(reader.EOF, "Reader must be at EOF.");
-            Assert.AreEqual(expected, actual);
+            Assert.That(reader.EOF, Is.True, "Reader must be at EOF.");
+            Assert.That(actual, Is.EqualTo(expected));
         }
 
         class ExportValueTestExporter : TupleExporter
@@ -170,8 +170,9 @@ namespace Jayrock.Json.Conversion.Converters
             public bool ForceNullContext;
             public bool ForceNullWriter;
 
-            public ExportValueTestExporter(Type inputType) : 
-                base(inputType) {}
+            public ExportValueTestExporter(Type inputType) :
+                base(inputType)
+            { }
 
             protected override void ExportValue(ExportContext context, object value, JsonWriter writer)
             {
@@ -182,3 +183,7 @@ namespace Jayrock.Json.Conversion.Converters
 }
 
 #endif
+
+
+
+

@@ -36,7 +36,7 @@ namespace Jayrock.Json.Conversion.Converters
         [Test]
         public void ImportNull()
         {
-            Assert.IsNull(Import("null"));
+            Assert.That(Import("null"), Is.Null);
         }
 
         [Test]
@@ -136,7 +136,7 @@ namespace Jayrock.Json.Conversion.Converters
         public void ImportZulu()
         {
             DateTime time = JsonConvert.Import<DateTime>("'2013-10-29T11:04:09.144Z'").ToUniversalTime();
-            Assert.AreEqual(new DateTime(2013, 10, 29, 11, 04, 09, 144), time);
+            Assert.That(time, Is.EqualTo(new DateTime(2013, 10, 29, 11, 04, 09, 144)));
         }
 
         private static void AssertImport(DateTime expected, string input)
@@ -147,11 +147,11 @@ namespace Jayrock.Json.Conversion.Converters
         private static void AssertImport(DateTime expected, string input, bool expectingUTC)
         {
             object o = Import(input);
-            Assert.IsInstanceOf<DateTime>(o);
+            Assert.That(o, Is.InstanceOf<DateTime>());
             if (expectingUTC)
-                Assert.AreEqual(expected, ((DateTime)o).ToUniversalTime());
+                Assert.That(((DateTime)o).ToUniversalTime(), Is.EqualTo(expected));
             else
-                Assert.AreEqual(expected, o);
+                Assert.That(o, Is.EqualTo(expected));
         }
 
         private static object Import(string input)
@@ -159,9 +159,9 @@ namespace Jayrock.Json.Conversion.Converters
             JsonTextReader reader = new JsonTextReader(new StringReader(input));
             ImportContext context = new ImportContext();
             object value = context.Import(typeof(DateTime), reader);
-            Assert.IsTrue(reader.EOF, "Reader must be at EOF.");
+            Assert.That(reader.EOF, Is.True, "Reader must be at EOF.");
             if (value != null)
-                Assert.IsInstanceOf<DateTime>(value);
+                Assert.That(value, Is.InstanceOf<DateTime>());
             return value;
         }
 
@@ -175,3 +175,4 @@ namespace Jayrock.Json.Conversion.Converters
         }
     }
 }
+

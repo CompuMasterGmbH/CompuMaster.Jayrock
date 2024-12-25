@@ -29,60 +29,63 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestStringImporter
     {
-        [ Test ]
+        [Test]
         public void ImportString()
         {
             AssertImport("Hello World", "\"Hello World\"");
         }
 
-        [ Test ]
+        [Test]
         public void ImportNull()
         {
             AssertImport(null, "null");
         }
 
-        [ Test ]
+        [Test]
         public void ImportNumber()
         {
             AssertImport("123", "123");
         }
 
-        [ Test ]
+        [Test]
         public void ImportTrue()
         {
             AssertImport("true", "true");
         }
 
-        [ Test ]
+        [Test]
         public void ImportFalse()
         {
             AssertImport("false", "false");
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportArray()
         {
-            AssertImport(null, "[]");
+            Assert.Throws<JsonException>(() => AssertImport(null, "[]"));
         }
-        
-        [ Test, ExpectedException(typeof(JsonException)) ]
+
+        [Test]
         public void CannotImportObject()
         {
-            AssertImport(null, "{}");
+            Assert.Throws<JsonException>(() => AssertImport(null, "{}"));
         }
-        
+
         private static void AssertImport(string expected, string input)
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(input));
             StringImporter importer = new StringImporter();
             object o = importer.Import(new ImportContext(), reader);
-            Assert.IsTrue(reader.EOF, "Reader must be at EOF.");
+            Assert.That(reader.EOF, Is.True, "Reader must be at EOF.");
             if (expected != null)
-                Assert.IsInstanceOfType(typeof(string), o);
-            Assert.AreEqual(expected, o);
+                Assert.That(o, Is.InstanceOf<string>());
+            Assert.That(o, Is.EqualTo(expected));
         }
     }
 }
+
+
+

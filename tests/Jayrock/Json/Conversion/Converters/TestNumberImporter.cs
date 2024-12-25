@@ -30,69 +30,69 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestNumberImporter
     {
-        [ Test ]
+        [Test]
         public void ImportByte()
         {
-            AssertImport((byte) 123, "123");
+            AssertImport((byte)123, "123");
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportOutsideByte()
         {
-            AssertImport((byte) 0, "456");
+            Assert.Throws<JsonException>(() => AssertImport((byte)0, "456"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportObject()
         {
-            AssertImport((byte) 0, "{}");
+            Assert.Throws<JsonException>(() => AssertImport((byte)0, "{}"));
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportArray()
         {
-            AssertImport((byte) 0, "[]");
+            Assert.Throws<JsonException>(() => AssertImport((byte)0, "[]"));
         }
 
-        [ Test ]
+        [Test]
         public void ImportInt16()
         {
-            AssertImport((short) 456, "456");
+            AssertImport((short)456, "456");
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportOutsideInt16()
         {
-            AssertImport((short) 0, "456789");
+            Assert.Throws<JsonException>(() => AssertImport((short)0, "456789"));
         }
-        
-        [ Test ]
+
+        [Test]
         public void ImportString()
         {
             AssertImport(123456789, "'123456789'");
         }
 
-        [ Test ]
+        [Test]
         public void ImportBoolean()
         {
             AssertImport(1, "true");
             AssertImport(0, "false");
         }
 
-        #if !NET_1_0 && !NET_1_1 && !NET_2_0
+#if !NET_1_0 && !NET_1_1 && !NET_2_0
 
-        [ Test ]
+        [Test]
         public void ImportBigInteger()
         {
             AssertImport(System.Numerics.BigInteger.Pow(long.MaxValue, 3), "784637716923335095224261902710254454442933591094742482943");
         }
 
-        #endif // !NET_1_0 && !NET_1_1 && !NET_2_0
+#endif // !NET_1_0 && !NET_1_1 && !NET_2_0
 
-        [ Test ]
+        [Test]
         public void ImportDecimalUsingExponentialNotation()
         {
             //
@@ -103,12 +103,15 @@ namespace Jayrock.Json.Conversion.Converters
             AssertImport(7.25e-5m, "7.25e-005");
         }
 
-        [ Test, ExpectedException(typeof(JsonException)) ]
+        [Test]
         public void CannotImportNull()
         {
-            ImportContext importContext = new ImportContext();
-            JsonTextReader reader = new JsonTextReader(new StringReader("null"));
-            new Int32Importer().Import(importContext, reader);
+            Assert.Throws<JsonException>(() =>
+            {
+                ImportContext importContext = new ImportContext();
+                JsonTextReader reader = new JsonTextReader(new StringReader("null"));
+                new Int32Importer().Import(importContext, reader);
+            });
         }
 
         private static void AssertImport(object expected, string input)
@@ -117,9 +120,12 @@ namespace Jayrock.Json.Conversion.Converters
             Type expectedType = expected.GetType();
             ImportContext context = new ImportContext();
             object o = context.Import(expectedType, reader);
-            Assert.IsTrue(reader.EOF, "Reader must be at EOF.");
-            Assert.IsInstanceOfType(expectedType, o);
-            Assert.AreEqual(expected, o);
+            Assert.That(reader.EOF, Is.True, "Reader must be at EOF.");
+            Assert.That(o, Is.InstanceOf(expectedType));
+            Assert.That(o, Is.EqualTo(expected));
         }
     }
 }
+
+
+

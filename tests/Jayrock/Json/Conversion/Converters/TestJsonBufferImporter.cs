@@ -29,34 +29,37 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestJsonBufferImporter
-    {        
-        [ Test ]
+    {
+        [Test]
         public void OutputypeIsJsonBuffer()
         {
-            Assert.AreSame(typeof(JsonBuffer), (new JsonBufferImporter()).OutputType);
+            Assert.That((new JsonBufferImporter()).OutputType, Is.SameAs(typeof(JsonBuffer)));
         }
 
-        [ Test ]
+        [Test]
         public void Import()
         {
             JsonReader reader = JsonText.CreateReader("[42,{x:123,y:456},foo,true,null,false]");
             JsonBufferImporter importer = new JsonBufferImporter();
-            JsonBuffer buffer = (JsonBuffer) importer.Import(JsonConvert.CreateImportContext(), reader);
-            Assert.AreEqual("[42,{\"x\":123,\"y\":456},\"foo\",true,null,false]", buffer.ToString());
+            JsonBuffer buffer = (JsonBuffer)importer.Import(JsonConvert.CreateImportContext(), reader);
+            Assert.That(buffer.ToString(), Is.EqualTo("[42,{\"x\":123,\"y\":456},\"foo\",true,null,false]"));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotImportWithNullContext()
         {
-            new JsonBufferImporter().Import(null, JsonText.CreateReader(string.Empty));
+            Assert.Throws<ArgumentNullException>(() => new JsonBufferImporter().Import(null, JsonText.CreateReader(string.Empty)));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotImportWithNullWriter()
         {
-            new JsonBufferImporter().Import(JsonConvert.CreateImportContext(), null);
+            Assert.Throws<ArgumentNullException>(() => new JsonBufferImporter().Import(JsonConvert.CreateImportContext(), null));
         }
     }
 }
+
+
+

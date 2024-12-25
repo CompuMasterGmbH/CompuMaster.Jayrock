@@ -29,47 +29,50 @@ namespace Jayrock.Json.Conversion.Converters
 
     #endregion
 
-    [ TestFixture ]
+    [TestFixture]
     public class TestTypeExporterBase
     {
         private readonly ThingExporter _exporter = new ThingExporter();
-        
-        [ Test ]
+
+        [Test]
         public void ExportNull()
         {
             Export(null).ReadNull();
         }
 
-        [ Test ]
+        [Test]
         public void InputTypeInitialization()
         {
-            Assert.AreSame(typeof(Thing), _exporter.InputType);
+            Assert.That(_exporter.InputType, Is.SameAs(typeof(Thing)));
         }
 
-        [ Test, ExpectedException(typeof(ArgumentNullException)) ]
+        [Test]
         public void CannotUseNullContext()
         {
-            _exporter.Export(null, null, null);
+            Assert.Throws<ArgumentNullException>(() => _exporter.Export(null, null, null));
         }
- 
+
         private JsonReader Export(object value)
         {
             JsonRecorder writer = new JsonRecorder();
             _exporter.Export(new ExportContext(), value, writer);
             return writer.CreatePlayer();
         }
-        
+
         private class Thing
         {
         }
 
         private class ThingExporter : ExporterBase
         {
-            public ThingExporter() : base(typeof(Thing)) {}
-            
+            public ThingExporter() : base(typeof(Thing)) { }
+
             protected override void ExportValue(ExportContext context, object value, JsonWriter writer)
             {
             }
         }
     }
 }
+
+
+
